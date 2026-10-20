@@ -1,0 +1,64 @@
+/* Tooltips inspiradas nas dicas roxas do inventário do Minecraft */
+#burgerTooltip {
+    position: fixed;
+    z-index: 2147483647;
+    display: none;
+    width: max-content;
+    max-width: min(290px, calc(100vw - 24px));
+    padding: 8px 10px;
+    color: #f5eaff;
+    background: rgba(31, 13, 49, 0.97);
+    border: 1px solid #a96cff;
+    border-radius: 5px;
+    box-shadow: 0 3px 0 #10051c, 0 0 12px rgba(155, 87, 255, .28);
+    font: 500 13px/1.35 Arial, Helvetica, sans-serif;
+    letter-spacing: .1px;
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0;
+    transform: translateY(3px);
+    transition: opacity .08s linear, transform .08s linear;
+}
+#burgerTooltip.visivel {
+    opacity: 1;
+    transform: translateY(0);
+}
+#burgerTooltip .tooltip-titulo {
+    display: block;
+    margin-bottom: 2px;
+    color: #d7a7ff;
+    font-weight: 700;
+}
+#burgerTooltip .tooltip-descricao {
+    display: block;
+    color: #f5eaff;
+    font-weight: 400;
+}
+@media (hover: none), (pointer: coarse) {
+    #burgerTooltip { display: none !important; }
+}
+
+
+/* Correção complementar de posicionamento das tooltips */
+#burgerTooltip {
+    position: fixed !important;
+    z-index: 2147483647 !important;
+    box-sizing: border-box;
+    pointer-events: none !important;
+    margin: 0 !important;
+    right: auto;
+    bottom: auto;
+    transform-origin: top left;
+    will-change: left, top, opacity;
+}
+
+#burgerTooltip.visivel {
+    visibility: visible;
+}
+
+#burgerTooltip:not(.visivel) {
+    pointer-events: none !important;
+}

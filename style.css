@@ -1,0 +1,1284 @@
+
+/* ========================================
+   CONFIGURAÇÕES GERAIS
+   BURGER CLICKER 🍔
+======================================== */
+
+* {
+    box-sizing: border-box;
+    border-radius: 24px;
+    font-size: 125%;
+}
+
+html {
+    width: 100%;
+    min-height: 100%;
+    font-size: 100%;
+    scroll-behavior: smooth;
+}
+
+@font-face {
+    font-family: "Font_1";
+    src: url("fonts/Patrick_Hand/PatrickHand-Regular.ttf") format("truetype");
+    font-style: normal;
+    font-display: swap;
+}
+
+
+body {
+    font-family: "Font_1", sans-serif;
+
+    /* O fundo será controlado por uma camada independente */
+    background: transparent;
+
+    text-align: center;
+    margin: 0;
+    padding: clamp(12px, 3vw, 30px);
+
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    overflow-wrap: break-word;
+    color: #432b20;
+
+    /* Mantém o fundo atrás do conteúdo do jogo */
+    position: relative;
+    isolation: isolate;
+
+    animation: entradaSite 0.8s ease-out both;
+}
+
+
+/* ========================================
+   FUNDO RESPONSIVO — BURGER CLICKER
+======================================== */
+
+html {
+    background-color: #ffffff;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+
+    /* Ocupa exatamente a área visível da tela */
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+
+    /* Imagem esticada para preencher toda a tela */
+    background-image: url("media/background.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+
+    /* Fica atrás de todos os elementos do jogo */
+    z-index: -1;
+    pointer-events: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+
+    filter: drop-shadow(0 3px 4px rgba(50, 30, 15, 0.18));
+
+    transition:
+        transform 0.35s cubic-bezier(.2, .8, .2, 1),
+        filter 0.35s ease;
+}
+
+/* ========================================
+   ANIMAÇÕES GERAIS
+======================================== */
+
+@keyframes entradaSite {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes entradaPainel {
+    from {
+        opacity: 0;
+        transform: translateY(22px) scale(0.985);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes pulsarHamburguer {
+    0%, 100% {
+        filter: drop-shadow(0 7px 5px rgba(70, 40, 20, 0.22));
+    }
+
+    50% {
+        filter: drop-shadow(0 13px 10px rgba(70, 40, 20, 0.36));
+    }
+}
+
+@keyframes burgerLevitar {
+    0%, 100% {
+        transform: translateY(0) rotate(-1deg) scale(1);
+    }
+
+    25% {
+        transform: translateY(-7px) rotate(1deg) scale(1.015);
+    }
+
+    50% {
+        transform: translateY(-11px) rotate(0deg) scale(1.025);
+    }
+
+    75% {
+        transform: translateY(-5px) rotate(-1deg) scale(1.01);
+    }
+}
+
+@keyframes burgerSombra {
+    0%, 100% {
+        filter: drop-shadow(0 7px 5px rgba(70, 40, 20, 0.24));
+    }
+
+    50% {
+        filter: drop-shadow(0 14px 11px rgba(70, 40, 20, 0.38));
+    }
+}
+
+@keyframes burgerClique {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    35% {
+        transform: scale(0.86) rotate(-4deg);
+    }
+
+    65% {
+        transform: scale(1.12) rotate(3deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes imagemRespirar {
+    0%, 100% {
+        filter: drop-shadow(0 5px 5px rgba(70, 40, 20, 0.22));
+    }
+
+    50% {
+        filter: drop-shadow(0 10px 9px rgba(70, 40, 20, 0.34));
+    }
+}
+
+@keyframes brilhoXP {
+    from {
+        background-position: 100% 0;
+    }
+
+    to {
+        background-position: -100% 0;
+    }
+}
+
+@keyframes brilhoXPInterno {
+    from {
+        transform: translateX(-150%) skewX(-20deg);
+    }
+
+    to {
+        transform: translateX(250%) skewX(-20deg);
+    }
+}
+
+@keyframes subir {
+    0% {
+        opacity: 0;
+        transform: translateY(8px) scale(0.75);
+    }
+
+    15% {
+        opacity: 1;
+        transform: translateY(0) scale(1.15);
+    }
+
+    35% {
+        transform: translateY(-8px) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(1.05);
+    }
+}
+
+@keyframes textoExplosivo {
+    0% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            translateY(25px)
+            rotate(var(--float-rotation, -5deg))
+            scale(0.25);
+    }
+
+    15% {
+        opacity: 1;
+        transform:
+            translate(-50%, -50%)
+            translateY(-8px)
+            rotate(var(--float-rotation, -5deg))
+            scale(var(--float-size, 1.1));
+    }
+
+    30% {
+        opacity: 1;
+        transform:
+            translate(-50%, -50%)
+            translateY(-3px)
+            rotate(var(--float-rotation, -5deg))
+            scale(1);
+    }
+
+    75% {
+        opacity: 1;
+        transform:
+            translate(-50%, -50%)
+            translateY(-32px)
+            rotate(var(--float-rotation, -5deg))
+            scale(1.03);
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            translateY(-85px)
+            rotate(var(--float-rotation, -5deg))
+            scale(0.85);
+    }
+}
+
+@keyframes brilhoConquista {
+    0%, 100% {
+        box-shadow:
+            0 3px 0 rgba(92, 51, 23, 0.15),
+            0 5px 10px rgba(92, 51, 23, 0.08);
+    }
+
+    50% {
+        box-shadow:
+            0 4px 0 rgba(92, 51, 23, 0.12),
+            0 8px 18px rgba(139, 69, 19, 0.22);
+    }
+}
+
+@keyframes botaoPulsar {
+    0%, 100% {
+        box-shadow:
+            0 4px 0 rgba(92, 51, 23, 0.17),
+            0 7px 12px rgba(60, 35, 20, 0.08);
+    }
+
+    50% {
+        box-shadow:
+            0 5px 0 rgba(92, 51, 23, 0.2),
+            0 10px 18px rgba(60, 35, 20, 0.14);
+    }
+}
+
+/* ========================================
+   TÍTULOS E TEXTOS
+   SEM CONTORNOS
+======================================== */
+
+h1 {
+    font-size: 200%;
+    color: #8b4513;
+    overflow-wrap: anywhere;
+
+    text-shadow:
+        2px 3px 0 rgba(92, 51, 23, 0.15),
+        0 6px 12px rgba(60, 35, 20, 0.18);
+
+    transition:
+        transform 0.3s ease,
+        text-shadow 0.3s ease;
+
+    animation: entradaPainel 0.7s ease-out both;
+}
+
+h1:hover {
+    transform: translateY(-2px) scale(1.02);
+
+    text-shadow:
+        2px 4px 0 rgba(92, 51, 23, 0.18),
+        0 9px 18px rgba(60, 35, 20, 0.25);
+}
+
+h2 {
+    color: #5c3317;
+
+    text-shadow:
+        0 3px 5px rgba(60, 35, 20, 0.12);
+
+    transition:
+        color 0.25s ease,
+        transform 0.25s ease,
+        text-shadow 0.25s ease;
+}
+
+h2:hover {
+    color: #8b4513;
+    transform: translateY(-1px);
+
+    text-shadow:
+        0 4px 8px rgba(60, 35, 20, 0.2);
+}
+
+h3,
+p,
+#contador,
+#pps,
+#nivel,
+#xp {
+    text-shadow:
+        0 2px 4px rgba(60, 35, 20, 0.12);
+}
+
+h4 {
+    font-size: 150%;
+    color: #8b4513;
+    overflow-wrap: anywhere;
+
+    text-shadow:
+        0 3px 5px rgba(60, 35, 20, 0.12);
+
+    animation: entradaPainel 0.9s ease-out both;
+}
+
+/* ========================================
+   PAINEL PRINCIPAL
+======================================== */
+
+.painel {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto 50px;
+
+    animation: entradaPainel 0.8s ease-out both;
+}
+
+#contador {
+    font-size: 300%;
+    overflow-wrap: anywhere;
+    color: #8b4513;
+
+    text-shadow:
+        0 4px 0 rgba(92, 51, 23, 0.12),
+        0 7px 14px rgba(60, 35, 20, 0.18);
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease,
+        text-shadow 0.2s ease;
+}
+
+#contador:hover {
+    color: #a0522d;
+    transform: scale(1.025);
+
+    text-shadow:
+        0 5px 0 rgba(92, 51, 23, 0.15),
+        0 9px 18px rgba(60, 35, 20, 0.25);
+}
+
+#pps,
+#nivel,
+#xp {
+    color: #5c3317;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+#pps:hover,
+#nivel:hover,
+#xp:hover {
+    color: #8b4513;
+    transform: translateY(-1px);
+}
+
+/* ========================================
+   BOTÃO E IMAGEM DO HAMBÚRGUER
+======================================== */
+
+#burgerBtn {
+    font-size: 750%;
+
+    border: none;
+    background: none;
+    cursor: pointer;
+
+    padding: 0;
+    max-width: 100%;
+
+    transform-origin: center;
+    will-change: transform, filter;
+
+    animation:
+        burgerLevitar 3s ease-in-out infinite,
+        burgerSombra 2.5s ease-in-out infinite;
+
+    transition:
+        transform 0.22s cubic-bezier(.2, .8, .2, 1),
+        filter 0.22s ease;
+
+    touch-action: manipulation;
+}
+
+/* O hover suspende a flutuação para dar controle ao movimento */
+#burgerBtn:hover {
+    animation: none;
+
+    transform: translateY(-5px) scale(1.09) rotate(-4deg);
+
+    filter:
+        drop-shadow(0 15px 10px rgba(70, 40, 20, 0.36))
+        brightness(1.07)
+        saturate(1.08);
+}
+
+#burgerBtn:active {
+    animation: burgerClique 0.32s ease-out;
+
+    filter:
+        drop-shadow(0 3px 2px rgba(70, 40, 20, 0.2))
+        brightness(0.98);
+}
+
+#burgerBtn:focus-visible {
+    outline: 3px solid #a0522d;
+    outline-offset: 7px;
+}
+
+/* Imagem que fica dentro do botão */
+#burgerBtn img {
+    display: inline-block;
+    transform-origin: center;
+
+    transition:
+        transform 0.22s cubic-bezier(.2, .8, .2, 1),
+        filter 0.22s ease;
+}
+
+#burgerBtn:hover img {
+    transform: scale(1.045) rotate(2deg);
+
+    filter:
+        drop-shadow(0 8px 6px rgba(70, 40, 20, 0.25))
+        saturate(1.12);
+}
+
+#burgerBtn:active img {
+    transform: scale(0.94) rotate(-2deg);
+}
+
+/* Imagem art_1, inclusive quando não estiver dentro do botão */
+img[src*="art_1"] {
+    transform-origin: center;
+
+    transition:
+        transform 0.3s cubic-bezier(.2, .8, .2, 1),
+        filter 0.3s ease;
+}
+
+img[src*="art_1"]:hover {
+    transform: scale(1.06) rotate(-2deg);
+
+    filter:
+        drop-shadow(0 10px 8px rgba(70, 40, 20, 0.3))
+        saturate(1.12)
+        brightness(1.04);
+}
+
+/* ========================================
+   PAINÉIS DO JOGO
+======================================== */
+
+.loja,
+.upgrades,
+.estatisticas,
+.prestige,
+.conquistas {
+    position: relative;
+
+    width: 100%;
+    max-width: 960px;
+
+    margin: clamp(24px, 5vw, 50px) auto;
+    padding: clamp(14px, 3vw, 30px);
+
+    border-radius: 20px;
+    min-width: 0;
+
+    box-shadow:
+        0 5px 0 rgba(60, 35, 20, 0.12),
+        0 10px 22px rgba(60, 35, 20, 0.12);
+
+    transition:
+        transform 0.3s cubic-bezier(.2, .8, .2, 1),
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+
+    animation: entradaPainel 0.7s ease-out both;
+}
+
+.loja:hover,
+.upgrades:hover,
+.estatisticas:hover,
+.prestige:hover,
+.conquistas:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 8px 0 rgba(60, 35, 20, 0.12),
+        0 18px 32px rgba(60, 35, 20, 0.2);
+}
+
+/* Cores originais preservadas */
+
+.loja {
+    background: #fff2d5;
+    border: 4px solid #8b4513;
+}
+
+.upgrades {
+    background: #eef7ff;
+    border: 4px solid #3388ff;
+}
+
+.estatisticas {
+    background: #fff8e8;
+    border: 4px solid #4e342e;
+}
+
+.prestige {
+    background: #fff6c2;
+    border: 4px solid gold;
+}
+
+.conquistas {
+    background: #fff2d5;
+    border: 4px solid #8b4513;
+}
+
+/* Realce individual das bordas no hover */
+
+.loja:hover,
+.conquistas:hover {
+    border-color: #6d310c;
+}
+
+.upgrades:hover {
+    border-color: #1768d1;
+}
+
+.estatisticas:hover {
+    border-color: #2d1b17;
+}
+
+.prestige:hover {
+    border-color: #c49a00;
+}
+
+/* ========================================
+   IMAGENS DOS PAINÉIS
+======================================== */
+
+.loja img,
+.upgrades img,
+.estatisticas img,
+.prestige img,
+.conquistas img {
+    transform-origin: center;
+
+    transition:
+        transform 0.3s cubic-bezier(.2, .8, .2, 1),
+        filter 0.3s ease;
+}
+
+.loja img:hover,
+.upgrades img:hover,
+.estatisticas img:hover,
+.prestige img:hover,
+.conquistas img:hover {
+    transform: translateY(-4px) scale(1.07);
+
+    filter:
+        drop-shadow(0 8px 6px rgba(50, 30, 15, 0.25))
+        saturate(1.12)
+        brightness(1.04);
+}
+
+/* ========================================
+   BOTÕES DA LOJA E UPGRADES
+======================================== */
+
+.loja button,
+.upgrades button {
+    display: block;
+
+    width: 100%;
+    max-width: 660px;
+
+    margin: 16px auto;
+    padding: clamp(12px, 2.5vw, 24px);
+
+    overflow-wrap: anywhere;
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 0 rgba(92, 51, 23, 0.17),
+        0 7px 12px rgba(60, 35, 20, 0.08);
+
+    transition:
+        transform 0.18s cubic-bezier(.2, .8, .2, 1),
+        box-shadow 0.18s ease,
+        filter 0.18s ease;
+
+    touch-action: manipulation;
+}
+
+.loja button:hover,
+.upgrades button:hover {
+    transform: translateY(-4px) scale(1.015);
+
+    box-shadow:
+        0 7px 0 rgba(92, 51, 23, 0.15),
+        0 12px 20px rgba(60, 35, 20, 0.16);
+
+    filter: brightness(1.05) saturate(1.04);
+}
+
+.loja button:active,
+.upgrades button:active {
+    transform: translateY(2px) scale(0.985);
+
+    box-shadow:
+        0 1px 0 rgba(92, 51, 23, 0.17),
+        0 3px 6px rgba(60, 35, 20, 0.1);
+
+    filter: brightness(0.97);
+}
+
+.loja button span,
+.upgrades button span {
+    text-shadow:
+        0 2px 3px rgba(60, 35, 20, 0.12);
+}
+
+/* ========================================
+   REBIRTH / RENASCIMENTO
+======================================== */
+
+#rebirthBtn {
+    width: 100%;
+    max-width: 500px;
+
+    padding: clamp(12px, 2.5vw, 24px);
+    font-family: inherit;
+
+    background: gold;
+    border: 4px solid #b98e00;
+    border-radius: 16px;
+
+    box-shadow:
+        0 5px 0 #b98e00,
+        0 9px 16px rgba(140, 100, 0, 0.2);
+
+    cursor: pointer;
+    overflow-wrap: anywhere;
+    touch-action: manipulation;
+
+    transition:
+        transform 0.2s cubic-bezier(.2, .8, .2, 1),
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+}
+
+#rebirthBtn:hover {
+    transform: translateY(-5px) scale(1.025);
+
+    box-shadow:
+        0 9px 0 #b98e00,
+        0 15px 25px rgba(140, 100, 0, 0.28);
+
+    filter: brightness(1.07) saturate(1.08);
+}
+
+#rebirthBtn:active {
+    transform: translateY(3px) scale(0.985);
+
+    box-shadow:
+        0 2px 0 #b98e00,
+        0 4px 8px rgba(140, 100, 0, 0.16);
+}
+
+/* ========================================
+   CONQUISTAS
+======================================== */
+
+.conquista {
+    margin: 10px;
+    padding: clamp(10px, 2vw, 16px);
+
+    background: #ffe082;
+    border: 2px solid #8b4513;
+    border-radius: 16px;
+
+    font-weight: bold;
+    overflow-wrap: anywhere;
+
+    box-shadow:
+        0 3px 0 rgba(92, 51, 23, 0.15),
+        0 5px 10px rgba(92, 51, 23, 0.08);
+
+    transition:
+        transform 0.22s cubic-bezier(.2, .8, .2, 1),
+        box-shadow 0.22s ease,
+        filter 0.22s ease,
+        background-color 0.22s ease;
+}
+
+.conquista:hover {
+    transform: translateY(-4px) scale(1.025);
+
+    box-shadow:
+        0 5px 0 rgba(92, 51, 23, 0.12),
+        0 10px 18px rgba(92, 51, 23, 0.18);
+
+    filter: brightness(1.04) saturate(1.08);
+}
+
+/* ========================================
+   TEXTOS FLUTUANTES
+   GRANDES, ALEATÓRIOS E COLORIDOS
+======================================== */
+
+.floatText {
+    position: fixed;
+
+    left: 50%;
+    top: 50%;
+
+    width: max-content;
+    max-width: 90vw;
+    padding: 4px 12px;
+
+    color: #5c3317;
+    font-weight: bold;
+    font-size: clamp(2.2rem, 7vw, 5.5rem) !important;
+    line-height: 1.1;
+
+    text-align: center;
+    overflow-wrap: anywhere;
+    pointer-events: none;
+    user-select: none;
+
+    z-index: 99999;
+
+    text-shadow:
+        0 3px 0 rgba(92, 51, 23, 0.2),
+        0 6px 12px rgba(60, 35, 20, 0.32);
+
+    will-change: transform, opacity;
+
+    animation: textoExplosivo 1.25s cubic-bezier(.2, .8, .2, 1) forwards;
+}
+
+/* Variações de cor para os textos flutuantes */
+
+.floatText.fx-dourado {
+    color: #c17b00;
+
+    text-shadow:
+        0 3px 0 rgba(112, 63, 0, 0.25),
+        0 7px 14px rgba(112, 63, 0, 0.3);
+}
+
+.floatText.fx-verde {
+    color: #247b2a;
+
+    text-shadow:
+        0 3px 0 rgba(23, 83, 27, 0.25),
+        0 7px 14px rgba(23, 83, 27, 0.3);
+}
+
+.floatText.fx-vermelho {
+    color: #b52e24;
+
+    text-shadow:
+        0 3px 0 rgba(100, 25, 15, 0.25),
+        0 7px 14px rgba(100, 25, 15, 0.3);
+}
+
+/* ========================================
+   BARRA DE XP
+======================================== */
+
+.barraContainer {
+    width: 100%;
+    max-width: 800px;
+
+    height: clamp(24px, 5vw, 50px);
+    margin: 20px auto;
+
+    background: #d0c8bd;
+    border: 4px solid #777064;
+    border-radius: 16px;
+
+    overflow: hidden;
+    position: relative;
+
+    box-shadow:
+        inset 0 3px 7px rgba(0, 0, 0, 0.18),
+        0 4px 9px rgba(60, 35, 20, 0.12);
+
+    transition:
+        box-shadow 0.25s ease,
+        transform 0.25s ease;
+}
+
+.barraContainer:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        inset 0 3px 7px rgba(0, 0, 0, 0.18),
+        0 7px 14px rgba(60, 35, 20, 0.2);
+}
+
+.barraXP {
+    position: relative;
+
+    height: 100%;
+    width: 0%;
+    overflow: hidden;
+
+    background: linear-gradient(
+        90deg,
+        #2e7d32,
+        #43a047,
+        #80c85b,
+        #43a047,
+        #2e7d32
+    );
+
+    background-size: 250% 100%;
+    border-radius: 10px;
+
+    box-shadow:
+        inset 0 2px 3px rgba(35, 90, 25, 0.2),
+        0 0 9px rgba(46, 125, 50, 0.25);
+
+    transition:
+        width 0.35s cubic-bezier(.2, .8, .2, 1),
+        filter 0.25s ease;
+
+    animation: brilhoXP 4s linear infinite;
+}
+
+/* Reflexo colorido que percorre a barra */
+.barraXP::after {
+    content: "";
+    position: absolute;
+
+    top: -20%;
+    left: 0;
+
+    width: 25%;
+    height: 140%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 213, 79, 0.55),
+        rgba(255, 183, 77, 0.75),
+        transparent
+    );
+
+    border-radius: 10px;
+    pointer-events: none;
+
+    animation: brilhoXPInterno 2.8s ease-in-out infinite;
+}
+
+.barraContainer:hover .barraXP {
+    filter: brightness(1.12) saturate(1.15);
+}
+
+/* ========================================
+   FOCO DE TECLADO
+======================================== */
+
+button:focus-visible {
+    outline: 3px solid #2459a9;
+    outline-offset: 4px;
+
+    box-shadow:
+        0 0 0 5px rgba(36, 89, 169, 0.15),
+        0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ========================================
+   TABLETS E TELAS MÉDIAS
+======================================== */
+
+@media (max-width: 768px) {
+    body {
+        padding: 16px;
+    }
+
+    .painel {
+        margin-bottom: 30px;
+    }
+
+    .loja,
+    .upgrades,
+    .estatisticas,
+    .prestige,
+    .conquistas {
+        margin-top: 28px;
+        margin-bottom: 28px;
+    }
+
+    .loja button,
+    .upgrades button {
+        max-width: 100%;
+    }
+
+    #burgerBtn {
+        max-width: 90%;
+    }
+
+    .floatText {
+        max-width: 88vw;
+        padding: 3px 8px;
+    }
+}
+
+/* ========================================
+   SMARTPHONES
+======================================== */
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        margin-top: 12px;
+        margin-bottom: 20px;
+    }
+
+    .painel {
+        margin-bottom: 24px;
+    }
+
+    .loja,
+    .upgrades,
+    .estatisticas,
+    .prestige,
+    .conquistas {
+        padding: 12px;
+        border-width: 3px;
+        border-radius: 14px;
+
+        margin: 24px auto;
+    }
+
+    .loja button,
+    .upgrades button {
+        margin: 12px auto;
+        padding: 14px 10px;
+    }
+
+    #rebirthBtn {
+        padding: 14px 10px;
+        border-width: 3px;
+    }
+
+    .conquista {
+        margin: 8px 0;
+        padding: 10px;
+    }
+
+    .barraContainer {
+        height: 25px;
+        border-width: 3px;
+    }
+
+    #burgerBtn {
+        max-width: 85%;
+    }
+
+    .floatText {
+        font-size: clamp(2rem, 10vw, 3.5rem) !important;
+        max-width: 86vw;
+    }
+
+    /* Movimentos menores para telas pequenas */
+    .loja:hover,
+    .upgrades:hover,
+    .estatisticas:hover,
+    .prestige:hover,
+    .conquistas:hover {
+        transform: translateY(-2px);
+    }
+}
+
+/* ========================================
+   TELAS MUITO ESTREITAS
+======================================== */
+
+@media (max-width: 320px) {
+    body {
+        padding: 6px;
+    }
+
+    .loja,
+    .upgrades,
+    .estatisticas,
+    .prestige,
+    .conquistas {
+        padding: 8px;
+        border-width: 2px;
+    }
+
+    .loja button,
+    .upgrades button {
+        padding: 12px 6px;
+    }
+
+    .floatText {
+        font-size: 1.8rem !important;
+        max-width: 84vw;
+    }
+}
+
+/* ========================================
+   TAMANHO AUTOMÁTICO DOS TEXTOS
+======================================== */
+
+@media (min-width: 1201px) {
+    * {
+        font-size: 125%;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1200px) {
+    * {
+        font-size: 115%;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    * {
+        font-size: 105%;
+    }
+}
+
+@media (min-width: 321px) and (max-width: 480px) {
+    * {
+        font-size: 95%;
+    }
+}
+
+@media (max-width: 320px) {
+    * {
+        font-size: 85%;
+    }
+}
+
+/* ========================================
+   TELAS TOUCH
+   EVITA HOVERS PRESOS NO CELULAR
+======================================== */
+
+@media (hover: none) {
+    #burgerBtn:hover {
+        animation:
+            burgerLevitar 3s ease-in-out infinite,
+            burgerSombra 2.5s ease-in-out infinite;
+
+        transform: none;
+    }
+
+    #burgerBtn:hover img {
+        transform: none;
+    }
+
+    .loja button:hover,
+    .upgrades button:hover,
+    #rebirthBtn:hover {
+        transform: none;
+    }
+
+    .loja img:hover,
+    .upgrades img:hover,
+    .estatisticas img:hover,
+    .prestige img:hover,
+    .conquistas img:hover {
+        transform: none;
+
+        filter: drop-shadow(
+            0 3px 4px rgba(50, 30, 15, 0.18)
+        );
+    }
+
+    img[src*="art_1"]:hover {
+        transform: none;
+    }
+
+    .loja:hover,
+    .upgrades:hover,
+    .estatisticas:hover,
+    .prestige:hover,
+    .conquistas:hover {
+        transform: none;
+    }
+}
+
+/* ========================================
+   ACESSIBILIDADE
+   RESPEITA QUEM PREFERE MENOS ANIMAÇÕES
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ========================================
+   LOJA DE PRESTÍGIO
+======================================== */
+.prestige-shop-panel {
+    width: min(96%, 1200px);
+    margin: 28px auto;
+    padding: clamp(16px, 3vw, 30px);
+    border: 3px solid #9b65d6;
+    border-radius: 24px;
+    background: linear-gradient(145deg, rgba(249, 239, 255, .97), rgba(232, 216, 255, .96));
+    box-shadow: 0 10px 26px rgba(74, 34, 110, .18);
+    color: #38234b;
+}
+.prestige-shop-panel > h2 { color: #6e36a5; }
+.prestige-shop-balance {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.8);
+    border: 1px solid rgba(120,70,160,.25);
+}
+.prestige-shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 235px), 1fr));
+    gap: 14px;
+    margin-top: 18px;
+}
+.prestige-upgrade-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 16px;
+    border: 2px solid rgba(133, 81, 181, .3);
+    border-radius: 18px;
+    background: rgba(255,255,255,.86);
+    box-shadow: 0 4px 10px rgba(70,35,100,.08);
+}
+.prestige-upgrade-card h3 {
+    margin: 0;
+    color: #62308e;
+}
+.prestige-upgrade-card p { margin: 4px 0; }
+.prestige-upgrade-level {
+    font-weight: 800;
+    color: #70409b;
+}
+.prestige-upgrade-card button {
+    margin-top: auto;
+    border: 0;
+    border-radius: 12px;
+    padding: 11px 12px;
+    color: #fff;
+    background: linear-gradient(135deg, #8c4fc4, #62309b);
+    cursor: pointer;
+    font-weight: 800;
+    transition: transform .15s ease, filter .15s ease;
+}
+.prestige-upgrade-card button:not(:disabled):hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+}
+.prestige-upgrade-card button:disabled {
+    cursor: not-allowed;
+    opacity: .55;
+    filter: grayscale(.25);
+}
+@media (max-width: 480px) {
+    .prestige-shop-panel { width: 96%; padding: 14px; }
+    .prestige-upgrade-card { padding: 13px; }
+}
+
+
+/* ========================================
+   BOTÕES DA LOJA DE PRESTÍGIO
+   COMPRA E CUSTO EM LINHAS SEPARADAS
+======================================== */
+
+.prestige-upgrade-card button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    width: 100%;
+    min-width: 0;
+    padding: 12px 8px;
+
+    font-family: inherit;
+    font-size: 100%;
+    line-height: 1.3;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    .prestige-upgrade-card button {
+        padding: 10px 6px;
+        font-size: 95%;
+    }
+}
