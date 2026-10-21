@@ -1,0 +1,251 @@
+/* ========================================
+   MENU DE CONFIGURAÇÕES — BURGER CLICKER
+======================================== */
+
+#configBtn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+    border: none;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.92);
+    color: #432b20;
+    box-shadow: 0 5px 16px rgba(60, 35, 20, 0.18);
+    backdrop-filter: blur(8px);
+}
+
+#configBtn:hover {
+    transform: translateY(-2px);
+}
+
+.config-modal[hidden] {
+    display: none;
+}
+
+.config-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(5px);
+}
+
+.config-caixa {
+    width: min(760px, 100%);
+    max-height: min(90vh, 900px);
+    overflow: auto;
+    padding: clamp(18px, 4vw, 34px);
+    background: rgba(255, 248, 233, 0.98);
+    color: #432b20;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    text-align: left;
+}
+
+.config-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.config-cabecalho h2 {
+    margin: 0;
+}
+
+#configFecharBtn {
+    border: none;
+    cursor: pointer;
+    font-size: 1.1em;
+    padding: 8px 12px;
+}
+
+.config-grupo {
+    margin-top: 22px;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 18px;
+    box-shadow: 0 3px 12px rgba(60, 35, 20, 0.08);
+}
+
+.config-grupo h3 {
+    margin-top: 0;
+}
+
+.config-opcao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 11px 0;
+    border-bottom: 1px solid rgba(92, 51, 23, 0.12);
+}
+
+.config-opcao:last-child {
+    border-bottom: none;
+}
+
+.config-opcao label {
+    cursor: pointer;
+    flex: 1;
+}
+
+.config-opcao input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    accent-color: #ff9800;
+}
+
+.config-volume {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px 14px;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.config-volume label {
+    grid-column: 1 / -1;
+    font-weight: 700;
+}
+
+.config-volume input[type="range"] {
+    width: 100%;
+    accent-color: #ff9800;
+}
+
+.config-acoes {
+    display: grid;
+    gap: 10px;
+}
+
+.config-acoes button {
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+}
+
+.config-acoes button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.config-status,
+.config-status-backup,
+.config-status-instalacao {
+    margin: 10px 0 0;
+    font-size: 0.95em;
+    opacity: 0.85;
+}
+
+.config-status[data-erro="true"] {
+    font-weight: 700;
+}
+
+.config-aviso {
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 14px;
+    background: rgba(255, 193, 7, 0.16);
+}
+
+body.config-modal-aberto {
+    overflow: hidden;
+}
+
+/* Tema escuro */
+html.tema-escuro {
+    background-color: #101114;
+}
+
+html.tema-escuro body {
+    color: #f4eee7;
+}
+
+html.tema-escuro body::before {
+    filter: brightness(0.48) saturate(0.8);
+}
+
+html.tema-escuro h1,
+html.tema-escuro h2,
+html.tema-escuro h3,
+html.tema-escuro h4,
+html.tema-escuro p,
+html.tema-escuro #contador,
+html.tema-escuro #pps,
+html.tema-escuro #nivel,
+html.tema-escuro #xp {
+    color: #f4eee7;
+}
+
+html.tema-escuro .loja,
+html.tema-escuro .upgrades,
+html.tema-escuro .estatisticas,
+html.tema-escuro .prestige,
+html.tema-escuro .conquistas,
+html.tema-escuro .painel-pets,
+html.tema-escuro .prestige-shop-panel {
+    color: #f4eee7;
+    background: rgba(24, 25, 30, 0.88);
+    box-shadow: 0 5px 0 rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.3);
+}
+
+html.tema-escuro button,
+html.tema-escuro input,
+html.tema-escuro select,
+html.tema-escuro textarea {
+    color: #f4eee7;
+    background-color: #292b31;
+}
+
+html.tema-escuro .config-caixa {
+    background: #18191e;
+    color: #f4eee7;
+}
+
+html.tema-escuro .config-grupo {
+    background: rgba(45, 46, 53, 0.88);
+}
+
+html.tema-escuro #configBtn {
+    background: rgba(35, 36, 42, 0.94);
+    color: #f4eee7;
+}
+
+/* Desativar animações */
+html.sem-animacoes *,
+html.sem-animacoes *::before,
+html.sem-animacoes *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+}
+
+@media (max-width: 600px) {
+    #configBtn {
+        top: 10px;
+        right: 10px;
+        padding: 8px 11px;
+        font-size: 0.9em;
+    }
+
+    .config-modal {
+        padding: 10px;
+    }
+
+    .config-caixa {
+        max-height: 94vh;
+        padding: 16px;
+    }
+}
