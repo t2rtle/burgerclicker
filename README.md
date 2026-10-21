@@ -14,7 +14,7 @@ Idle Game inspirado em Cookie Clicker.
 
 ## Jogar
 
-https://t2rtle.github.io/burgerclicker/
+https://t2rtle.github.io
 
 ## Desenvolvedor
 
