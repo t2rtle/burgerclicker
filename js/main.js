@@ -8,15 +8,43 @@ function tocarSomClique() {
     audio.volume = somClique.volume;
     audio.play().catch(erro => console.warn("Não foi possível reproduzir o som:", erro));
 }
+
+// Vibração para dispositivos que oferecem suporte à Vibration API.
+const VIBRACAO_NORMAL = 35;
+const VIBRACAO_LEVE = 12;
+
+function vibrar(duracaoOuPadrao) {
+    if (typeof navigator.vibrate !== "function") return;
+    try {
+        navigator.vibrate(duracaoOuPadrao);
+    } catch (erro) {
+        console.warn("Não foi possível vibrar o dispositivo:", erro);
+    }
+}
+
+function vibrarClique() {
+    vibrar(VIBRACAO_NORMAL);
+}
+
+function vibrarProducaoAutomatica() {
+    vibrar(VIBRACAO_LEVE);
+}
+
 document.addEventListener("pointerdown", event => {
     if (event.button !== 0) return;
     const alvo = event.target instanceof Element ? event.target : null;
     const botao = alvo?.closest("button");
-    if (botao) tocarSomClique();
+    if (botao) {
+        tocarSomClique();
+        vibrarClique();
+    }
 }, true);
 document.addEventListener("click", event => {
     if (event.detail !== 0 || !(event.target instanceof Element)) return;
-    if (event.target.closest("button")) tocarSomClique();
+    if (event.target.closest("button")) {
+        tocarSomClique();
+        vibrarClique();
+    }
 });
 
 function atualizarTela() {
@@ -180,6 +208,7 @@ rebirthBtn.onclick = () => {
 };
 
 let producaoFracionaria = 0;
+let producaoAutomaticaNoUltimoSegundo = 0;
 
 setInterval(() => {
     const ganho = calcularPPS() / 10;
@@ -191,8 +220,16 @@ setInterval(() => {
     hamburgueres += hamburgueresGanhos;
     hamburgueresTotais += hamburgueresGanhos;
     runHamburgueres += hamburgueresGanhos;
+    producaoAutomaticaNoUltimoSegundo += hamburgueresGanhos;
     atualizarTela();
 }, 100);
+
+setInterval(() => {
+    if (calcularPPS() > 0 && producaoAutomaticaNoUltimoSegundo > 0) {
+        vibrarProducaoAutomatica();
+    }
+    producaoAutomaticaNoUltimoSegundo = 0;
+}, 1000);
 
 setInterval(() => { tempoJogado++; }, 1000);
 
