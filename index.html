@@ -4,19 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🍔 Burger Clicker</title>
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="css/pets.css">
     <link rel="stylesheet" href="css/tooltips.css">
+    <link rel="stylesheet" href="css/settings.css">
     <meta name="theme-color" content="#fff8e9">
     <meta name="description" content="🍔 Burger Clicker - Idle Game com pets, rebirths, loja de prestígio e progressão infinita.">
+    <link rel="icon" href="media/pwa-icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="media/pwa-icon.svg">
     
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1469004475264377"
     crossorigin="anonymous"></script>
 
-	<meta name="google-adsense-account" content="ca-pub-1469004475264377">
+    <meta name="google-adsense-account" content="ca-pub-1469004475264377">
 </head>
 <body>
-	<footer>
+    <footer>
 
         <a href="about.html">Sobre</a>
 
@@ -33,12 +37,90 @@
         </a>
 
     </footer>
-	
+    
     <audio id="musicaFundo" loop><source src="media/music.mp3" type="audio/mpeg"></audio>
     <audio id="somClique" src="media/click.mp3"></audio>
 
     <h1>🍔 Burger Clicker</h1>
     <h4>Por Crabscary - v1.0 - 2026 🦀</h4>
+
+    <button id="configBtn" type="button" aria-label="Abrir configurações">⚙️ Configurações</button>
+
+    <section id="configModal" class="config-modal" hidden aria-label="Menu de configurações">
+        <div class="config-caixa" role="dialog" aria-modal="true" aria-labelledby="configTitulo">
+            <div class="config-cabecalho">
+                <h2 id="configTitulo">⚙️ Configurações</h2>
+                <button id="configFecharBtn" type="button" aria-label="Fechar configurações">✖️</button>
+            </div>
+
+            <p>Personalize sua experiência no Burger Clicker. As opções ficam salvas neste dispositivo.</p>
+
+            <div class="config-grupo">
+                <h3>🎮 Experiência</h3>
+                <div class="config-opcao">
+                    <label for="configSom">🔊 Som dos efeitos</label>
+                    <input id="configSom" type="checkbox" checked>
+                </div>
+                <div class="config-opcao">
+                    <label for="configMusica">🎵 Música de fundo</label>
+                    <input id="configMusica" type="checkbox" checked>
+                </div>
+                <div class="config-opcao">
+                    <label for="configAnimacoes">✨ Animações</label>
+                    <input id="configAnimacoes" type="checkbox" checked>
+                </div>
+                <div class="config-opcao">
+                    <label for="configTemaEscuro">🌙 Tema escuro</label>
+                    <input id="configTemaEscuro" type="checkbox">
+                </div>
+                <div class="config-opcao">
+                    <label for="configVibracao">📳 Vibração</label>
+                    <input id="configVibracao" type="checkbox" checked>
+                </div>
+
+                <div class="config-volume">
+                    <label for="configVolumeMusica">🎵 Volume da música <span id="configVolumeMusicaValor">30%</span></label>
+                    <input id="configVolumeMusica" type="range" min="0" max="100" step="1" value="30">
+                </div>
+                <div class="config-volume">
+                    <label for="configVolumeEfeitos">🔊 Volume dos efeitos <span id="configVolumeEfeitosValor">70%</span></label>
+                    <input id="configVolumeEfeitos" type="range" min="0" max="100" step="1" value="70">
+                </div>
+            </div>
+
+            <div class="config-grupo">
+                <h3>💾 Backup</h3>
+                <p>O jogo cria backups automáticos periódicos e também antes de resetar ou restaurar um progresso.</p>
+                <div class="config-acoes">
+                    <button id="configBackupAgora" type="button">💾 Criar e baixar backup agora</button>
+                    <button id="configRestaurarBackupBtn" type="button">📥 Restaurar arquivo de backup</button>
+                    <button id="configRestaurarUltimoBtn" type="button">⏪ Restaurar último backup automático</button>
+                    <input id="configBackupArquivo" type="file" accept="application/json,.json" hidden>
+                </div>
+                <p id="configBackupStatus" class="config-status-backup">Backup automático: aguardando o primeiro backup.</p>
+                <p class="config-aviso">⚠️ Guarde também um arquivo baixado em um local seguro. O backup automático fica no armazenamento deste navegador e pode ser perdido se os dados do site forem apagados.</p>
+            </div>
+
+            <div class="config-grupo">
+                <h3>🔄 Progresso</h3>
+                <p>Use esta opção para começar novamente do zero. Um backup automático é criado antes da exclusão.</p>
+                <div class="config-acoes">
+                    <button id="configResetarBtn" type="button">🔄 Resetar todo o progresso</button>
+                </div>
+            </div>
+
+            <div class="config-grupo">
+                <h3>📱 Aplicativo</h3>
+                <p>O Burger Clicker agora possui manifesto PWA, ícone, Service Worker e modo de instalação quando o navegador oferecer suporte.</p>
+                <div class="config-acoes">
+                    <button id="configInstalarBtn" type="button">📱 Instalar aplicativo</button>
+                </div>
+                <p id="configInstalacaoStatus" class="config-status-instalacao">Verificando disponibilidade da instalação...</p>
+            </div>
+
+            <p id="configStatus" class="config-status" role="status"></p>
+        </div>
+    </section>
 
     <div class="painel">
         <button id="burgerBtn" aria-label="Produzir hambúrgueres">🍔</button>
@@ -139,5 +221,6 @@
     <script src="js/systems.js"></script>
     <script src="js/main.js"></script>
     <script src="js/tooltips.js"></script>
+    <script src="js/settings.js"></script>
 </body>
 </html>
