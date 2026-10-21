@@ -13,10 +13,7 @@
     <meta name="description" content="🍔 Burger Clicker - Idle Game com pets, rebirths, loja de prestígio e progressão infinita.">
     <link rel="icon" href="media/pwa-icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="media/pwa-icon.svg">
-    
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1469004475264377"
-    crossorigin="anonymous"></script>
-
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1469004475264377" crossorigin="anonymous"></script>
     <meta name="google-adsense-account" content="ca-pub-1469004475264377">
 </head>
 <body>
@@ -25,13 +22,12 @@
         <a href="privacy.html">Privacidade</a> |
         <a href="contact.html">Contato</a>
     </footer>
-    
+
     <audio id="musicaFundo" loop><source src="media/music.mp3" type="audio/mpeg"></audio>
     <audio id="somClique" src="media/click.mp3"></audio>
 
     <h1>🍔 Burger Clicker</h1>
     <h4>Por Crabscary - v1.0 - 2026 🦀</h4>
-
     <button id="configBtn" type="button" aria-label="Abrir configurações">⚙️ Configurações</button>
 
     <section id="configModal" class="config-modal" hidden aria-label="Menu de configurações">
@@ -40,32 +36,15 @@
                 <h2 id="configTitulo">⚙️ Configurações</h2>
                 <button id="configFecharBtn" type="button" aria-label="Fechar configurações">✖️</button>
             </div>
-
             <p>Personalize sua experiência no Burger Clicker. As opções ficam salvas neste dispositivo.</p>
 
             <div class="config-grupo">
                 <h3>🎮 Experiência</h3>
-                <div class="config-opcao">
-                    <label for="configSom">🔊 Som dos efeitos</label>
-                    <input id="configSom" type="checkbox" checked>
-                </div>
-                <div class="config-opcao">
-                    <label for="configMusica">🎵 Música de fundo</label>
-                    <input id="configMusica" type="checkbox" checked>
-                </div>
-                <div class="config-opcao">
-                    <label for="configAnimacoes">✨ Animações</label>
-                    <input id="configAnimacoes" type="checkbox" checked>
-                </div>
-                <div class="config-opcao">
-                    <label for="configTemaEscuro">🌙 Tema escuro</label>
-                    <input id="configTemaEscuro" type="checkbox">
-                </div>
-                <div class="config-opcao">
-                    <label for="configVibracao">📳 Vibração</label>
-                    <input id="configVibracao" type="checkbox" checked>
-                </div>
-
+                <div class="config-opcao"><label for="configSom">🔊 Som dos efeitos</label><input id="configSom" type="checkbox" checked></div>
+                <div class="config-opcao"><label for="configMusica">🎵 Música de fundo</label><input id="configMusica" type="checkbox" checked></div>
+                <div class="config-opcao"><label for="configAnimacoes">✨ Animações</label><input id="configAnimacoes" type="checkbox" checked></div>
+                <div class="config-opcao"><label for="configTemaEscuro">🌙 Tema escuro</label><input id="configTemaEscuro" type="checkbox"></div>
+                <div class="config-opcao"><label for="configVibracao">📳 Vibração</label><input id="configVibracao" type="checkbox" checked></div>
                 <div class="config-volume">
                     <label for="configVolumeMusica">🎵 Volume da música <span id="configVolumeMusicaValor">30%</span></label>
                     <input id="configVolumeMusica" type="range" min="0" max="100" step="1" value="30">
@@ -92,20 +71,15 @@
             <div class="config-grupo">
                 <h3>🔄 Progresso</h3>
                 <p>Use esta opção para começar novamente do zero. Um backup automático é criado antes da exclusão.</p>
-                <div class="config-acoes">
-                    <button id="configResetarBtn" type="button">🔄 Resetar todo o progresso</button>
-                </div>
+                <div class="config-acoes"><button id="configResetarBtn" type="button">🔄 Resetar todo o progresso</button></div>
             </div>
 
             <div class="config-grupo">
                 <h3>📱 Aplicativo</h3>
                 <p>O Burger Clicker agora possui manifesto PWA, ícone, Service Worker e modo de instalação quando o navegador oferecer suporte.</p>
-                <div class="config-acoes">
-                    <button id="configInstalarBtn" type="button">📱 Instalar aplicativo</button>
-                </div>
+                <div class="config-acoes"><button id="configInstalarBtn" type="button">📱 Instalar aplicativo</button></div>
                 <p id="configInstalacaoStatus" class="config-status-instalacao">Verificando disponibilidade da instalação...</p>
             </div>
-
             <p id="configStatus" class="config-status" role="status"></p>
         </div>
     </section>
@@ -127,23 +101,10 @@
         </div>
         <div class="pet-controles">
             <label for="petNomeInput">Nome personalizado do pet equipado</label>
-            <div class="pet-nome-linha">
-                <input id="petNomeInput" type="text" maxlength="80" placeholder="Ex.: Bolinha, Rei do Hambúrguer..." autocomplete="off">
-                <button id="petSalvarNomeBtn" type="button">💾 Salvar nome</button>
-            </div>
+            <div class="pet-nome-linha"><input id="petNomeInput" type="text" maxlength="80" placeholder="Ex.: Bolinha, Rei do Hambúrguer..." autocomplete="off"><button id="petSalvarNomeBtn" type="button">💾 Salvar nome</button></div>
             <label for="petSelecionar">Trocar pet equipado</label>
-            <div class="pet-nome-linha">
-                <select id="petSelecionar">
-                    <option value="">Nenhum pet disponível</option>
-                </select>
-                <button id="petEquiparBtn" type="button">🎒 Equipar</button>
-            </div>
-            <div class="pet-alimentar">
-                <p id="petNivel">Nível de alimentação: —</p>
-                <p id="petRecompensa">Recompensa: —</p>
-                <p id="petCusto">Custo para alimentar: —</p>
-                <button id="petAlimentarBtn" type="button" disabled>🍔 Alimentar e evoluir</button>
-            </div>
+            <div class="pet-nome-linha"><select id="petSelecionar"><option value="">Nenhum pet disponível</option></select><button id="petEquiparBtn" type="button">🎒 Equipar</button></div>
+            <div class="pet-alimentar"><p id="petNivel">Nível de alimentação: —</p><p id="petRecompensa">Recompensa: —</p><p id="petCusto">Custo para alimentar: —</p><button id="petAlimentarBtn" type="button" disabled>🍔 Alimentar e evoluir</button></div>
         </div>
         <h3>📚 Coleção de pets (<span id="petQuantidade">0</span>)</h3>
         <p class="pet-ajuda">Pets novos podem ser encontrados ao fazer Rebirth. Cada descoberta é aleatória e não repete um pet que você já possui. Dê um nome, equipe outro pet quando quiser e alimente-o para aumentar sua recompensa sem limite.</p>
@@ -151,59 +112,36 @@
     </section>
 
     <img src="media/art_1.png" alt="Arte 1" width="800">
-
     <div class="loja">
         <h2>🏪 Loja</h2>
         <img src="media/art_2.png" alt="Arte 2" width="600">
         <button id="funcionarioBtn">👨‍🍳 Funcionário<br>Possui: <span id="funcionariosQtd">0</span><br>Custo: <span id="funcionarioCusto">10</span></button>
         <button id="chapaBtn">🔥 Chapa Industrial<br>Possui: <span id="chapasQtd">0</span><br>Custo: <span id="chapaCusto">100</span></button>
         <button id="foodTruckBtn">🚚 Food Truck<br>Possui: <span id="foodTruckQtd">0</span><br>Custo: <span id="foodTruckCusto">500</span></button>
-        <button id="lanchoneteBtn">🍔 Lanchonete<br>Possui: <span id="lanchoneteQtd">0</span><br>Custo: <span id="lanchoneteCusto">2500</span></button>
+        <button id="lanchoneteBtn">🍔 Lanchonete<br>Possui: <span id="lanchonetesQtd">0</span><br>Custo: <span id="lanchoneteCusto">2500</span></button>
         <button id="franquiaBtn">🌎 Franquia<br>Possui: <span id="franquiasQtd">0</span><br>Custo: <span id="franquiaCusto">10000</span></button>
     </div>
 
     <div class="upgrades">
-        <h2>⬆️ Upgrades</h2>
-        <img src="media/art_1.png" alt="Arte 1" width="600">
-        <button id="upgradeClique2xBtn">🖱️ Clique Duplo</button>
-        <button id="upgradeClique5xBtn">🖱️ Clique Mestre</button>
-        <button id="upgradeFuncionarioBtn">👨‍🍳 Funcionários Motivados</button>
-        <button id="upgradeChapaBtn">🔥 Chapas Turbo</button>
-        <button id="upgradeGlobalBtn">📺 Marketing Global</button>
+        <h2>⬆️ Upgrades</h2><img src="media/art_1.png" alt="Arte 1" width="600">
+        <button id="upgradeClique2xBtn">🖱️ Clique Duplo</button><button id="upgradeClique5xBtn">🖱️ Clique Mestre</button><button id="upgradeFuncionarioBtn">👨‍🍳 Funcionários Motivados</button><button id="upgradeChapaBtn">🔥 Chapas Turbo</button><button id="upgradeGlobalBtn">📺 Marketing Global</button>
     </div>
 
     <div class="estatisticas">
-        <h2>📊 Estatísticas</h2>
-        <img src="media/art_1.png" alt="Arte 1" width="600">
-        <p>Hambúrgueres Produzidos: <span id="estatTotal">0</span></p>
-        <p>Cliques Totais: <span id="estatCliques">0</span></p>
-        <p>Tempo Jogado: <span id="estatTempo">0 min</span></p>
-        <p>Rebirths: <span id="estatRebirth">0</span></p>
-        <p>Próximo Rebirth: <span id="requisitoRebirth">1M</span></p>
+        <h2>📊 Estatísticas</h2><img src="media/art_1.png" alt="Arte 1" width="600">
+        <p>Hambúrgueres Produzidos: <span id="estatTotal">0</span></p><p>Cliques Totais: <span id="estatCliques">0</span></p><p>Tempo Jogado: <span id="estatTempo">0 min</span></p><p>Rebirths: <span id="estatRebirth">0</span></p><p>Próximo Rebirth: <span id="requisitoRebirth">1M</span></p>
     </div>
 
     <div class="prestige">
-        <h2>⭐ Rebirth</h2>
-        <img src="media/art_1.png" alt="Arte 1" width="600">
-        <button id="rebirthBtn">Fazer Rebirth</button>
-        <p>Fichas disponíveis: <span id="prestigeTokens">0</span> 🪙</p>
-        <p>Total de fichas conquistadas: <span id="prestigeTokensEarned">0</span> 🪙</p>
-        <p>Multiplicador Global permanente: <span id="prestigeBonus">1x</span></p>
-        <p>Reseta o progresso mas concede bônus permanentes e pode revelar um novo pet.</p>
+        <h2>⭐ Rebirth</h2><img src="media/art_1.png" alt="Arte 1" width="600"><button id="rebirthBtn">Fazer Rebirth</button>
+        <p>Fichas disponíveis: <span id="prestigeTokens">0</span> 🪙</p><p>Total de fichas conquistadas: <span id="prestigeTokensEarned">0</span> 🪙</p><p>Multiplicador Global permanente: <span id="prestigeBonus">1x</span></p><p>Reseta o progresso mas concede bônus permanentes e pode revelar um novo pet.</p>
     </div>
 
     <section class="prestige-shop-panel" aria-labelledby="prestigeShopTitle">
-        <h2 id="prestigeShopTitle">🪙 Loja de Prestígio</h2>
-        <p>Gaste fichas de prestígio em melhorias permanentes. O Rebirth continua reiniciando dinheiro, negócios, nível e upgrades comuns — as melhorias desta loja e o multiplicador conquistado permanecem.</p>
-        <p class="prestige-shop-balance">Saldo disponível: <strong><span id="prestigeShopSaldo">0</span> 🪙</strong></p>
-        <div id="prestigeShop" class="prestige-shop-grid"></div>
+        <h2 id="prestigeShopTitle">🪙 Loja de Prestígio</h2><p>Gaste fichas de prestígio em melhorias permanentes. O Rebirth continua reiniciando dinheiro, negócios, nível e upgrades comuns — as melhorias desta loja e o multiplicador conquistado permanecem.</p><p class="prestige-shop-balance">Saldo disponível: <strong><span id="prestigeShopSaldo">0</span> 🪙</strong></p><div id="prestigeShop" class="prestige-shop-grid"></div>
     </section>
 
-    <div class="conquistas">
-        <h2>🏆 Conquistas</h2>
-        <img src="media/art_1.png" alt="Arte 1" width="600">
-        <div id="listaConquistas"></div>
-    </div>
+    <div class="conquistas"><h2>🏆 Conquistas</h2><img src="media/art_1.png" alt="Arte 1" width="600"><div id="listaConquistas"></div></div>
 
     <script src="js/core.js"></script>
     <script src="js/systems.js"></script>
