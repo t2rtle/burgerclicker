@@ -1,4 +1,4 @@
-const CACHE_NAME = "burger-clicker-v1";
+const CACHE_NAME = "burger-clicker-v2";
 
 const APP_SHELL = [
     "./",
@@ -6,6 +6,7 @@ const APP_SHELL = [
     "./style.css",
     "./css/pets.css",
     "./css/tooltips.css",
+    "./css/settings.css",
     "./js/core.js",
     "./js/systems.js",
     "./js/main.js",
