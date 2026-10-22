@@ -1,0 +1,123 @@
+/* ==========================================
+   INTERFACE GLASS — BURGER CLICKER
+   Painéis translúcidos, blur e janelas compactas
+========================================== */
+:root {
+  --bc-glass: rgba(255, 250, 239, .78);
+  --bc-glass-strong: rgba(255, 250, 239, .93);
+  --bc-glass-border: rgba(255, 255, 255, .72);
+  --bc-glass-shadow: 0 12px 30px rgba(48, 29, 15, .16);
+  --bc-text: #432b20;
+}
+body > h1,
+body > h4 {
+  text-shadow: 0 2px 12px rgba(255,255,255,.45);
+}
+.painel,
+.loja,
+.upgrades,
+.estatisticas,
+.prestige,
+.conquistas,
+.painel-pets,
+.prestige-shop-panel {
+  width: min(100%, 1040px);
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid var(--bc-glass-border) !important;
+  border-radius: 22px !important;
+  background: var(--bc-glass) !important;
+  color: var(--bc-text);
+  box-shadow: var(--bc-glass-shadow), inset 0 1px 0 rgba(255,255,255,.55) !important;
+  backdrop-filter: blur(12px) saturate(1.15);
+  -webkit-backdrop-filter: blur(12px) saturate(1.15);
+}
+.painel { padding: clamp(18px, 3vw, 30px); }
+.loja, .upgrades, .estatisticas, .prestige, .conquistas, .painel-pets, .prestige-shop-panel {
+  padding: clamp(16px, 3vw, 28px);
+}
+.loja button, .upgrades button, #rebirthBtn, .pets button,
+.prestige-upgrade-card button, #configBtn, .bc-area-btn {
+  border: 1px solid rgba(255,255,255,.7);
+  border-radius: 14px;
+  box-shadow: 0 5px 14px rgba(60,35,20,.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.loja button:not(:disabled):hover,
+.upgrades button:not(:disabled):hover,
+#rebirthBtn:not(:disabled):hover,
+.pets button:not(:disabled):hover,
+.prestige-upgrade-card button:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(60,35,20,.18);
+}
+.pet-ativo-card, .pet-card, .pet-alimentar, .prestige-shop-balance,
+.prestige-upgrade-card, .conquista {
+  border-radius: 16px;
+  border-color: rgba(255,255,255,.72);
+  background: rgba(255,255,255,.55);
+  box-shadow: 0 4px 14px rgba(60,35,20,.08);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+img { border-radius: 16px; }
+footer {
+  width: fit-content;
+  max-width: 100%;
+  margin: 24px auto 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--bc-glass-border);
+  border-radius: 14px;
+  background: rgba(255,250,239,.72);
+  box-shadow: 0 5px 16px rgba(60,35,20,.1);
+  backdrop-filter: blur(8px);
+}
+footer a { color: #754018; }
+.config-modal, #welcomeScreen {
+  background: rgba(24, 16, 11, .42) !important;
+  backdrop-filter: blur(12px) saturate(1.1) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
+}
+html.tema-escuro {
+  --bc-glass: rgba(28, 29, 35, .82);
+  --bc-glass-strong: rgba(28, 29, 35, .95);
+  --bc-glass-border: rgba(255,255,255,.12);
+  --bc-glass-shadow: 0 12px 30px rgba(0,0,0,.3);
+  --bc-text: #f4eee7;
+}
+html.tema-escuro .painel,
+html.tema-escuro .loja,
+html.tema-escuro .upgrades,
+html.tema-escuro .estatisticas,
+html.tema-escuro .prestige,
+html.tema-escuro .conquistas,
+html.tema-escuro .painel-pets,
+html.tema-escuro .prestige-shop-panel {
+  background: var(--bc-glass) !important;
+  color: var(--bc-text);
+  border-color: var(--bc-glass-border) !important;
+}
+html.tema-escuro .pet-ativo-card,
+html.tema-escuro .pet-card,
+html.tema-escuro .pet-alimentar,
+html.tema-escuro .prestige-shop-balance,
+html.tema-escuro .prestige-upgrade-card,
+html.tema-escuro .conquista,
+html.tema-escuro footer {
+  background: rgba(40,41,48,.8);
+  color: #f4eee7;
+  border-color: rgba(255,255,255,.12);
+}
+html.tema-escuro footer a { color: #ffd49a; }
+@media (max-width: 600px) {
+  .painel, .loja, .upgrades, .estatisticas, .prestige, .conquistas,
+  .painel-pets, .prestige-shop-panel {
+    border-radius: 17px !important;
+    padding: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loja button, .upgrades button, #rebirthBtn, .pets button { transition: none; }
+}
