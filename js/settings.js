@@ -360,14 +360,8 @@
     }
 
     function registrarPWA() {
-        if (!("serviceWorker" in navigator)) {
-            if (elementos.statusInstalacao) elementos.statusInstalacao.textContent = "Este navegador não oferece Service Worker.";
-            return;
-        }
-
-        navigator.serviceWorker.register("./sw.js")
-            .then(() => console.log("Burger Clicker PWA: Service Worker registrado."))
-            .catch(erro => console.warn("Burger Clicker PWA: falha ao registrar Service Worker.", erro));
+        // O registro único, as atualizações e os diagnósticos do Service Worker
+        // são centralizados em js/pwa.js para evitar registros concorrentes.
     }
 
     function configurarInstalacao() {
