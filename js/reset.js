@@ -5,6 +5,7 @@
     const CONFIG_PREFIX = "bc_config_";
     const BACKUP_PREFIX = "bc_backup_";
     const LAST_BACKUP_KEY = "bc_ultimo_backup";
+    const BACKUP_QUANTIDADE = 5;
 
     function definirStatus(texto, erro = false) {
         const status = document.getElementById("configStatus");
@@ -25,13 +26,41 @@
         return manter;
     }
 
+    function criarBackupAntesDoReset() {
+        const dados = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            const chave = localStorage.key(i);
+            if (!chave || chave.startsWith(CONFIG_PREFIX) || chave.startsWith(BACKUP_PREFIX) || chave === LAST_BACKUP_KEY) continue;
+            dados[chave] = localStorage.getItem(chave);
+        }
+
+        const pacote = {
+            app: "Burger Clicker",
+            formato: 1,
+            criadoEm: new Date().toISOString(),
+            dados
+        };
+
+        const anteriores = [];
+        for (let i = 0; i < BACKUP_QUANTIDADE; i++) {
+            const valor = localStorage.getItem(BACKUP_PREFIX + i);
+            if (valor) anteriores.push(valor);
+        }
+
+        localStorage.setItem(BACKUP_PREFIX + "0", JSON.stringify(pacote));
+        anteriores.slice(0, BACKUP_QUANTIDADE - 1).forEach((valor, indice) => {
+            localStorage.setItem(BACKUP_PREFIX + (indice + 1), valor);
+        });
+        localStorage.setItem(LAST_BACKUP_KEY, pacote.criadoEm);
+    }
+
     function resetarEmUmClique(event) {
         if (!(event.target instanceof Element)) return;
         const botao = event.target.closest(`#${RESET_BUTTON_ID}`);
         if (!botao) return;
 
-        // Intercepta antes do listener antigo de settings.js. Assim o reset
-        // não abre duas confirmações e não depende de Ctrl+F5.
+        // Capture phase intercepta o listener antigo de settings.js antes que
+        // ele execute. Assim não há segunda confirmação nem necessidade de F5.
         event.preventDefault();
         event.stopImmediatePropagation();
 
@@ -41,28 +70,24 @@
         botao.textContent = "⏳ Resetando...";
 
         try {
-            const manter = preservarConfiguracoesEBackups();
-
-            // Tenta criar um backup de segurança usando a função existente.
-            // Se ela estiver disponível, o último estado válido fica preservado.
-            if (typeof window.salvarBackupAutomatico === "function") {
-                try {
-                    window.salvarBackupAutomatico();
-                } catch (erro) {
-                    console.warn("[Burger Clicker] Backup antes do reset indisponível:", erro);
-                }
+            // O backup de segurança é feito no próprio módulo para não depender
+            // de funções privadas do módulo de configurações.
+            try {
+                criarBackupAntesDoReset();
+            } catch (erroBackup) {
+                console.warn("[Burger Clicker] Backup antes do reset indisponível; o reset continuará:", erroBackup);
             }
 
-            // Recalcula a lista depois do backup para preservar também o backup
-            // recém-criado. As chaves de configuração nunca são apagadas.
-            const preservarDepoisDoBackup = preservarConfiguracoesEBackups();
+            // O backup recém-criado entra nesta lista e será preservado junto
+            // das configurações do usuário.
+            const manter = preservarConfiguracoesEBackups();
             localStorage.clear();
-            Object.entries(preservarDepoisDoBackup).forEach(([chave, valor]) => {
+            Object.entries(manter).forEach(([chave, valor]) => {
                 localStorage.setItem(chave, valor);
             });
 
-            // Evita que beforeunload salve novamente o estado antigo.
-            // A própria página será recarregada imediatamente.
+            // settings.js e outros listeners consultam esta flag no beforeunload,
+            // evitando que o progresso antigo seja gravado novamente.
             location.reload();
         } catch (erro) {
             window.__burgerClickerResetEmAndamento = false;
@@ -74,7 +99,6 @@
     }
 
     function iniciar() {
-        // Capture phase garante que o listener antigo de settings.js não execute.
         document.addEventListener("click", resetarEmUmClique, true);
     }
 
