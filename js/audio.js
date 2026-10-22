@@ -1,7 +1,7 @@
 "use strict";
 
 /* Burger Clicker - sistema de áudio centralizado.
- * Efeito: media/click.wav (o arquivo chamado click.mp3 no repositório é o mesmo WAV).
+ * Efeito de clique: Web Audio API, sem depender de um arquivo externo.
  * Música: media/music.mp3 em loop.
  *
  * Os caminhos começam com / porque o Burger Clicker é publicado na raiz
@@ -183,8 +183,7 @@
         }
     }
 
-    // Captura o gesto antes dos handlers antigos de main.js. Em botões,
-    // impedimos o código antigo de tentar tocar o arquivo click.mp3 inválido.
+    // Captura o gesto antes dos handlers do jogo e inicia o efeito sintetizado.
     window.addEventListener("pointerdown", event => {
         if (event.button !== 0) return;
         const alvo = event.target instanceof Element ? event.target : null;
