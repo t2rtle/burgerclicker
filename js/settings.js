@@ -223,12 +223,17 @@
     }
 
     function criarBackupManual() {
-        salvarBackupAutomatico();
-        const pacote = criarPacoteBackup();
-        const data = new Date();
-        const nome = `burger-clicker-backup-${data.toISOString().replace(/[:.]/g, "-")}.json`;
-        baixarArquivo(nome, JSON.stringify(pacote, null, 2));
-        definirStatus("💾 Backup criado e baixado com sucesso!");
+        try {
+            salvarBackupAutomatico();
+            const pacote = criarPacoteBackup();
+            const data = new Date();
+            const nome = `burger-clicker-backup-${data.toISOString().replace(/[:.]/g, "-")}.json`;
+            baixarArquivo(nome, JSON.stringify(pacote, null, 2));
+            definirStatus("💾 Backup criado e baixado com sucesso!");
+        } catch (erro) {
+            definirStatus("❌ Não foi possível criar o backup. Verifique o espaço de armazenamento e tente novamente.", true);
+            console.error("[Burger Clicker] Falha ao criar backup manual:", erro);
+        }
     }
 
     // Só restaura chaves que pertencem ao estado conhecido do jogo.
@@ -262,21 +267,36 @@
     function restaurarPacote(pacote) {
         if (!validarPacoteBackup(pacote)) throw new Error("Backup inválido ou de outro aplicativo.");
 
-        const configuracoes = {};
+        const estadoAnterior = {};
         for (let i = 0; i < localStorage.length; i++) {
             const chave = localStorage.key(i);
-            if (chave?.startsWith("bc_config_") || chave?.startsWith(BACKUP_PREFIX) || chave === CONFIG.ultimoBackup) {
-                configuracoes[chave] = localStorage.getItem(chave);
-            }
+            if (chave) estadoAnterior[chave] = localStorage.getItem(chave);
         }
 
-        localStorage.clear();
-        Object.entries(configuracoes).forEach(([chave, valor]) => localStorage.setItem(chave, valor));
-        Object.entries(pacote.dados).forEach(([chave, valor]) => {
-            if (!chave.startsWith("bc_config_") && !chave.startsWith(BACKUP_PREFIX)) {
-                localStorage.setItem(chave, String(valor));
+        try {
+            const configuracoes = {};
+            for (const [chave, valor] of Object.entries(estadoAnterior)) {
+                if (chave.startsWith("bc_config_") || chave.startsWith(BACKUP_PREFIX) || chave === CONFIG.ultimoBackup) {
+                    configuracoes[chave] = valor;
+                }
             }
-        });
+
+            localStorage.clear();
+            Object.entries(configuracoes).forEach(([chave, valor]) => localStorage.setItem(chave, valor));
+            Object.entries(pacote.dados).forEach(([chave, valor]) => {
+                localStorage.setItem(chave, String(valor));
+            });
+        } catch (erro) {
+            // Tenta devolver o armazenamento ao estado anterior se a restauração falhar.
+            try {
+                localStorage.clear();
+                Object.entries(estadoAnterior).forEach(([chave, valor]) => localStorage.setItem(chave, valor));
+            } catch (erroRollback) {
+                console.error("[Burger Clicker] Também falhou a recuperação do armazenamento:", erroRollback);
+            }
+            throw new Error("A restauração falhou e o jogo tentou preservar o progresso anterior. Verifique o armazenamento disponível.");
+        }
+
         // O backup anterior já foi preservado pelo fluxo de restauração.
         // Não o sobrescreva aqui com uma cópia do estado recém-restaurado.
         location.reload();
@@ -435,7 +455,12 @@
         const primeira = confirm("⚠️ Resetar o progresso vai apagar hambúrgueres, negócios, pets, conquistas, Rebirths e melhorias de prestígio. Um backup automático será criado antes. Continuar?");
         if (!primeira) return;
 
-        salvarBackupAutomatico();
+        try {
+            salvarBackupAutomatico();
+        } catch (erro) {
+            console.error("[Burger Clicker] Não foi possível criar o backup antes do reset:", erro);
+            if (!confirm("⚠️ Não foi possível criar um backup automático (possivelmente por falta de espaço). Deseja continuar mesmo assim, sem garantia de recuperação?")) return;
+        }
         const segunda = confirm("Tem certeza? O jogo será reiniciado agora. O backup automático continuará disponível para restauração.");
         if (!segunda) return;
 
