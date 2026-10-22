@@ -21,13 +21,15 @@
 }
 
 .welcome-caixa {
-    width: min(720px, 100%);
-    max-height: 84dvh;
+    width: min(600px, calc(100vw - 32px));
+    max-height: 78dvh;
     overflow: auto;
-    padding: clamp(18px, 3.5vw, 32px);
+    padding: clamp(16px, 3vw, 26px);
     border: 2px solid rgba(255, 255, 255, 0.72);
     border-radius: 22px;
-    background: linear-gradient(145deg, rgba(255, 250, 237, 0.98), rgba(255, 235, 194, 0.97));
+    background: linear-gradient(145deg, rgba(255, 250, 237, 0.94), rgba(255, 235, 194, 0.91));
+    backdrop-filter: blur(18px) saturate(1.15);
+    -webkit-backdrop-filter: blur(18px) saturate(1.15);
     box-shadow: 0 16px 42px rgba(0, 0, 0, 0.28), 0 5px 0 rgba(92, 51, 23, 0.14);
     color: #432b20;
     text-align: center;
@@ -139,8 +141,8 @@
     }
 
     .welcome-caixa {
-        width: min(520px, 100%);
-        max-height: 90dvh;
+        width: calc(100vw - 24px);
+        max-height: 82dvh;
         padding: 16px 14px;
         border-width: 2px;
         border-radius: 18px;
