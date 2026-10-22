@@ -1,66 +1,5 @@
 "use strict";
 
-// O som de clique continua usando media/click.wav. O pool permite que
-// vários cliques rápidos toquem sem cortar imediatamente o som anterior.
-const somClique = document.getElementById("somClique");
-const sonsClique = [];
-let proximoSomClique = 0;
-
-if (somClique) {
-    somClique.preload = "auto";
-    somClique.load();
-
-    const origemSomClique = somClique.currentSrc || somClique.src;
-    for (let i = 0; i < 8; i++) {
-        const audio = new Audio(origemSomClique);
-        audio.preload = "auto";
-        audio.volume = 1;
-        audio.load();
-        sonsClique.push(audio);
-    }
-}
-
-function tocarSomClique() {
-    if (!somClique || localStorage.getItem("bc_config_som") === "false") return;
-
-    const salvo = localStorage.getItem("bc_config_volume_efeitos");
-    const volumeSalvo = salvo === null || salvo.trim() === "" ? 1 : Number(salvo);
-    const volume = Number.isFinite(volumeSalvo) ? Math.max(0, Math.min(1, volumeSalvo)) : 1;
-    if (volume <= 0) return;
-
-    const audio = sonsClique.length
-        ? sonsClique[proximoSomClique++ % sonsClique.length]
-        : somClique;
-
-    try {
-        audio.pause();
-        audio.currentTime = 0;
-        audio.volume = volume;
-        audio.muted = false;
-        const reproducao = audio.play();
-        if (reproducao && typeof reproducao.catch === "function") {
-            reproducao.catch(() => {
-                // Fallback no elemento original caso o navegador rejeite o pool.
-                if (audio === somClique) return;
-                try {
-                    somClique.pause();
-                    somClique.currentTime = 0;
-                    somClique.volume = volume;
-                    somClique.muted = false;
-                    const fallback = somClique.play();
-                    if (fallback && typeof fallback.catch === "function") {
-                        fallback.catch(erro => console.warn("Não foi possível reproduzir media/click.wav:", erro));
-                    }
-                } catch (erro) {
-                    console.warn("Não foi possível reproduzir media/click.wav:", erro);
-                }
-            });
-        }
-    } catch (erro) {
-        console.warn("Falha ao reproduzir o som de clique:", erro);
-    }
-}
-
 // Vibração para dispositivos que oferecem suporte à Vibration API.
 const VIBRACAO_NORMAL = 35;
 const VIBRACAO_LEVE = 12;
@@ -85,18 +24,11 @@ function vibrarProducaoAutomatica() {
 document.addEventListener("pointerdown", event => {
     if (event.button !== 0) return;
     const alvo = event.target instanceof Element ? event.target : null;
-    const botao = alvo?.closest("button");
-    if (botao) {
-        tocarSomClique();
-        vibrarClique();
-    }
+    if (alvo?.closest("button")) vibrarClique();
 }, true);
 document.addEventListener("click", event => {
     if (event.detail !== 0 || !(event.target instanceof Element)) return;
-    if (event.target.closest("button")) {
-        tocarSomClique();
-        vibrarClique();
-    }
+    if (event.target.closest("button")) vibrarClique();
 });
 
 function atualizarTela() {
@@ -310,39 +242,6 @@ function salvarJogo() {
 }
 setInterval(salvarJogo, 5000);
 window.addEventListener("beforeunload", salvarJogo);
-
-const musica = document.getElementById("musicaFundo");
-let ouvintesDeInicioMusica = true;
-
-function iniciarMusica() {
-    if (!musica || localStorage.getItem("bc_config_musica") === "false") return;
-    const salvo = localStorage.getItem("bc_config_volume_musica");
-    const volumeSalvo = salvo === null || salvo.trim() === "" ? 0.5 : Number(salvo);
-    musica.volume = Number.isFinite(volumeSalvo) ? Math.max(0, Math.min(1, volumeSalvo)) : 0.5;
-    musica.loop = true;
-    musica.muted = false;
-
-    // play() é chamado diretamente dentro do gesto do usuário, conforme as
-    // políticas de reprodução automática do navegador.
-    const tentativa = musica.play();
-    if (tentativa?.then) {
-        tentativa.then(() => {
-            if (!ouvintesDeInicioMusica) return;
-            ouvintesDeInicioMusica = false;
-            document.removeEventListener("pointerdown", iniciarMusica, true);
-            document.removeEventListener("keydown", iniciarMusica, true);
-        }).catch(() => {
-            // Mantém os ouvintes para tentar novamente no próximo gesto.
-        });
-    }
-}
-
-if (musica) {
-    musica.loop = true;
-    document.addEventListener("pointerdown", iniciarMusica, true);
-    document.addEventListener("keydown", iniciarMusica, true);
-    window.BurgerClickerAudio = { iniciarMusica };
-}
 
 if (!localStorage.getItem("requisitoRebirth")) requisitoRebirth = calcularRequisitoRebirth();
 criarLojaPrestigio();
