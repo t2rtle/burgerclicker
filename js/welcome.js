@@ -19,7 +19,6 @@
             // é o melhor momento para desbloquear o áudio.
             try {
                 if (window.BurgerClickerAudio) {
-                    window.BurgerClickerAudio.tocarEfeito();
                     await window.BurgerClickerAudio.iniciarMusica();
                 }
             } catch (erro) {
