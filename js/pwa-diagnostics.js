@@ -163,7 +163,8 @@
             }
             const url = new URL("/", location.origin);
             url.searchParams.set("abrir-app", "1");
-            const opened = window.open(url.href, "_blank", "noopener");
+            const opened = window.open(url.href, "_blank");
+            if (opened) opened.opener = null;
             if (statusInstall) {
                 statusInstall.textContent = opened
                     ? "A página do Burger Clicker foi aberta em outra aba. Por segurança, navegadores não oferecem uma forma universal de forçar a abertura de uma PWA já instalada; se não abrir como app, use o ícone instalado no sistema."
