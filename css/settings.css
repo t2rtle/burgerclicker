@@ -344,3 +344,24 @@ html.sem-animacoes *::after {
     background: rgba(0, 0, 0, 0.06);
     font: 12px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
+
+
+/* Diagnóstico PWA: relatório legível em PC, tablet e celular. */
+.pwa-diagnostico-status {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    max-height: 420px;
+    overflow: auto;
+    margin: 12px 0 0;
+    padding: 12px;
+    border: 1px solid var(--config-borda, #d6c8ad);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.06);
+    color: inherit;
+    font: 12px/1.55 ui-monospace, SFMono-Regular, Consolas, monospace;
+    -webkit-user-select: text;
+    user-select: text;
+}
+html.tema-escuro .pwa-diagnostico-status {
+    background: rgba(0, 0, 0, 0.25);
+}
