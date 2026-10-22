@@ -74,12 +74,19 @@
     });
 
     let musicaEmTeste = false;
+    let configuracaoMusicaOriginal = null;
 
     function testar(id, nome, loop) {
         const audio = $(id);
         if (loop && musicaEmTeste && audio && !audio.paused) {
             audio.pause();
             musicaEmTeste = false;
+            if (configuracaoMusicaOriginal) {
+                audio.loop = configuracaoMusicaOriginal.loop;
+                audio.muted = configuracaoMusicaOriginal.muted;
+                audio.volume = configuracaoMusicaOriginal.volume;
+                configuracaoMusicaOriginal = null;
+            }
             mostrar("Teste de música interrompido.\n\n" + infoAudio(audio));
             return;
         }
@@ -91,6 +98,7 @@
         const volumeOriginal = audio.volume;
         const mutedOriginal = audio.muted;
         const loopOriginal = audio.loop;
+        if (loop) configuracaoMusicaOriginal = { volume: volumeOriginal, muted: mutedOriginal, loop: loopOriginal };
         audio.pause();
         audio.currentTime = 0;
         audio.muted = false;
@@ -99,7 +107,10 @@
         if (loop) musicaEmTeste = true;
 
         const restaurar = () => {
-            if (loop) musicaEmTeste = false;
+            if (loop) {
+                musicaEmTeste = false;
+                configuracaoMusicaOriginal = null;
+            }
             audio.loop = loopOriginal;
             audio.muted = mutedOriginal;
             audio.volume = volumeOriginal;
