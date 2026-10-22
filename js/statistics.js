@@ -1,229 +1,72 @@
 "use strict";
 
-/* Burger Clicker — Estatísticas avançadas.
- * Mantém métricas históricas separadas do progresso principal para que
- * Rebirth/reset não apague os dados da conta sem que o jogador peça.
- */
+/* Estatísticas avançadas do Burger Clicker. */
 (() => {
-    const STORAGE_KEY = "bc_statistics_v2";
-    const defaultStats = {
-        sessoes: 0, primeiraSessao: 0, ultimaSessao: 0,
-        cliquesManuais: 0, hamburgueresManuais: 0, hamburgueresAutomaticos: 0,
-        maiorSaldo: 0, maiorPPS: 0, maiorClique: 0,
-        comprasNegocios: 0, comprasUpgrades: 0, comprasExpansao: 0,
-        hamburgueresGastosEstimados: 0, xpGanho: 0, niveisGanhos: 0,
-        rebirthsFeitos: 0, tokensGanhos: 0, tokensGastos: 0,
-        petsDescobertos: 0, petsAlimentados: 0, conquistasDesbloqueadas: 0,
-        tempoOnline: 0, tempoNestaSessao: 0,
-        maiorNivel: 1, maiorMultiplicadorClique: 1, maiorBonusPrestige: 1,
-        maiorQuantidadeNegocios: 0, maiorQuantidadeFuncionarios: 0,
-        maiorQuantidadeChapas: 0, maiorQuantidadeFoodTrucks: 0,
-        maiorQuantidadeLanchonetes: 0, maiorQuantidadeFranquias: 0,
-        ultimoRebirthEm: 0, ultimoNivelEm: 0,
-        cliquesPorSegundoMax: 0, cliquesNoUltimoMinuto: 0,
-        segundosAtivos: 0, diasJogados: 0
+    const KEY = "bc_statistics_v2";
+    const base = {
+        sessoes:0, primeiraSessao:0, ultimaSessao:0, tempoSessao:0,
+        cliquesManuais:0, producaoManual:0, producaoAutomatica:0,
+        maiorSaldo:0, maiorPPS:0, maiorClique:0, maiorCPS:0,
+        comprasNegocios:0, comprasUpgrades:0, comprasExpansao:0,
+        xpGanho:0, niveisGanhos:0, rebirthsHistorico:0, tokensGanhos:0,
+        maiorNivel:1, maiorBonusPrestige:1, maiorMultiplicadorClique:1,
+        maiorNegocios:0, petsAlimentados:0, maiorPets:0, maiorConquistas:0,
+        ultimoRebirthEm:0, ultimoNivelEm:0
     };
-
-    function carregar() {
-        try {
-            const salvo = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-            return Object.assign({}, defaultStats, salvo && typeof salvo === "object" ? salvo : {});
-        } catch { return Object.assign({}, defaultStats); }
-    }
-    let stats = carregar();
-    const agora = Date.now();
-    if (!stats.primeiraSessao) stats.primeiraSessao = agora;
-    stats.sessoes++;
-    stats.ultimaSessao = agora;
-
-    const snapshot = {
-        cliques: Number(typeof cliquesTotais !== "undefined" ? cliquesTotais : 0),
-        total: Number(typeof hamburgueresTotais !== "undefined" ? hamburgueresTotais : 0),
-        xp: Number(typeof xp !== "undefined" ? xp : 0),
-        nivel: Number(typeof nivel !== "undefined" ? nivel : 1),
-        rebirths: Number(typeof rebirths !== "undefined" ? rebirths : 0),
-        tokens: Number(typeof prestigeTokensEarned !== "undefined" ? prestigeTokensEarned : 0),
-        pets: 0, conquistas: 0,
-        negocios: { funcionario: 0, chapa: 0, foodTruck: 0, lanchonete: 0, franquia: 0 },
-        upgrades: 0, expansao: 0,
-        saldo: Number(typeof hamburgueres !== "undefined" ? hamburgueres : 0),
-        tempo: Number(typeof tempoJogado !== "undefined" ? tempoJogado : 0),
-        inicioSegundo: Math.floor(Date.now() / 1000),
-        cliquesSegundo: 0
+    let s = (() => { try { return {...base, ...(JSON.parse(localStorage.getItem(KEY)||"{}"))}; } catch { return {...base}; } })();
+    const now = Date.now(); if (!s.primeiraSessao) s.primeiraSessao = now; s.sessoes++; s.ultimaSessao = now;
+    const snap = {
+        total: n(typeof hamburgueresTotais!=="undefined"?hamburgueresTotais:0), clicks:n(typeof cliquesTotais!=="undefined"?cliquesTotais:0),
+        manual:0, xp:n(typeof xp!=="undefined"?xp:0), nivel:n(typeof nivel!=="undefined"?nivel:1), rebirth:n(typeof rebirths!=="undefined"?rebirths:0),
+        tokens:n(typeof prestigeTokensEarned!=="undefined"?prestigeTokensEarned:0), negocios:{funcionario:0,chapa:0,foodTruck:0,lanchonete:0,franquia:0}, upgrades:0
     };
+    function n(v){v=Number(v);return Number.isFinite(v)?v:0;}
+    function fmt(v){return typeof formatarNumero==="function"?formatarNumero(Math.round(n(v))):Math.round(n(v)).toLocaleString("pt-BR");}
+    function tempo(v){v=Math.max(0,Math.floor(n(v)));const d=Math.floor(v/86400);v%=86400;const h=Math.floor(v/3600);v%=3600;const m=Math.floor(v/60);const sec=v%60;return d?`${d}d ${h}h ${m}min`:h?`${h}h ${m}min`:m?`${m}min ${sec}s`:`${sec}s`;}
+    function pets(){try{return JSON.parse(localStorage.getItem("petColecao")||"[]").length;}catch{return 0;}}
+    function ach(){try{return JSON.parse(localStorage.getItem("conquistas")||"[]").length;}catch{return 0;}}
+    function exp(){try{const x=JSON.parse(localStorage.getItem("bc_expansion_state_v1")||"{}");return (x.shop?Object.values(x.shop).reduce((a,v)=>a+n(v),0):0)+(x.upgrades?Object.values(x.upgrades).filter(Boolean).length:0);}catch{return 0;}}
+    function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 
-    function salvar() {
-        stats.ultimaSessao = Date.now();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
-    }
-    function num(valor) { return Number.isFinite(Number(valor)) ? Number(valor) : 0; }
-    function fmt(valor) {
-        if (typeof formatarNumero === "function") return formatarNumero(Math.round(num(valor)));
-        return Math.round(num(valor)).toLocaleString("pt-BR");
-    }
-    function pct(valor) { return (num(valor) * 100).toFixed(1) + "%"; }
-    function duracao(segundos) {
-        segundos = Math.max(0, Math.floor(num(segundos)));
-        const d = Math.floor(segundos / 86400); segundos %= 86400;
-        const h = Math.floor(segundos / 3600); segundos %= 3600;
-        const m = Math.floor(segundos / 60); const s = segundos % 60;
-        if (d) return `${d}d ${h}h ${m}min`;
-        if (h) return `${h}h ${m}min`;
-        if (m) return `${m}min ${s}s`;
-        return `${s}s`;
-    }
-    function lerExpansion() {
-        try { return JSON.parse(localStorage.getItem("bc_expansion_state_v1") || "{}"); } catch { return {}; }
-    }
-    function contarPets() {
-        try { return JSON.parse(localStorage.getItem("petColecao") || "[]").length; } catch { return 0; }
-    }
-    function contarConquistas() {
-        try { return JSON.parse(localStorage.getItem("conquistas") || "[]").length; } catch { return 0; }
-    }
-    function contarExpansion() {
-        const e = lerExpansion();
-        let n = 0;
-        if (e.shop && typeof e.shop === "object") n += Object.values(e.shop).reduce((a, v) => a + num(v), 0);
-        if (e.upgrades && typeof e.upgrades === "object") n += Object.values(e.upgrades).filter(Boolean).length;
-        return n;
+    function ui(){
+        const p=document.querySelector(".estatisticas"); if(!p||document.getElementById("estatisticasAvancadas"))return;
+        const x=document.createElement("section");x.id="estatisticasAvancadas";x.className="estatisticas-avancadas";
+        x.innerHTML=`<div class="estat-cabecalho-avancado"><div><h3>📈 Estatísticas detalhadas</h3><p>Um painel completo com seu histórico e desempenho.</p></div><button id="estatAtualizarBtn" type="button">🔄 Atualizar</button></div><div class="estat-grid">
+        <article><h4>🍔 Produção</h4><p>Total produzido <b id="saTotal">0</b></p><p>Produção manual <b id="saManual">0</b></p><p>Produção automática <b id="saAuto">0</b></p><p>Saldo atual <b id="saSaldo">0</b></p><p>Maior saldo <b id="saMaiorSaldo">0</b></p><p>Maior clique <b id="saMaiorClique">0</b></p><p>Maior PPS <b id="saMaiorPPS">0</b></p></article>
+        <article><h4>🖱️ Cliques</h4><p>Cliques totais <b id="saCliques">0</b></p><p>Nesta sessão <b id="saCliquesSessao">0</b></p><p>Máx. cliques/s <b id="saCPS">0</b></p><p>Média por clique <b id="saMedia">0</b></p><p>Cliques/minuto <b id="saCPM">0</b></p></article>
+        <article><h4>🏪 Negócios</h4><p>Funcionários <b id="saFunc">0</b></p><p>Chapas <b id="saChapas">0</b></p><p>Food Trucks <b id="saTrucks">0</b></p><p>Lanchonetes <b id="saLanch">0</b></p><p>Franquias <b id="saFranq">0</b></p><p>Total atual <b id="saNegocios">0</b></p><p>Compras totais <b id="saCompras">0</b></p></article>
+        <article><h4>⬆️ Progressão</h4><p>Nível atual <b id="saNivel">1</b></p><p>Maior nível <b id="saMaiorNivel">1</b></p><p>XP atual <b id="saXP">0</b></p><p>XP ganho rastreado <b id="saXPGanho">0</b></p><p>Upgrades comprados <b id="saUpgrades">0</b></p><p>Itens da expansão <b id="saExp">0</b></p></article>
+        <article><h4>⭐ Rebirth & Prestígio</h4><p>Rebirths <b id="saRebirth">0</b></p><p>Tokens ganhos <b id="saTokens">0</b></p><p>Bônus atual/máximo <b id="saBonus">1x</b></p><p>Multiplicador de clique máximo <b id="saMult">1x</b></p><p>Último Rebirth <b id="saUltimoRebirth">—</b></p></article>
+        <article><h4>🐾 Coleção</h4><p>Pets descobertos <b id="saPets">0</b></p><p>Pets disponíveis <b id="saPetsTotal">0</b></p><p>Pets alimentados <b id="saAlimentados">0</b></p><p>Conquistas obtidas <b id="saAch">0</b></p><p>Conquistas no sistema <b id="saAchTotal">100+</b></p></article>
+        <article><h4>⏱️ Tempo</h4><p>Tempo total do jogo <b id="saTempo">0</b></p><p>Nesta sessão <b id="saSessao">0</b></p><p>Sessões iniciadas <b id="saSessoes">0</b></p><p>Primeira sessão <b id="saPrimeira">—</b></p><p>Dias desde o início <b id="saDias">0</b></p></article>
+        <article><h4>📊 Desempenho</h4><p>Eficiência automática <b id="saEficiencia">0%</b></p><p>Maior quantidade de negócios <b id="saMaiorNeg">0</b></p><p>Hambúrgueres nesta run <b id="saRun">0</b></p><p>Última atividade <b id="saUltima">—</b></p><p>Estado salvo <b id="saEstado">Ativo</b></p></article></div>`;
+        p.appendChild(x);document.getElementById("estatAtualizarBtn")?.addEventListener("click",render);
     }
 
-    function injetarInterface() {
-        const painel = document.querySelector(".estatisticas");
-        if (!painel || document.getElementById("estatisticasAvancadas")) return;
-        const bloco = document.createElement("section");
-        bloco.id = "estatisticasAvancadas";
-        bloco.className = "estatisticas-avancadas";
-        bloco.innerHTML = `
-            <div class="estat-cabecalho-avancado">
-                <div><h3>📈 Estatísticas detalhadas</h3><p>Seu histórico completo de produção, progressão, economia e atividade.</p></div>
-                <button id="estatAtualizarBtn" type="button">🔄 Atualizar</button>
-            </div>
-            <div class="estat-grid">
-                <article><h4>🍔 Produção</h4><p>Total produzido <b id="saTotal">0</b></p><p>Produção manual <b id="saManual">0</b></p><p>Produção automática <b id="saAuto">0</b></p><p>Saldo atual <b id="saSaldo">0</b></p><p>Maior saldo <b id="saMaiorSaldo">0</b></p><p>Maior clique <b id="saMaiorClique">0</b></p><p>Maior produção/s <b id="saMaiorPPS">0</b></p></article>
-                <article><h4>🖱️ Cliques</h4><p>Cliques totais <b id="saCliques">0</b></p><p>Cliques nesta sessão <b id="saCliquesSessao">0</b></p><p>Máx. cliques/s <b id="saCPS">0</b></p><p>Produção média por clique <b id="saMediaClique">0</b></p><p>Cliques por minuto <b id="saCPM">0</b></p></article>
-                <article><h4>🏪 Negócios</h4><p>Funcionários <b id="saFunc">0</b></p><p>Chapas <b id="saChapas">0</b></p><p>Food Trucks <b id="saTrucks">0</b></p><p>Lanchonetes <b id="saLanch">0</b></p><p>Franquias <b id="saFranq">0</b></p><p>Total de negócios <b id="saNegocios">0</b></p><p>Compras de negócios <b id="saComprasNeg">0</b></p></article>
-                <article><h4>⬆️ Progressão</h4><p>Nível atual <b id="saNivel">1</b></p><p>Maior nível <b id="saMaiorNivel">1</b></p><p>XP atual <b id="saXP">0</b></p><p>XP total ganho <b id="saXPGanho">0</b></p><p>Upgrades comprados <b id="saUpgrades">0</b></p><p>Itens da expansão <b id="saExpansao">0</b></p></article>
-                <article><h4>⭐ Rebirth & Prestígio</h4><p>Rebirths <b id="saRebirth">0</b></p><p>Tokens conquistados <b id="saTokens">0</b></p><p>Tokens gastos <b id="saTokensGastos">0</b></p><p>Bônus máximo <b id="saBonus">1x</b></p><p>Último Rebirth <b id="saUltimoRebirth">—</b></p></article>
-                <article><h4>🐾 Coleção</h4><p>Pets descobertos <b id="saPets">0</b></p><p>Pets disponíveis <b id="saPetsTotal">0</b></p><p>Pets alimentados <b id="saAlimentos">0</b></p><p>Conquistas obtidas <b id="saConquistas">0</b></p><p>Conquistas rastreadas <b id="saConquistasTotal">0</b></p></article>
-                <article><h4>⏱️ Tempo</h4><p>Tempo total jogado <b id="saTempo">0</b></p><p>Nesta sessão <b id="saSessao">0</b></p><p>Sessões iniciadas <b id="saSessoes">0</b></p><p>Segundos ativos <b id="saAtivos">0</b></p><p>Primeira sessão <b id="saPrimeira">—</b></p></article>
-                <article><h4>📊 Desempenho</h4><p>Eficiência automática <b id="saEficiencia">0%</b></p><p>Multiplicador de clique máximo <b id="saMultClique">1x</b></p><p>Maior quantidade de negócios <b id="saMaiorNegocios">0</b></p><p>Hambúrgueres nesta run <b id="saRun">0</b></p><p>Data da última atividade <b id="saUltima">—</b></p></article>
-            </div>`;
-        painel.appendChild(bloco);
-        document.getElementById("estatAtualizarBtn")?.addEventListener("click", atualizar);
+    function rastrear(){
+        const bs=["funcionarios","chapas","foodTrucks","lanchonetes","franquias"], nomes=["funcionario","chapa","foodTruck","lanchonete","franquia"];
+        bs.forEach((k,i)=>{const v=n(typeof window[k]!=="undefined"?window[k]:({funcionarios:typeof funcionarios!=="undefined"?funcionarios:0,chapas:typeof chapas!=="undefined"?chapas:0,foodTrucks:typeof foodTrucks!=="undefined"?foodTrucks:0,lanchonetes:typeof lanchonetes!=="undefined"?lanchonetes:0,franquias:typeof franquias!=="undefined"?franquias:0}[k]));if(v>snap.negocios[nomes[i]])s.comprasNegocios+=v-snap.negocios[nomes[i]];snap.negocios[nomes[i]]=v;});
+        const flags=["upgradeClique2x","upgradeClique5x","upgradeFuncionario","upgradeChapa","upgradeGlobal"];
+        flags.forEach(k=>{const v=typeof window[k]!=="undefined"?window[k]:(typeof globalThis[k]!=="undefined"?globalThis[k]:false);if(v&&!snap[k])s.comprasUpgrades++;snap[k]=!!v;});
+        const T=n(typeof hamburgueresTotais!=="undefined"?hamburgueresTotais:0), manual=s.producaoManual;
+        if(T>snap.total){s.producaoAutomatica+=Math.max(0,(T-snap.total)-Math.max(0,s.producaoManual-manual));} snap.total=T;
+        const X=n(typeof xp!=="undefined"?xp:0);if(X>snap.xp)s.xpGanho+=X-snap.xp;snap.xp=X;
+        const L=n(typeof nivel!=="undefined"?nivel:1);if(L>snap.nivel){s.niveisGanhos+=L-snap.nivel;s.ultimoNivelEm=Date.now();}snap.nivel=L;s.maiorNivel=Math.max(s.maiorNivel,L);
+        const R=n(typeof rebirths!=="undefined"?rebirths:0);if(R>snap.rebirth){s.ultimoRebirthEm=Date.now();}s.rebirthsHistorico=Math.max(s.rebirthsHistorico,R);snap.rebirth=R;
+        const TK=n(typeof prestigeTokensEarned!=="undefined"?prestigeTokensEarned:0);s.tokensGanhos=Math.max(s.tokensGanhos,TK);snap.tokens=TK;
+        const p=n(typeof calcularPPS==="function"?calcularPPS():0),saldo=n(typeof hamburgueres!=="undefined"?hamburgueres:0),m=n(typeof multiplicadorClique!=="undefined"?multiplicadorClique:1),petsNow=pets(),a=ach();
+        s.maiorSaldo=Math.max(s.maiorSaldo,saldo);s.maiorPPS=Math.max(s.maiorPPS,p);s.maiorNivel=Math.max(s.maiorNivel,L);s.maiorBonusPrestige=Math.max(s.maiorBonusPrestige,typeof bonusPrestige==="function"?n(bonusPrestige()):1);s.maiorMultiplicadorClique=Math.max(s.maiorMultiplicadorClique,m);s.maiorNegocios=Math.max(s.maiorNegocios,Object.values(snap.negocios).reduce((a,b)=>a+b,0));s.maiorPets=Math.max(s.maiorPets,petsNow);s.maiorConquistas=Math.max(s.maiorConquistas,a);s.tempoSessao++;s.ultimaSessao=Date.now();
     }
-
-    function atualizar() {
-        const negocios = {
-            funcionario: num(typeof funcionarios !== "undefined" ? funcionarios : 0),
-            chapa: num(typeof chapas !== "undefined" ? chapas : 0),
-            foodTruck: num(typeof foodTrucks !== "undefined" ? foodTrucks : 0),
-            lanchonete: num(typeof lanchonetes !== "undefined" ? lanchonetes : 0),
-            franquia: num(typeof franquias !== "undefined" ? franquias : 0)
-        };
-        const totalNegocios = Object.values(negocios).reduce((a, b) => a + b, 0);
-        const total = num(typeof hamburgueresTotais !== "undefined" ? hamburgueresTotais : 0);
-        const saldo = num(typeof hamburgueres !== "undefined" ? hamburgueres : 0);
-        const cliques = num(typeof cliquesTotais !== "undefined" ? cliquesTotais : 0);
-        const tempo = num(typeof tempoJogado !== "undefined" ? tempoJogado : 0);
-        const nivelAtual = num(typeof nivel !== "undefined" ? nivel : 1);
-        const rebirthAtual = num(typeof rebirths !== "undefined" ? rebirths : 0);
-        const tokens = num(typeof prestigeTokensEarned !== "undefined" ? prestigeTokensEarned : 0);
-        const bonus = typeof bonusPrestige === "function" ? num(bonusPrestige()) : 1;
-        const ppsAtual = typeof calcularPPS === "function" ? num(calcularPPS()) : 0;
-        const multClique = num(typeof multiplicadorClique !== "undefined" ? multiplicadorClique : 1);
-        const pets = contarPets();
-        const conquistasAtuais = contarConquistas();
-        const expItens = contarExpansion();
-
-        stats.maiorSaldo = Math.max(stats.maiorSaldo, saldo);
-        stats.maiorPPS = Math.max(stats.maiorPPS, ppsAtual);
-        stats.maiorNivel = Math.max(stats.maiorNivel, nivelAtual);
-        stats.maiorBonusPrestige = Math.max(stats.maiorBonusPrestige, bonus);
-        stats.maiorMultiplicadorClique = Math.max(stats.maiorMultiplicadorClique, multClique);
-        stats.maiorQuantidadeNegocios = Math.max(stats.maiorQuantidadeNegocios, totalNegocios);
-        stats.maiorQuantidadeFuncionarios = Math.max(stats.maiorQuantidadeFuncionarios, negocios.funcionario);
-        stats.maiorQuantidadeChapas = Math.max(stats.maiorQuantidadeChapas, negocios.chapa);
-        stats.maiorQuantidadeFoodTrucks = Math.max(stats.maiorQuantidadeFoodTrucks, negocios.foodTruck);
-        stats.maiorQuantidadeLanchonetes = Math.max(stats.maiorQuantidadeLanchonetes, negocios.lanchonete);
-        stats.maiorQuantidadeFranquias = Math.max(stats.maiorQuantidadeFranquias, negocios.franquia);
-        stats.petsDescobertos = Math.max(stats.petsDescobertos, pets);
-        stats.conquistasDesbloqueadas = Math.max(stats.conquistasDesbloqueadas, conquistasAtuais);
-        stats.tempoOnline++;
-        stats.tempoNestaSessao++;
-        stats.segundosAtivos++;
-        stats.diasJogados = Math.max(1, Math.ceil((Date.now() - stats.primeiraSessao) / 86400000));
-
-        const deltaTotal = total - snapshot.total;
-        if (deltaTotal > 0) {
-            const manualDelta = Math.max(0, stats.hamburgueresManuais - snapshot.cliques); // corrigido abaixo pelo listener
-            const autoDelta = Math.max(0, deltaTotal - Math.max(0, manualDelta));
-            stats.hamburgueresAutomaticos += autoDelta;
-        }
-        if (cliques > snapshot.cliques) stats.cliquesNoUltimoMinuto += cliques - snapshot.cliques;
-        stats.rebirthsFeitos = Math.max(stats.rebirthsFeitos, rebirthAtual);
-        stats.tokensGanhos = Math.max(stats.tokensGanhos, tokens);
-        snapshot.total = total; snapshot.cliques = cliques; snapshot.xp = num(typeof xp !== "undefined" ? xp : 0);
-        snapshot.nivel = nivelAtual; snapshot.rebirths = rebirthAtual; snapshot.tokens = tokens;
-        snapshot.saldo = saldo; snapshot.tempo = tempo;
-
-        const set = (id, valor) => { const el = document.getElementById(id); if (el) el.textContent = valor; };
-        set("saTotal", fmt(total)); set("saManual", fmt(stats.hamburgueresManuais)); set("saAuto", fmt(stats.hamburgueresAutomaticos));
-        set("saSaldo", fmt(saldo)); set("saMaiorSaldo", fmt(stats.maiorSaldo)); set("saMaiorClique", fmt(stats.maiorClique)); set("saMaiorPPS", fmt(stats.maiorPPS));
-        set("saCliques", fmt(cliques)); set("saCliquesSessao", fmt(Math.max(0, cliques - (Number(sessionStorage.getItem("bcStatsStartClicks")) || cliques))));
-        set("saCPS", fmt(stats.cliquesPorSegundoMax)); set("saMediaClique", fmt(cliques ? total / cliques : 0)); set("saCPM", fmt(stats.cliquesNoUltimoMinuto));
-        set("saFunc", fmt(negocios.funcionario)); set("saChapas", fmt(negocios.chapa)); set("saTrucks", fmt(negocios.foodTruck)); set("saLanch", fmt(negocios.lanchonete)); set("saFranq", fmt(negocios.franquia)); set("saNegocios", fmt(totalNegocios)); set("saComprasNeg", fmt(stats.comprasNegocios));
-        set("saNivel", fmt(nivelAtual)); set("saMaiorNivel", fmt(stats.maiorNivel)); set("saXP", fmt(typeof xp !== "undefined" ? xp : 0)); set("saXPGanho", fmt(stats.xpGanho)); set("saUpgrades", fmt(stats.comprasUpgrades)); set("saExpansao", fmt(expItens));
-        set("saRebirth", fmt(rebirthAtual)); set("saTokens", fmt(tokens)); set("saTokensGastos", fmt(stats.tokensGastos)); set("saBonus", bonus.toFixed(2) + "x"); set("saUltimoRebirth", stats.ultimoRebirthEm ? new Date(stats.ultimoRebirthEm).toLocaleString("pt-BR") : "—");
-        set("saPets", fmt(pets)); set("saPetsTotal", typeof PET_CATALOG !== "undefined" ? fmt(PET_CATALOG.length) : "—"); set("saAlimentos", fmt(stats.petsAlimentados)); set("saConquistas", fmt(conquistasAtuais)); set("saConquistasTotal", "100+");
-        set("saTempo", duracao(tempo)); set("saSessao", duracao(stats.tempoNestaSessao)); set("saSessoes", fmt(stats.sessoes)); set("saAtivos", duracao(stats.segundosAtivos)); set("saPrimeira", new Date(stats.primeiraSessao).toLocaleString("pt-BR"));
-        set("saEficiencia", pct(total ? stats.hamburgueresAutomaticos / total : 0)); set("saMultClique", stats.maiorMultiplicadorClique.toFixed(2) + "x"); set("saMaiorNegocios", fmt(stats.maiorQuantidadeNegocios)); set("saRun", fmt(typeof runHamburgueres !== "undefined" ? runHamburgueres : 0)); set("saUltima", new Date(stats.ultimaSessao).toLocaleString("pt-BR"));
+    function render(){
+        rastrear();const T=n(typeof hamburgueresTotais!=="undefined"?hamburgueresTotais:0),C=n(typeof cliquesTotais!=="undefined"?cliquesTotais:0),bal=n(typeof hamburgueres!=="undefined"?hamburgueres:0),L=n(typeof nivel!=="undefined"?nivel:1),R=n(typeof rebirths!=="undefined"?rebirths:0),TK=n(typeof prestigeTokensEarned!=="undefined"?prestigeTokensEarned:0),p=pets(),a=ach(),run=n(typeof runHamburgueres!=="undefined"?runHamburgueres:0),pps=n(typeof calcularPPS==="function"?calcularPPS():0),b=typeof bonusPrestige==="function"?n(bonusPrestige()):1;
+        const N=Object.values(snap.negocios).reduce((a,v)=>a+v,0),auto=s.producaoAutomatica,eff=T?auto/T:0,startClicks=Number(sessionStorage.getItem("bcStatsStartClicks")||C);
+        set("saTotal",fmt(T));set("saManual",fmt(s.producaoManual));set("saAuto",fmt(auto));set("saSaldo",fmt(bal));set("saMaiorSaldo",fmt(s.maiorSaldo));set("saMaiorClique",fmt(s.maiorClique));set("saMaiorPPS",fmt(s.maiorPPS));set("saCliques",fmt(C));set("saCliquesSessao",fmt(Math.max(0,C-startClicks)));set("saCPS",fmt(s.maiorCPS));set("saMedia",fmt(C?T/C:0));set("saCPM",fmt(C?C/Math.max(1,(n(typeof tempoJogado!=="undefined"?tempoJogado:1)/60)):0));set("saFunc",fmt(snap.negocios.funcionario));set("saChapas",fmt(snap.negocios.chapa));set("saTrucks",fmt(snap.negocios.foodTruck));set("saLanch",fmt(snap.negocios.lanchonete));set("saFranq",fmt(snap.negocios.franquia));set("saNegocios",fmt(N));set("saCompras",fmt(s.comprasNegocios));set("saNivel",fmt(L));set("saMaiorNivel",fmt(s.maiorNivel));set("saXP",fmt(typeof xp!=="undefined"?xp:0));set("saXPGanho",fmt(s.xpGanho));set("saUpgrades",fmt(s.comprasUpgrades));set("saExp",fmt(exp()));set("saRebirth",fmt(R));set("saTokens",fmt(TK));set("saBonus",b.toFixed(2)+"x");set("saMult",s.maiorMultiplicadorClique.toFixed(2)+"x");set("saUltimoRebirth",s.ultimoRebirthEm?new Date(s.ultimoRebirthEm).toLocaleString("pt-BR"):"—");set("saPets",fmt(p));set("saPetsTotal",typeof PET_CATALOG!=="undefined"?fmt(PET_CATALOG.length):"—");set("saAlimentados",fmt(s.petsAlimentados));set("saAch",fmt(a));set("saTempo",tempo(n(typeof tempoJogado!=="undefined"?tempoJogado:0)));set("saSessao",tempo(s.tempoSessao));set("saSessoes",fmt(s.sessoes));set("saPrimeira",new Date(s.primeiraSessao).toLocaleString("pt-BR"));set("saDias",fmt(Math.max(1,Math.ceil((Date.now()-s.primeiraSessao)/86400000))));set("saEficiencia",(eff*100).toFixed(1)+"%");set("saMaiorNeg",fmt(s.maiorNegocios));set("saRun",fmt(run));set("saUltima",new Date(s.ultimaSessao).toLocaleString("pt-BR"));
+        s.ultimaSessao=Date.now();localStorage.setItem(KEY,JSON.stringify(s));
     }
-
-    function registrarClique() {
-        const ganho = typeof calcularPoderClique === "function" ? num(calcularPoderClique()) : 0;
-        stats.cliquesManuais++;
-        stats.hamburgueresManuais += ganho;
-        stats.maiorClique = Math.max(stats.maiorClique, ganho);
-        snapshot.cliquesSegundo++;
-    }
-    function detectarMudancas() {
-        const negocios = ["funcionarios", "chapas", "foodTrucks", "lanchonetes", "franquias"];
-        negocios.forEach(k => {
-            const atual = num(typeof window[k] !== "undefined" ? window[k] : 0);
-            if (atual > num(snapshot.negocios[k])) stats.comprasNegocios += atual - num(snapshot.negocios[k]);
-            snapshot.negocios[k] = atual;
-        });
-        const upgradesNormais = ["upgradeClique2x", "upgradeClique5x", "upgradeFuncionario", "upgradeChapa", "upgradeGlobal"];
-        upgradesNormais.forEach(k => { if (typeof window[k] === "boolean" && window[k] && !snapshot[k]) stats.comprasUpgrades++; snapshot[k] = typeof window[k] === "boolean" ? window[k] : snapshot[k]; });
-        const novoNivel = num(typeof nivel !== "undefined" ? nivel : 1);
-        if (novoNivel > snapshot.nivel) { stats.niveisGanhos += novoNivel - snapshot.nivel; stats.ultimoNivelEm = Date.now(); }
-        const novoRebirth = num(typeof rebirths !== "undefined" ? rebirths : 0);
-        if (novoRebirth > snapshot.rebirths) { stats.ultimoRebirthEm = Date.now(); }
-        const novoTokens = num(typeof prestigeTokensEarned !== "undefined" ? prestigeTokensEarned : 0);
-        if (novoTokens > snapshot.tokens) stats.tokensGanhos += novoTokens - snapshot.tokens;
-        const novoXp = num(typeof xp !== "undefined" ? xp : 0);
-        if (novoXp > snapshot.xp) stats.xpGanho += novoXp - snapshot.xp;
-        snapshot.nivel = novoNivel; snapshot.rebirths = novoRebirth; snapshot.tokens = novoTokens; snapshot.xp = novoXp;
-    }
-
-    try {
-        if (!sessionStorage.getItem("bcStatsStartClicks")) sessionStorage.setItem("bcStatsStartClicks", String(num(typeof cliquesTotais !== "undefined" ? cliquesTotais : 0)));
-    } catch {}
-    document.addEventListener("click", event => {
-        const alvo = event.target instanceof Element ? event.target : null;
-        if (alvo?.closest("#burgerBtn")) registrarClique();
-    }, true);
-
-    injetarInterface();
-    atualizar();
-    setInterval(() => { detectarMudancas(); atualizar(); salvar(); }, 1000);
-    setInterval(() => {
-        stats.cliquesPorSegundoMax = Math.max(stats.cliquesPorSegundoMax, snapshot.cliquesSegundo);
-        snapshot.cliquesSegundo = 0;
-        salvar();
-    }, 1000);
-    setInterval(() => { stats.cliquesNoUltimoMinuto = 0; }, 60000);
-    window.addEventListener("beforeunload", salvar);
+    document.addEventListener("click",e=>{const a=e.target instanceof Element?e.target:null;if(a?.closest("#burgerBtn")){const g=n(typeof calcularPoderClique==="function"?calcularPoderClique():0);s.cliquesManuais++;s.producaoManual+=g;s.maiorClique=Math.max(s.maiorClique,g);}},true);
+    try{if(!sessionStorage.getItem("bcStatsStartClicks"))sessionStorage.setItem("bcStatsStartClicks",String(snap.clicks));}catch{}
+    ui();render();
+    setInterval(()=>{render();},1000);
+    setInterval(()=>{s.maiorCPS=Math.max(s.maiorCPS,s.cliquesManuais-snap.clicks);snap.clicks=s.cliquesManuais;localStorage.setItem(KEY,JSON.stringify(s));},1000);
+    window.addEventListener("beforeunload",()=>localStorage.setItem(KEY,JSON.stringify(s)));
 })();
