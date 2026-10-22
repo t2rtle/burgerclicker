@@ -45,7 +45,10 @@
 
     // Repetir a tentativa de música após uma interação real cobre navegadores
     // que bloqueiam autoplay até o primeiro gesto do usuário.
-    const iniciarMusicaComGesto = () => {
+    const iniciarMusicaComGesto = event => {
+        const alvo = event.target instanceof Element ? event.target : document.activeElement;
+        // O painel de diagnóstico precisa iniciar apenas o áudio que está testando.
+        if (alvo?.closest(".config-diagnostico-audio")) return;
         try {
             window.BurgerClickerAudio?.iniciarMusica();
         } catch (erro) {
