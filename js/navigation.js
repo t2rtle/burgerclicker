@@ -27,6 +27,13 @@
         const configBtn = document.getElementById("configBtn");
         if (!painel || !configBtn || document.querySelector(".bc-areas-nav")) return;
 
+        // Esta imagem fica solta entre o painel principal e a Loja no HTML
+        // antigo e é apenas decorativa; escondê-la evita espaço vertical inútil.
+        document.querySelectorAll('body > img[src*="art_1"]').forEach(imagem => {
+            imagem.hidden = true;
+            imagem.setAttribute("aria-hidden", "true");
+        });
+
         const nav = document.createElement("nav");
         nav.className = "bc-areas-nav";
         nav.setAttribute("aria-label", "Áreas do Burger Clicker");
