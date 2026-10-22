@@ -1,6 +1,6 @@
 /* Burger Clicker PWA Service Worker */
 const CACHE_PREFIX = "burger-clicker-";
-const CACHE_NAME = "burger-clicker-v23";
+const CACHE_NAME = "burger-clicker-v24";
 const APP_SHELL = [
     "/",
     "/index.html",
@@ -11,6 +11,7 @@ const APP_SHELL = [
     "/css/settings.css",
     "/css/navigation.css",
     "/css/welcome.css",
+    "/css/glass-ui.css",
     "/js/core.js",
     "/js/systems.js",
     "/js/main.js",
