@@ -1,0 +1,149 @@
+/* ========================================
+   TELA DE BOAS-VINDAS — BURGER CLICKER
+======================================== */
+
+#welcomeScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(16px, 4vw, 40px);
+    background: rgba(35, 20, 12, 0.72);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    animation: welcomeFadeIn 0.35s ease-out both;
+}
+
+#welcomeScreen[hidden] {
+    display: none;
+}
+
+.welcome-caixa {
+    width: min(920px, 100%);
+    max-height: min(90dvh, 820px);
+    overflow: auto;
+    padding: clamp(22px, 5vw, 48px);
+    border: 3px solid rgba(255, 255, 255, 0.75);
+    border-radius: 28px;
+    background: linear-gradient(145deg, rgba(255, 250, 237, 0.98), rgba(255, 235, 194, 0.97));
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 7px 0 rgba(92, 51, 23, 0.16);
+    color: #432b20;
+    text-align: center;
+    animation: welcomePop 0.45s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.welcome-logo {
+    font-size: clamp(4rem, 12vw, 7rem);
+    line-height: 1;
+    margin: 0 0 8px;
+    filter: drop-shadow(0 8px 8px rgba(70, 40, 20, 0.2));
+    animation: welcomeBurger 2.8s ease-in-out infinite;
+}
+
+.welcome-caixa h1 {
+    margin: 0;
+    font-size: clamp(2rem, 6vw, 3.8rem);
+    color: #8b4513;
+}
+
+.welcome-subtitulo {
+    margin: 8px auto 22px;
+    font-size: clamp(1rem, 2.8vw, 1.35rem);
+    max-width: 700px;
+}
+
+.welcome-changelog {
+    margin: 0 auto 24px;
+    max-width: 760px;
+    padding: 18px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.58);
+    box-shadow: inset 0 0 0 2px rgba(139, 69, 19, 0.08);
+    text-align: left;
+}
+
+.welcome-changelog h2 {
+    margin-top: 0;
+    text-align: center;
+}
+
+.welcome-changelog ul {
+    margin: 0;
+    padding-left: 1.5em;
+}
+
+.welcome-changelog li {
+    margin: 9px 0;
+}
+
+.welcome-audio-aviso {
+    margin: 0 auto 18px;
+    max-width: 700px;
+    font-size: 0.95em;
+    opacity: 0.82;
+}
+
+#welcomePlayBtn {
+    width: min(420px, 100%);
+    min-height: 64px;
+    border: none;
+    border-radius: 20px;
+    padding: 14px 24px;
+    background: #8b4513;
+    color: #fffaf0;
+    font-family: inherit;
+    font-size: clamp(1.35rem, 4vw, 1.8rem);
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #5c3317, 0 10px 22px rgba(60, 35, 20, 0.2);
+    transition: transform 0.16s ease, filter 0.16s ease, box-shadow 0.16s ease;
+    touch-action: manipulation;
+}
+
+#welcomePlayBtn:hover {
+    transform: translateY(-2px) scale(1.02);
+    filter: brightness(1.08);
+}
+
+#welcomePlayBtn:active {
+    transform: translateY(4px) scale(0.99);
+    box-shadow: 0 2px 0 #5c3317, 0 5px 12px rgba(60, 35, 20, 0.16);
+}
+
+#welcomePlayBtn:focus-visible {
+    outline: 4px solid #d79a45;
+    outline-offset: 4px;
+}
+
+@keyframes welcomeFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes welcomePop {
+    from { opacity: 0; transform: translateY(20px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes welcomeBurger {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-8px) rotate(2deg); }
+}
+
+@media (max-width: 600px) {
+    #welcomeScreen {
+        padding: 10px;
+    }
+
+    .welcome-caixa {
+        max-height: 94dvh;
+        padding: 20px 16px;
+        border-radius: 22px;
+    }
+
+    .welcome-changelog {
+        padding: 14px;
+    }
+}
