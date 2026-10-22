@@ -1,6 +1,6 @@
 /* Burger Clicker PWA Service Worker */
 const CACHE_PREFIX = "burger-clicker-";
-const CACHE_NAME = "burger-clicker-v17";
+const CACHE_NAME = "burger-clicker-v18";
 const APP_SHELL = [
     "/",
     "/index.html",
