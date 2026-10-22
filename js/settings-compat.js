@@ -43,11 +43,8 @@
         elemento?.addEventListener("input", sincronizarAudio);
     });
 
-    // Repetir a tentativa de música após uma interação real cobre navegadores
-    // que bloqueiam autoplay até o primeiro gesto do usuário.
     const iniciarMusicaComGesto = event => {
         const alvo = event.target instanceof Element ? event.target : document.activeElement;
-        // O painel de diagnóstico precisa iniciar apenas o áudio que está testando.
         if (alvo?.closest(".config-diagnostico-audio")) return;
         try {
             window.BurgerClickerAudio?.iniciarMusica();
@@ -58,8 +55,6 @@
     window.addEventListener("pointerdown", iniciarMusicaComGesto, { passive: true });
     window.addEventListener("keydown", iniciarMusicaComGesto, { passive: true });
 
-    // Módulos separados para manter instalação/PWA, reset e navegação fora da
-    // lógica principal das configurações. Este arquivo já é carregado pelo HTML.
     const carregarScript = src => {
         const script = document.createElement("script");
         script.src = src;
@@ -70,4 +65,5 @@
     carregarScript("/js/pwa.js");
     carregarScript("/js/reset.js");
     carregarScript("/js/navigation.js");
+    carregarScript("/js/expansion.js");
 })();
