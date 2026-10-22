@@ -1,0 +1,124 @@
+"use strict";
+
+/* Diagnóstico de áudio visível para o Burger Clicker. */
+(() => {
+    const $ = id => document.getElementById(id);
+    const status = $("audioDiagnosticoStatus");
+    const btnArquivos = $("audioDiagnosticoArquivos");
+    const btnEfeito = $("audioDiagnosticoEfeito");
+    const btnMusica = $("audioDiagnosticoMusica");
+
+    if (!status || !btnArquivos || !btnEfeito || !btnMusica) return;
+
+    function mostrar(texto) {
+        status.textContent = texto;
+    }
+
+    function infoAudio(audio) {
+        if (!audio) return "elemento de áudio não encontrado";
+        const source = audio.querySelector("source");
+        return [
+            "src=" + (source?.src || audio.currentSrc || audio.src || "(vazio)"),
+            "readyState=" + audio.readyState,
+            "networkState=" + audio.networkState,
+            "muted=" + audio.muted,
+            "volume=" + audio.volume,
+            "canPlayMP3=" + (audio.canPlayType('audio/mpeg') || "não informado"),
+            "canPlayWAV=" + (audio.canPlayType('audio/wav') || "não informado"),
+            "erro=" + (audio.error ? audio.error.code + (audio.error.message ? ": " + audio.error.message : "") : "nenhum")
+        ].join("\n");
+    }
+
+    async function verificarArquivo(url) {
+        try {
+            const resposta = await fetch(url, { method: "HEAD", cache: "no-store" });
+            return url + " → HTTP " + resposta.status +
+                (resposta.headers.get("content-type") ? " | tipo: " + resposta.headers.get("content-type") : "") +
+                (resposta.ok ? "" : " | resposta não OK");
+        } catch (erro) {
+            return url + " → FALHA de rede: " + (erro?.message || String(erro));
+        }
+    }
+
+    btnArquivos.addEventListener("click", async () => {
+        btnArquivos.disabled = true;
+        mostrar("Verificando os arquivos e as configurações salvas…");
+        try {
+            const musica = $("musicaFundo");
+            const efeito = $("somClique");
+            const resultados = await Promise.all([
+                verificarArquivo("/media/music.mp3"),
+                verificarArquivo("/media/click.wav")
+            ]);
+            const chaves = [
+                "bc_config_som",
+                "bc_config_musica",
+                "bc_config_volume_efeitos",
+                "bc_config_volume_musica"
+            ];
+            const config = chaves.map(chave => chave + "=" + (() => {
+                try { return localStorage.getItem(chave) ?? "(padrão)"; }
+                catch (erro) { return "ERRO: " + erro.message; }
+            })()).join("\n");
+            mostrar(
+                "RESULTADO DOS ARQUIVOS\n" + resultados.join("\n") +
+                "\n\nELEMENTO DE MÚSICA\n" + infoAudio(musica) +
+                "\n\nELEMENTO DE EFEITO\n" + infoAudio(efeito) +
+                "\n\nCONFIGURAÇÕES SALVAS\n" + config
+            );
+        } catch (erro) {
+            mostrar("O diagnóstico encontrou uma exceção: " + (erro?.stack || erro?.message || String(erro)));
+        } finally {
+            btnArquivos.disabled = false;
+        }
+    });
+
+    function testar(id, nome, loop) {
+        const audio = $(id);
+        if (!audio) {
+            mostrar("FALHA: elemento " + id + " não existe no HTML.");
+            return;
+        }
+
+        const volumeOriginal = audio.volume;
+        const mutedOriginal = audio.muted;
+        const loopOriginal = audio.loop;
+        audio.pause();
+        audio.currentTime = 0;
+        audio.muted = false;
+        audio.volume = 0.7;
+        audio.loop = loop;
+
+        const restaurar = () => {
+            audio.loop = loopOriginal;
+            audio.muted = mutedOriginal;
+            audio.volume = volumeOriginal;
+        };
+
+        audio.addEventListener("error", () => {
+            mostrar("FALHA ao tocar " + nome + ".\n" + infoAudio(audio));
+            restaurar();
+        }, { once: true });
+
+        const promessa = audio.play();
+        if (promessa && typeof promessa.then === "function") {
+            promessa.then(() => {
+                mostrar("O navegador ACEITOU a reprodução de " + nome + ".\nSe você não ouviu nada, informe isso junto com este resultado.\n\n" + infoAudio(audio));
+                if (!loop) {
+                    audio.addEventListener("ended", restaurar, { once: true });
+                    // Evita manter as configurações de teste caso o arquivo não termine normalmente.
+                    setTimeout(restaurar, 15000);
+                }
+            }).catch(erro => {
+                mostrar("FALHA ao iniciar " + nome + ": " + (erro?.name || "Erro") + " — " + (erro?.message || String(erro)) + "\n\n" + infoAudio(audio));
+                restaurar();
+            });
+        } else {
+            mostrar("Foi feita a chamada de reprodução para " + nome + ".\n\n" + infoAudio(audio));
+        }
+    }
+
+    btnEfeito.addEventListener("click", () => testar("somClique", "efeito de clique", false));
+    btnMusica.addEventListener("click", () => testar("musicaFundo", "música de fundo", true));
+    mostrar("Pronto para diagnosticar. Toque primeiro em “Verificar arquivos” e depois teste cada áudio.");
+})();
