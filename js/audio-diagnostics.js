@@ -1,6 +1,6 @@
 "use strict";
 
-/* Diagnóstico de áudio visível para o Burger Clicker. */
+/* Diagnóstico do sistema de áudio do Burger Clicker. */
 (() => {
     const $ = id => document.getElementById(id);
     const status = $("audioDiagnosticoStatus");
@@ -15,17 +15,33 @@
     }
 
     function infoAudio(audio) {
-        if (!audio) return "elemento de áudio não encontrado";
+        if (!(audio instanceof HTMLAudioElement)) return "elemento de áudio não encontrado";
         const source = audio.querySelector("source");
         return [
             "src=" + (source?.src || audio.currentSrc || audio.src || "(vazio)"),
             "readyState=" + audio.readyState,
             "networkState=" + audio.networkState,
+            "paused=" + audio.paused,
             "muted=" + audio.muted,
             "volume=" + audio.volume,
-            "canPlayMP3=" + (audio.canPlayType('audio/mpeg') || "não informado"),
-            "canPlayWAV=" + (audio.canPlayType('audio/wav') || "não informado"),
+            "duration=" + (Number.isFinite(audio.duration) ? audio.duration.toFixed(2) + "s" : "desconhecida"),
+            "canPlayMP3=" + (audio.canPlayType("audio/mpeg") || "não informado"),
+            "canPlayWAV=" + (audio.canPlayType("audio/wav") || "não informado"),
             "erro=" + (audio.error ? audio.error.code + (audio.error.message ? ": " + audio.error.message : "") : "nenhum")
+        ].join("\n");
+    }
+
+    function infoSistema() {
+        const sistema = window.BurgerClickerAudio;
+        if (!sistema || typeof sistema.obterEstado !== "function") return "Sistema centralizado: NÃO disponível";
+        const estado = sistema.obterEstado();
+        return [
+            "engine=" + estado.engine,
+            "Web Audio API=" + (estado.webAudio ? "SIM" : "NÃO"),
+            "arquivo de efeito=" + estado.clickSource,
+            "arquivo de música=" + estado.musicSource,
+            "canais de efeito=" + estado.clickPool,
+            "usuário já interagiu=" + estado.userInteracted
         ].join("\n");
     }
 
@@ -40,9 +56,10 @@
         }
     }
 
-    btnArquivos.addEventListener("click", async () => {
+    btnArquivos.addEventListener("click", async event => {
+        event.stopPropagation();
         btnArquivos.disabled = true;
-        mostrar("Verificando os arquivos e as configurações salvas…");
+        mostrar("Verificando os arquivos reais da pasta /media…");
         try {
             const musica = $("musicaFundo");
             const efeito = $("somClique");
@@ -50,6 +67,13 @@
                 verificarArquivo("/media/music.mp3"),
                 verificarArquivo("/media/click.wav")
             ]);
+
+            let testes = "";
+            if (window.BurgerClickerAudio?.diagnosticarArquivos) {
+                const resultado = await window.BurgerClickerAudio.diagnosticarArquivos();
+                testes = "\n\nCARREGAMENTO HTMLAUDIOELEMENT\n" + JSON.stringify(resultado, null, 2);
+            }
+
             const chaves = [
                 "bc_config_som",
                 "bc_config_musica",
@@ -60,11 +84,13 @@
                 try { return localStorage.getItem(chave) ?? "(padrão)"; }
                 catch (erro) { return "ERRO: " + erro.message; }
             })()).join("\n");
+
             mostrar(
                 "RESULTADO DOS ARQUIVOS\n" + resultados.join("\n") +
+                "\n\nSISTEMA CENTRALIZADO\n" + infoSistema() +
                 "\n\nELEMENTO DE MÚSICA\n" + infoAudio(musica) +
                 "\n\nELEMENTO DE EFEITO\n" + infoAudio(efeito) +
-                "\n\nCONFIGURAÇÕES SALVAS\n" + config
+                "\n\nCONFIGURAÇÕES SALVAS\n" + config + testes
             );
         } catch (erro) {
             mostrar("O diagnóstico encontrou uma exceção: " + (erro?.stack || erro?.message || String(erro)));
@@ -76,9 +102,14 @@
     let musicaEmTeste = false;
     let configuracaoMusicaOriginal = null;
 
-    function testar(id, nome, loop) {
-        const audio = $(id);
-        if (loop && musicaEmTeste && audio && !audio.paused) {
+    function testarMusica() {
+        const audio = $("musicaFundo");
+        if (!(audio instanceof HTMLAudioElement)) {
+            mostrar("FALHA: o elemento #musicaFundo não existe no HTML.");
+            return;
+        }
+
+        if (musicaEmTeste && !audio.paused) {
             audio.pause();
             musicaEmTeste = false;
             if (configuracaoMusicaOriginal) {
@@ -90,65 +121,60 @@
             mostrar("Teste de música interrompido.\n\n" + infoAudio(audio));
             return;
         }
-        if (!audio) {
-            mostrar("FALHA: elemento " + id + " não existe no HTML.");
-            return;
-        }
 
-        const volumeOriginal = audio.volume;
-        const mutedOriginal = audio.muted;
-        const loopOriginal = audio.loop;
-        if (loop) configuracaoMusicaOriginal = { volume: volumeOriginal, muted: mutedOriginal, loop: loopOriginal };
+        configuracaoMusicaOriginal = {
+            volume: audio.volume,
+            muted: audio.muted,
+            loop: audio.loop
+        };
         audio.pause();
         audio.currentTime = 0;
         audio.muted = false;
         audio.volume = 0.7;
-        audio.loop = loop;
-        if (loop) musicaEmTeste = true;
-
-        const restaurar = () => {
-            if (loop) {
-                musicaEmTeste = false;
-                configuracaoMusicaOriginal = null;
-            }
-            audio.loop = loopOriginal;
-            audio.muted = mutedOriginal;
-            audio.volume = volumeOriginal;
-        };
-
-        audio.addEventListener("error", () => {
-            mostrar("FALHA ao tocar " + nome + ".\n" + infoAudio(audio));
-            restaurar();
-        }, { once: true });
+        audio.loop = true;
+        musicaEmTeste = true;
 
         const promessa = audio.play();
         if (promessa && typeof promessa.then === "function") {
             promessa.then(() => {
-                mostrar("O navegador ACEITOU a reprodução de " + nome + ".\nO teste utiliza diretamente o arquivo presente em /media.\n\n" + infoAudio(audio));
-                if (!loop) {
-                    audio.addEventListener("ended", restaurar, { once: true });
-                    setTimeout(restaurar, 15000);
-                }
+                mostrar("O navegador ACEITOU a reprodução de /media/music.mp3 usando HTMLAudioElement.\nNão há geração de áudio por Web Audio API.\n\n" + infoAudio(audio));
             }).catch(erro => {
-                mostrar("FALHA ao iniciar " + nome + ": " + (erro?.name || "Erro") + " — " + (erro?.message || String(erro)) + "\n\n" + infoAudio(audio));
-                restaurar();
+                mostrar("FALHA ao iniciar /media/music.mp3: " + (erro?.name || "Erro") + " — " + (erro?.message || String(erro)) + "\n\n" + infoAudio(audio));
+                restaurarMusica();
             });
-        } else {
-            mostrar("Foi feita a chamada de reprodução para " + nome + ".\n\n" + infoAudio(audio));
         }
     }
 
-    btnEfeito.addEventListener("click", () => {
+    function restaurarMusica() {
+        const audio = $("musicaFundo");
+        if (!(audio instanceof HTMLAudioElement)) return;
+        audio.pause();
+        if (configuracaoMusicaOriginal) {
+            audio.loop = configuracaoMusicaOriginal.loop;
+            audio.muted = configuracaoMusicaOriginal.muted;
+            audio.volume = configuracaoMusicaOriginal.volume;
+        }
+        configuracaoMusicaOriginal = null;
+        musicaEmTeste = false;
+    }
+
+    btnEfeito.addEventListener("click", event => {
+        event.stopPropagation();
         const audio = window.BurgerClickerAudio;
         if (!audio || typeof audio.tocarEfeito !== "function") {
             mostrar("FALHA: sistema de áudio centralizado não está disponível.");
             return;
         }
-        const tocou = audio.tocarEfeito();
+        const tocou = audio.tocarEfeito({ forcar: true });
         mostrar(tocou
-            ? "O teste acionou o arquivo /media/click.wav diretamente usando HTMLAudioElement. Não há geração de som por Web Audio API."
-            : "FALHA: não foi possível iniciar /media/click.wav. Verifique se os efeitos estão ativados, se o volume está acima de zero e se o arquivo está acessível.");
+            ? "Teste OK: /media/click.wav foi enviado a um canal HTMLAudioElement. Não há Web Audio API nem som sintetizado.\n\n" + infoSistema()
+            : "FALHA: não foi possível iniciar /media/click.wav. Verifique o arquivo e as configurações de volume.");
     });
-    btnMusica.addEventListener("click", () => testar("musicaFundo", "música de fundo", true));
-    mostrar("Pronto para diagnosticar. Toque primeiro em “Verificar arquivos” e depois teste cada áudio.");
+
+    btnMusica.addEventListener("click", event => {
+        event.stopPropagation();
+        testarMusica();
+    });
+
+    mostrar("Pronto para diagnosticar. O sistema usa somente os arquivos reais da pasta /media.");
 })();
