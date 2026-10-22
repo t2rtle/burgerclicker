@@ -1,6 +1,6 @@
 "use strict";
 
-// O som de clique continua usando media/click.mp3. O pool permite que
+// O som de clique continua usando media/click.wav. O pool permite que
 // vários cliques rápidos toquem sem cortar imediatamente o som anterior.
 const somClique = document.getElementById("somClique");
 const sonsClique = [];
@@ -49,10 +49,10 @@ function tocarSomClique() {
                     somClique.muted = false;
                     const fallback = somClique.play();
                     if (fallback && typeof fallback.catch === "function") {
-                        fallback.catch(erro => console.warn("Não foi possível reproduzir media/click.mp3:", erro));
+                        fallback.catch(erro => console.warn("Não foi possível reproduzir media/click.wav:", erro));
                     }
                 } catch (erro) {
-                    console.warn("Não foi possível reproduzir media/click.mp3:", erro);
+                    console.warn("Não foi possível reproduzir media/click.wav:", erro);
                 }
             });
         }
