@@ -181,6 +181,8 @@
     window.addEventListener("pointerdown", event => {
         if (event.button !== 0) return;
         const alvo = event.target instanceof Element ? event.target : null;
+        // Os botões de diagnóstico precisam testar o áudio isoladamente.
+        if (alvo?.closest(".config-diagnostico-audio")) return;
         const botao = alvo?.closest("button");
         processarInteracao();
         if (botao) {
