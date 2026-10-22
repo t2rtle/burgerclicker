@@ -12,22 +12,6 @@
         return localStorage.getItem(CONFIG_VIBRACAO) !== "false";
     }
 
-    // O main.js cria uma nova instância do áudio para cada clique.
-    // Garantimos que essa cópia respeite a opção Som das configurações.
-    if (window.HTMLMediaElement) {
-        const cloneOriginal = HTMLMediaElement.prototype.cloneNode;
-        HTMLMediaElement.prototype.cloneNode = function(deep) {
-            const copia = cloneOriginal.call(this, deep);
-            if (this.id === "somClique") {
-                copia.muted = !somAtivo();
-                copia.defaultMuted = !somAtivo();
-                if (!somAtivo()) copia.setAttribute("muted", "");
-                else copia.removeAttribute("muted");
-            }
-            return copia;
-        };
-    }
-
     // Faz a Vibration API obedecer ao interruptor de vibração sem alterar o
     // comportamento do restante do jogo.
     if (navigator && typeof navigator.vibrate === "function") {
