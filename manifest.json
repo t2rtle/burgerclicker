@@ -1,22 +1,31 @@
 {
   "id": "/",
   "name": "Burger Clicker",
-  "short_name": "Burger Clicker",
-  "description": "🍔 Burger Clicker - Idle Game com pets, rebirths, loja de prestígio e progressão infinita.",
+  "short_name": "Burger",
+  "description": "🍔 Burger Clicker: jogo idle de hambúrgueres com pets, melhorias, rebirths e progressão.",
   "lang": "pt-BR",
-  "start_url": "/",
+  "dir": "ltr",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone"],
-  "orientation": "portrait-primary",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "any",
   "background_color": "#fff8e9",
   "theme_color": "#fff8e9",
+  "categories": ["games", "entertainment"],
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "media/pwa-icon.svg",
+      "src": "/media/pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/media/pwa-icon.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ]
 }
