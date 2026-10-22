@@ -48,7 +48,9 @@
     }
 
     function lerNumero(chave, padrao) {
-        const valor = Number(localStorage.getItem(chave));
+        const salvo = localStorage.getItem(chave);
+        if (salvo === null || salvo.trim() === "") return padrao;
+        const valor = Number(salvo);
         return Number.isFinite(valor) ? valor : padrao;
     }
 
@@ -64,7 +66,7 @@
 
     function aplicarSom() {
         const habilitado = lerBooleano(CONFIG.som, true);
-        const volume = Math.max(0, Math.min(1, lerNumero(CONFIG.volumeEfeitos, 0.7)));
+        const volume = Math.max(0, Math.min(1, lerNumero(CONFIG.volumeEfeitos, 1.0)));
         const audio = $("somClique");
         if (audio) {
             audio.muted = !habilitado;
@@ -74,11 +76,12 @@
 
     function aplicarMusica() {
         const habilitada = lerBooleano(CONFIG.musica, true);
-        const volume = Math.max(0, Math.min(1, lerNumero(CONFIG.volumeMusica, 0.3)));
+        const volume = Math.max(0, Math.min(1, lerNumero(CONFIG.volumeMusica, 0.5)));
         const audio = $("musicaFundo");
         if (audio) {
             audio.muted = !habilitada;
             audio.volume = volume;
+            if (!habilitada) audio.pause();
         }
     }
 
@@ -105,8 +108,8 @@
         if (elementos.temaEscuro) elementos.temaEscuro.checked = lerBooleano(CONFIG.temaEscuro, false);
         if (elementos.vibracao) elementos.vibracao.checked = lerBooleano(CONFIG.vibracao, true);
 
-        const volumeMusica = Math.round(lerNumero(CONFIG.volumeMusica, 0.3) * 100);
-        const volumeEfeitos = Math.round(lerNumero(CONFIG.volumeEfeitos, 0.7) * 100);
+        const volumeMusica = Math.round(lerNumero(CONFIG.volumeMusica, 0.5) * 100);
+        const volumeEfeitos = Math.round(lerNumero(CONFIG.volumeEfeitos, 1.0) * 100);
         if (elementos.volumeMusica) elementos.volumeMusica.value = volumeMusica;
         if (elementos.volumeEfeitos) elementos.volumeEfeitos.value = volumeEfeitos;
         if (elementos.volumeMusicaValor) elementos.volumeMusicaValor.textContent = volumeMusica + "%";
@@ -143,6 +146,7 @@
         elementos.musica?.addEventListener("change", () => {
             salvarConfig(CONFIG.musica, elementos.musica.checked);
             aplicarMusica();
+            if (elementos.musica.checked) window.BurgerClickerAudio?.iniciarMusica();
         });
         elementos.animacoes?.addEventListener("change", () => {
             salvarConfig(CONFIG.animacoes, elementos.animacoes.checked);
