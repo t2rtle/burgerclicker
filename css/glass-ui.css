@@ -76,6 +76,8 @@ footer {
 }
 footer a { color: #754018; }
 .config-modal, #welcomeScreen {
+  /* O overlay ocupa a tela inteira: cantos quadrados evitam recortes nas bordas. */
+  border-radius: 0 !important;
   background: rgba(24, 16, 11, .42) !important;
   backdrop-filter: blur(12px) saturate(1.1) !important;
   -webkit-backdrop-filter: blur(12px) saturate(1.1) !important;
