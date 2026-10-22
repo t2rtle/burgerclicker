@@ -1,6 +1,6 @@
 /* ========================================
    TELA DE BOAS-VINDAS — BURGER CLICKER
-   O botão JOGAR também libera o áudio no navegador.
+   O botão JOGAR fecha a tela imediatamente e inicia o áudio sem bloquear o jogo.
 ======================================== */
 (function () {
     "use strict";
@@ -10,31 +10,36 @@
         const playBtn = document.getElementById("welcomePlayBtn");
         if (!screen || !playBtn) return;
 
-        // A tela aparece sempre que o site é aberto/recarregado.
         screen.hidden = false;
         document.body.classList.add("welcome-aberto");
 
-        const jogar = async function () {
-            // Este clique é uma interação real do usuário e, portanto,
-            // é o melhor momento para desbloquear o áudio.
-            try {
-                if (window.BurgerClickerAudio) {
-                    await window.BurgerClickerAudio.iniciarMusica();
-                }
-            } catch (erro) {
-                console.warn("Burger Clicker: não foi possível iniciar o áudio agora.", erro);
-            }
-
+        const jogar = function () {
+            // Feche a tela no mesmo gesto do usuário. A reprodução de áudio
+            // nunca deve impedir a entrada no jogo caso o navegador demore.
             screen.hidden = true;
             document.body.classList.remove("welcome-aberto");
             document.body.classList.add("jogo-iniciado");
 
-            // Devolve o foco ao jogo para teclado/acessibilidade.
             const burger = document.getElementById("burgerBtn");
             if (burger) burger.focus({ preventScroll: true });
+
+            // Inicia a música em segundo plano; a tela já foi fechada.
+            try {
+                const audio = window.BurgerClickerAudio;
+                if (audio && typeof audio.iniciarMusica === "function") {
+                    const tentativa = audio.iniciarMusica();
+                    if (tentativa && typeof tentativa.catch === "function") {
+                        tentativa.catch(erro => console.warn(
+                            "Burger Clicker: não foi possível iniciar o áudio agora.", erro
+                        ));
+                    }
+                }
+            } catch (erro) {
+                console.warn("Burger Clicker: não foi possível iniciar o áudio agora.", erro);
+            }
         };
 
-        playBtn.addEventListener("click", jogar, { once: true });
+        playBtn.addEventListener("click", jogar);
     }
 
     if (document.readyState === "loading") {
