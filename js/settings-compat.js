@@ -30,12 +30,16 @@
         }
     }
 
-    // O módulo PWA fica separado para não misturar instalação, atualização
-    // e Service Worker com a lógica das configurações do jogo.
-    // settings-compat.js já é carregado pelo index.html, então não é preciso
-    // alterar o HTML e arriscar quebrar a ordem atual dos scripts.
-    const pwaScript = document.createElement("script");
-    pwaScript.src = "/js/pwa.js";
-    pwaScript.defer = false;
-    document.head.appendChild(pwaScript);
+    // Módulos separados para manter instalação/PWA, reset e navegação fora da
+    // lógica principal das configurações. Este arquivo já é carregado pelo HTML.
+    const carregarScript = src => {
+        const script = document.createElement("script");
+        script.src = src;
+        script.defer = false;
+        document.head.appendChild(script);
+    };
+
+    carregarScript("/js/pwa.js");
+    carregarScript("/js/reset.js");
+    carregarScript("/js/navigation.js");
 })();
