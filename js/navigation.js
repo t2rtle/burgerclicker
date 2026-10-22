@@ -11,10 +11,21 @@
         ["conquistas", "🏆 Conquistas", ".conquistas"]
     ];
 
+    function carregarEstilos() {
+        if (document.querySelector('link[data-burger-navigation="true"]')) return;
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "/css/navigation.css";
+        link.dataset.burgerNavigation = "true";
+        document.head.appendChild(link);
+    }
+
     function iniciarNavegacao() {
+        carregarEstilos();
+
         const painel = document.querySelector(".painel");
         const configBtn = document.getElementById("configBtn");
-        if (!painel || !configBtn) return;
+        if (!painel || !configBtn || document.querySelector(".bc-areas-nav")) return;
 
         const nav = document.createElement("nav");
         nav.className = "bc-areas-nav";
@@ -25,7 +36,6 @@
         titulo.textContent = "📂 Menus do jogo";
         nav.appendChild(titulo);
 
-        const botoes = [];
         const secoes = [];
 
         const abrirArea = (indice, foco = true) => {
@@ -58,20 +68,18 @@
             botao.addEventListener("click", () => abrirArea(indice));
 
             nav.appendChild(botao);
-            botoes.push(botao);
             secoes.push({ botao, elemento });
         });
 
-        // O botão de configurações passa a fazer parte da mesma barra e fica
-        // abaixo do painel do hambúrguer, junto dos demais menus.
+        // Configurações passa a ficar na mesma barra e abaixo do hambúrguer.
         configBtn.classList.add("bc-area-btn", "bc-config-area-btn");
         configBtn.style.margin = "";
         nav.appendChild(configBtn);
 
         painel.insertAdjacentElement("afterend", nav);
 
-        // A Loja abre primeiro para que o jogo continue apresentando seu fluxo
-        // principal sem voltar a ocupar a página inteira.
+        // A Loja abre primeiro para manter o fluxo principal acessível sem
+        // devolver à página a altura enorme que existia anteriormente.
         if (secoes.length) {
             secoes[0].elemento.hidden = false;
             secoes[0].botao.setAttribute("aria-expanded", "true");
