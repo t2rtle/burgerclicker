@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/pets.css">
     <link rel="stylesheet" href="css/tooltips.css">
     <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/welcome.css">
     <meta name="theme-color" content="#fff8e9">
     <meta name="application-name" content="Burger Clicker">
     <meta name="mobile-web-app-capable" content="yes">
@@ -23,6 +24,31 @@
     <meta name="google-adsense-account" content="ca-pub-1469004475264377">
 </head>
 <body>
+    <section id="welcomeScreen" aria-label="Tela de boas-vindas ao Burger Clicker">
+        <div class="welcome-caixa" role="dialog" aria-modal="true" aria-labelledby="welcomeTitulo">
+            <div class="welcome-logo" aria-hidden="true">🍔</div>
+            <h1 id="welcomeTitulo">Burger Clicker</h1>
+            <p class="welcome-subtitulo">Bem-vindo de volta! Confira as novidades antes de começar a sua fábrica de hambúrgueres.</p>
+
+            <div class="welcome-changelog">
+                <h2>📋 Changelog — v1.0</h2>
+                <ul>
+                    <li>🎮 Sistema completo de progressão com níveis, XP, negócios e upgrades.</li>
+                    <li>⭐ Rebirth com fichas, bônus permanentes e Loja de Prestígio.</li>
+                    <li>🐾 Sistema de pets com coleção, equipamento, nomes e evolução.</li>
+                    <li>⚙️ Menu de Configurações com áudio, volumes, animações, tema, vibração e instalação PWA.</li>
+                    <li>💾 Backups automáticos, backup manual, restauração e reset seguro do progresso.</li>
+                    <li>📱 PWA preparado para instalação como aplicativo em navegadores compatíveis.</li>
+                    <li>🎵 Sistema de áudio atualizado: efeitos nos botões e música de fundo em looping.</li>
+                    <li>🔊 O botão Jogar libera o áudio durante uma interação permitida pelo navegador.</li>
+                </ul>
+            </div>
+
+            <p class="welcome-audio-aviso">🔊 Clique em <strong>JOGAR</strong> para entrar no jogo e permitir que a música e os efeitos sonoros sejam iniciados pelo navegador.</p>
+            <button id="welcomePlayBtn" type="button">🍔 JOGAR</button>
+        </div>
+    </section>
+
     <footer><a href="about.html">Sobre</a> | <a href="privacy.html">Privacidade</a> | <a href="contact.html">Contato</a></footer>
     <audio id="musicaFundo" preload="auto" loop><source src="media/music.mp3" type="audio/mpeg"></audio>
     <audio id="somClique" preload="auto"><source src="media/click.wav" type="audio/wav"><source src="media/click.mp3" type="audio/mpeg"></audio>
@@ -92,6 +118,6 @@
 
     <div class="conquistas"><h2>🏆 Conquistas</h2><img src="media/art_1.png" alt="Arte 1" width="600"><div id="listaConquistas"></div></div>
 
-    <script src="js/core.js"></script><script src="js/systems.js"></script><script src="js/audio.js"></script><script src="js/main.js"></script><script src="js/tooltips.js"></script><script src="js/settings.js"></script><script src="js/settings-compat.js"></script>
+    <script src="js/core.js"></script><script src="js/systems.js"></script><script src="js/audio.js"></script><script src="js/welcome.js"></script><script src="js/main.js"></script><script src="js/tooltips.js"></script><script src="js/settings.js"></script><script src="js/settings-compat.js"></script>
 </body>
 </html>
