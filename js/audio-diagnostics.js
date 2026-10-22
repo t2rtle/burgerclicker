@@ -73,8 +73,16 @@
         }
     });
 
+    let musicaEmTeste = false;
+
     function testar(id, nome, loop) {
         const audio = $(id);
+        if (loop && musicaEmTeste && audio && !audio.paused) {
+            audio.pause();
+            musicaEmTeste = false;
+            mostrar("Teste de música interrompido.\n\n" + infoAudio(audio));
+            return;
+        }
         if (!audio) {
             mostrar("FALHA: elemento " + id + " não existe no HTML.");
             return;
@@ -88,8 +96,10 @@
         audio.muted = false;
         audio.volume = 0.7;
         audio.loop = loop;
+        if (loop) musicaEmTeste = true;
 
         const restaurar = () => {
+            if (loop) musicaEmTeste = false;
             audio.loop = loopOriginal;
             audio.muted = mutedOriginal;
             audio.volume = volumeOriginal;
