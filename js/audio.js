@@ -185,7 +185,6 @@
         processarInteracao();
         if (botao) {
             tocarEfeito();
-            event.stopPropagation();
         }
     }, { capture: true, passive: true });
 
