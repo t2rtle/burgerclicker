@@ -54,12 +54,10 @@
     function inicializar() {
         if (inicializado) return;
         inicializado = true;
-
         for (let i = 0; i < CLICK_POOL_SIZE; i++) {
             const audio = criarAudio(CLICK_SRC);
             if (audio) clickPool.push(audio);
         }
-
         musica = criarAudio(MUSIC_SRC, true);
         if (musica) musica.loop = true;
     }
@@ -69,7 +67,6 @@
         if (!lerBooleano(CONFIG.som, true)) return;
         const volume = lerVolume(CONFIG.volumeSom, 1);
         if (volume <= 0 || !clickPool.length) return;
-
         const audio = clickPool[clickIndex++ % clickPool.length];
         try {
             audio.volume = volume;
@@ -90,7 +87,7 @@
             await musica.play();
             return true;
         } catch (_) {
-            // Autoplay pode ser bloqueado; a próxima interação tenta novamente.
+            // O navegador pode exigir uma interação; a próxima interação tenta de novo.
             return false;
         }
     }
@@ -106,7 +103,6 @@
         const musicaAtiva = lerBooleano(CONFIG.musica, true);
         const volumeSom = lerVolume(CONFIG.volumeSom, 1);
         const volumeMusica = lerVolume(CONFIG.volumeMusica, 0.5);
-
         clickPool.forEach(audio => {
             audio.muted = !somAtivo;
             audio.volume = volumeSom;
@@ -126,13 +122,17 @@
         if (lerBooleano(CONFIG.musica, true)) iniciarMusica();
     }
 
-    // Executa antes dos handlers dos botões. Assim qualquer botão libera a música
-    // e toca o efeito, inclusive configurações, loja, upgrades, pets e rebirth.
+    // Captura o gesto no window, antes dos handlers antigos de main.js.
+    // Em botões, impede o antigo handler de tocar um segundo efeito em WAV.
     window.addEventListener("pointerdown", event => {
         if (event.button !== 0) return;
-        processarInteracao();
         const alvo = event.target instanceof Element ? event.target : null;
-        if (alvo?.closest("button")) tocarEfeito();
+        const botao = alvo?.closest("button");
+        processarInteracao();
+        if (botao) {
+            tocarEfeito();
+            event.stopPropagation();
+        }
     }, { capture: true, passive: true });
 
     window.addEventListener("keydown", event => {
@@ -155,8 +155,6 @@
         aplicarConfiguracoes
     });
 
-    // Se autoplay for permitido, começa imediatamente. Caso contrário, começa
-    // automaticamente no primeiro gesto do jogador.
     inicializar();
     aplicarConfiguracoes();
 })();
