@@ -1,6 +1,6 @@
 /* Burger Clicker PWA Service Worker */
 const CACHE_PREFIX = "burger-clicker-";
-const CACHE_NAME = "burger-clicker-v11";
+const CACHE_NAME = "burger-clicker-v12";
 const APP_SHELL = [
     "/",
     "/index.html",
@@ -23,7 +23,7 @@ const APP_SHELL = [
     "/media/background.jpg",
     "/media/art_1.png",
     "/media/art_2.png",
-    "/media/click.wav",
+    "/media/click.mp3",
     "/media/music.mp3",
     "/media/pwa-icon.svg"
 ];
@@ -31,14 +31,10 @@ const APP_SHELL = [
 self.addEventListener("install", event => {
     event.waitUntil((async () => {
         const cache = await caches.open(CACHE_NAME);
-        // O shell é preenchido arquivo por arquivo: um recurso ausente não
-        // deve impedir que o Service Worker seja ativado.
         await Promise.allSettled(APP_SHELL.map(async path => {
             try {
                 const response = await fetch(path, { cache: "no-cache" });
-                if (response.ok && response.type === "basic") {
-                    await cache.put(path, response);
-                }
+                if (response.ok && response.type === "basic") await cache.put(path, response);
             } catch (error) {
                 console.warn("[Burger Clicker PWA] Falha ao pré-cachear:", path, error);
             }
@@ -69,24 +65,21 @@ self.addEventListener("message", event => {
 self.addEventListener("fetch", event => {
     const request = event.request;
     if (request.method !== "GET") return;
-
     const url = new URL(request.url);
-    // Nunca intercepte requisições de terceiros, extensões ou outros sites.
     if (url.origin !== self.location.origin) return;
 
     if (request.mode === "navigate") {
         event.respondWith((async () => {
             try {
                 const response = await fetch(request, { cache: "no-store" });
-                if (response && response.ok) {
+                if (response?.ok) {
                     const cache = await caches.open(CACHE_NAME);
                     await cache.put("/index.html", response.clone());
                 }
                 return response;
             } catch {
                 const cached = await caches.match(request) || await caches.match("/index.html") || await caches.match("/");
-                if (cached) return cached;
-                return new Response(
+                return cached || new Response(
                     "<!doctype html><html lang=\"pt-BR\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Sem conexão</title><body style=\"font-family:system-ui;text-align:center;padding:2rem\"><h1>🍔 Burger Clicker</h1><p>Você está sem conexão. Conecte-se à internet e tente novamente.</p></body></html>",
                     { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } }
                 );
@@ -95,14 +88,12 @@ self.addEventListener("fetch", event => {
         return;
     }
 
-    // Arquivos estáticos: cache primeiro; se ainda não existirem, tenta a rede.
     event.respondWith((async () => {
         const cached = await caches.match(request);
         if (cached) return cached;
-
         try {
             const response = await fetch(request);
-            if (response && response.ok && response.type === "basic") {
+            if (response?.ok && response.type === "basic") {
                 const cache = await caches.open(CACHE_NAME);
                 await cache.put(request, response.clone());
             }
