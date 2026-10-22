@@ -51,7 +51,7 @@
     // settings-compat.js já é carregado pelo index.html, então não é preciso
     // alterar o HTML e arriscar quebrar a ordem atual dos scripts.
     const pwaScript = document.createElement("script");
-    pwaScript.src = "./js/pwa.js?v=2";
+    pwaScript.src = "/js/pwa.js";
     pwaScript.defer = false;
     document.head.appendChild(pwaScript);
 })();
