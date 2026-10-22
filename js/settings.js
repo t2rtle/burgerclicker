@@ -231,9 +231,32 @@
         definirStatus("💾 Backup criado e baixado com sucesso!");
     }
 
+    // Só restaura chaves que pertencem ao estado conhecido do jogo.
+    // Isso impede que um arquivo importado injete chaves arbitrárias no armazenamento.
+    const CHAVES_PROTEGIDAS = new Set([
+        "hamburgueres", "hamburgueresTotais", "runHamburgueres",
+        "funcionarios", "chapas", "foodTrucks", "lanchonetes", "franquias",
+        "multiplicadorClique", "bonusGlobal",
+        "upgradeClique2x", "upgradeClique5x", "upgradeFuncionario", "upgradeChapa", "upgradeGlobal",
+        "xp", "nivel", "xpProximoNivel", "cliquesTotais", "tempoJogado", "rebirths",
+        "prestigeTokens", "prestigeTokensEarned", "prestigeUpgrades", "requisitoRebirth",
+        "conquistas", "ultimoSave", "petColecao", "petAtivoId", "petNomes", "petNiveis"
+    ]);
+
     function validarPacoteBackup(pacote) {
-        return pacote && pacote.app === "Burger Clicker" && pacote.formato === 1 &&
-            pacote.dados && typeof pacote.dados === "object" && !Array.isArray(pacote.dados);
+        if (!pacote || pacote.app !== "Burger Clicker" || pacote.formato !== 1 ||
+            !pacote.dados || typeof pacote.dados !== "object" || Array.isArray(pacote.dados)) {
+            return false;
+        }
+
+        const entradas = Object.entries(pacote.dados);
+        if (entradas.length > CHAVES_PROTEGIDAS.size) return false;
+
+        return entradas.every(([chave, valor]) =>
+            CHAVES_PROTEGIDAS.has(chave) &&
+            (typeof valor === "string" || typeof valor === "number" || typeof valor === "boolean") &&
+            String(valor).length <= 200000
+        );
     }
 
     function restaurarPacote(pacote) {
@@ -254,12 +277,18 @@
                 localStorage.setItem(chave, String(valor));
             }
         });
-        salvarBackupAutomatico();
+        // O backup anterior já foi preservado pelo fluxo de restauração.
+        // Não o sobrescreva aqui com uma cópia do estado recém-restaurado.
         location.reload();
     }
 
     function restaurarArquivo(file) {
         if (!file) return;
+        if (file.size > 2 * 1024 * 1024) {
+            definirStatus("❌ O arquivo de backup excede o limite de 2 MB.", true);
+            elementos.arquivoBackup.value = "";
+            return;
+        }
         const leitor = new FileReader();
         leitor.onload = () => {
             try {
@@ -307,10 +336,26 @@
     }
 
     function iniciarBackupAutomatico() {
-        setTimeout(() => salvarBackupAutomatico(), 5000);
-        setInterval(salvarBackupAutomatico, BACKUP_INTERVALO);
+        const backupSeguro = () => {
+            if (window.__burgerClickerResetEmAndamento) return;
+            try {
+                salvarBackupAutomatico();
+            } catch (erro) {
+                // Armazenamento cheio ou bloqueado não deve gerar exceções sem tratamento.
+                console.warn("[Burger Clicker] Backup automático indisponível:", erro);
+                if (elementos.statusBackup) {
+                    elementos.statusBackup.textContent = "⚠️ Não foi possível salvar o backup automático. Baixe um backup manual.";
+                }
+            }
+        };
+        setTimeout(backupSeguro, 5000);
+        setInterval(backupSeguro, BACKUP_INTERVALO);
         window.addEventListener("beforeunload", () => {
-            try { salvarBackupAutomatico(); } catch { /* não interrompe o fechamento da página */ }
+            // Um reset não deve criar um backup vazio depois de preservar o último backup útil.
+            if (window.__burgerClickerResetEmAndamento) return;
+            try { salvarBackupAutomatico(); } catch (erro) {
+                console.warn("[Burger Clicker] Não foi possível criar o backup ao sair:", erro);
+            }
         });
     }
 
@@ -402,9 +447,18 @@
             }
         }
 
-        localStorage.clear();
-        Object.entries(manter).forEach(([chave, valor]) => localStorage.setItem(chave, valor));
-        location.reload();
+        // Bloqueia os salvamentos dos listeners beforeunload antes de recarregar.
+        // Sem isso, salvarJogo() podia gravar o progresso antigo logo após o clear().
+        window.__burgerClickerResetEmAndamento = true;
+        try {
+            localStorage.clear();
+            Object.entries(manter).forEach(([chave, valor]) => localStorage.setItem(chave, valor));
+            location.reload();
+        } catch (erro) {
+            window.__burgerClickerResetEmAndamento = false;
+            definirStatus("❌ Não foi possível resetar o progresso. O armazenamento pode estar indisponível.", true);
+            console.error("[Burger Clicker] Falha ao resetar o progresso:", erro);
+        }
     }
 
     function iniciar() {
