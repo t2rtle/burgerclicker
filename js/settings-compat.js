@@ -12,8 +12,6 @@
         return localStorage.getItem(CONFIG_VIBRACAO) !== "false";
     }
 
-    // Faz a Vibration API obedecer ao interruptor de vibração sem alterar o
-    // comportamento do restante do jogo.
     if (navigator && typeof navigator.vibrate === "function") {
         const vibrarOriginal = navigator.vibrate.bind(navigator);
         try {
@@ -24,13 +22,10 @@
         } catch {
             try {
                 navigator.vibrate = padrao => vibracaoAtiva() ? vibrarOriginal(padrao) : true;
-            } catch {
-                // Alguns navegadores não permitem substituir o método.
-            }
+            } catch {}
         }
     }
 
-    // Sincroniza qualquer alteração do menu de configurações com a camada de áudio.
     const sincronizarAudio = () => {
         try { window.BurgerClickerAudio?.aplicarConfiguracoes(); } catch (erro) {
             console.warn("[Burger Clicker] Falha ao sincronizar áudio:", erro);
@@ -46,9 +41,7 @@
     const iniciarMusicaComGesto = event => {
         const alvo = event.target instanceof Element ? event.target : document.activeElement;
         if (alvo?.closest(".config-diagnostico-audio")) return;
-        try {
-            window.BurgerClickerAudio?.iniciarMusica();
-        } catch (erro) {
+        try { window.BurgerClickerAudio?.iniciarMusica(); } catch (erro) {
             console.warn("[Burger Clicker] Falha ao iniciar áudio após interação:", erro);
         }
     };
@@ -66,4 +59,5 @@
     carregarScript("/js/reset.js");
     carregarScript("/js/navigation.js");
     carregarScript("/js/expansion.js");
+    carregarScript("/js/expansion-ui.js");
 })();
