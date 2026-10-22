@@ -6,8 +6,13 @@
 
 * {
     box-sizing: border-box;
-    border-radius: 24px;
     font-size: 125%;
+}
+
+/* Os overlays de tela cheia nunca devem herdar cantos arredondados globais. */
+html body #welcomeScreen,
+html body #configModal {
+    border-radius: 0 !important;
 }
 
 html {
