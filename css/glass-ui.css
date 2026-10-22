@@ -131,10 +131,20 @@ html.tema-escuro footer a { color: #ffd49a; }
 html body #welcomeScreen,
 html body #configModal,
 html body .config-modal {
+  /* Somente o overlay de tela cheia fica quadrado; caixas internas preservam o raio. */
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  margin: 0 !important;
+  border: 0 !important;
   border-radius: 0 !important;
+  box-shadow: none !important;
   clip-path: none !important;
   -webkit-clip-path: none !important;
   mask: none !important;
   -webkit-mask: none !important;
   overflow-clip-margin: 0 !important;
+  transform: none !important;
 }
