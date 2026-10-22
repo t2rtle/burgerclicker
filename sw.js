@@ -1,8 +1,10 @@
-const CACHE_NAME = "burger-clicker-v4";
-
+/* Burger Clicker PWA Service Worker */
+const CACHE_PREFIX = "burger-clicker-";
+const CACHE_NAME = "burger-clicker-v5";
 const APP_SHELL = [
     "/",
     "/index.html",
+    "/manifest.json",
     "/style.css",
     "/css/pets.css",
     "/css/tooltips.css",
@@ -14,7 +16,6 @@ const APP_SHELL = [
     "/js/settings.js",
     "/js/settings-compat.js",
     "/js/pwa.js",
-    "/manifest.json",
     "/media/background.jpg",
     "/media/art_1.png",
     "/media/art_2.png",
@@ -26,87 +27,84 @@ const APP_SHELL = [
 self.addEventListener("install", event => {
     event.waitUntil((async () => {
         const cache = await caches.open(CACHE_NAME);
-
-        // Um único arquivo ausente não pode impedir a instalação do PWA inteiro.
-        await Promise.allSettled(
-            APP_SHELL.map(async url => {
-                try {
-                    const response = await fetch(url, { cache: "no-cache" });
-                    if (response.ok) await cache.put(url, response);
-                } catch (error) {
-                    console.warn("Burger Clicker SW: não foi possível armazenar", url, error);
+        // O shell é preenchido arquivo por arquivo: um recurso ausente não
+        // deve impedir que o Service Worker seja ativado.
+        await Promise.allSettled(APP_SHELL.map(async path => {
+            try {
+                const response = await fetch(path, { cache: "no-cache" });
+                if (response.ok && response.type === "basic") {
+                    await cache.put(path, response);
                 }
-            })
-        );
-
+            } catch (error) {
+                console.warn("[Burger Clicker PWA] Falha ao pré-cachear:", path, error);
+            }
+        }));
         await self.skipWaiting();
     })());
 });
 
 self.addEventListener("activate", event => {
     event.waitUntil((async () => {
-        const keys = await caches.keys();
-        await Promise.all(
-            keys
-                .filter(key => key.startsWith("burger-clicker-") && key !== CACHE_NAME)
-                .map(key => caches.delete(key))
-        );
+        const names = await caches.keys();
+        await Promise.all(names
+            .filter(name => name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME)
+            .map(name => caches.delete(name)));
         await self.clients.claim();
     })());
 });
 
 self.addEventListener("message", event => {
-    if (event.data?.type === "SKIP_WAITING") {
-        self.skipWaiting();
+    if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
+    if (event.data?.type === "CLEAR_APP_CACHE") {
+        event.waitUntil(caches.keys().then(names =>
+            Promise.all(names.filter(name => name.startsWith(CACHE_PREFIX)).map(name => caches.delete(name)))
+        ));
     }
 });
 
 self.addEventListener("fetch", event => {
-    if (event.request.method !== "GET") return;
-
     const request = event.request;
-    const url = new URL(request.url);
+    if (request.method !== "GET") return;
 
-    // Navegação: tenta sempre a versão online primeiro para evitar que uma
-    // instalação antiga do Edge abra uma página desatualizada ou incompleta.
+    const url = new URL(request.url);
+    // Nunca intercepte requisições de terceiros, extensões ou outros sites.
+    if (url.origin !== self.location.origin) return;
+
     if (request.mode === "navigate") {
         event.respondWith((async () => {
             try {
                 const response = await fetch(request, { cache: "no-store" });
-                if (response.ok) {
+                if (response && response.ok) {
                     const cache = await caches.open(CACHE_NAME);
-                    cache.put("/index.html", response.clone());
+                    await cache.put("/index.html", response.clone());
                 }
                 return response;
             } catch {
-                return (await caches.match(request)) ||
-                    (await caches.match("/index.html")) ||
-                    new Response("Burger Clicker offline", {
-                        status: 503,
-                        headers: { "Content-Type": "text/plain; charset=utf-8" }
-                    });
+                const cached = await caches.match(request) || await caches.match("/index.html") || await caches.match("/");
+                if (cached) return cached;
+                return new Response(
+                    "<!doctype html><html lang=\"pt-BR\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Sem conexão</title><body style=\"font-family:system-ui;text-align:center;padding:2rem\"><h1>🍔 Burger Clicker</h1><p>Você está sem conexão. Conecte-se à internet e tente novamente.</p></body></html>",
+                    { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } }
+                );
             }
         })());
         return;
     }
 
-    // Arquivos locais: cache primeiro para carregamento rápido/offline;
-    // quando não houver cache, busca na rede e guarda a cópia.
-    if (url.origin === self.location.origin) {
-        event.respondWith((async () => {
-            const cached = await caches.match(request);
-            if (cached) return cached;
+    // Arquivos estáticos: cache primeiro; se ainda não existirem, tenta a rede.
+    event.respondWith((async () => {
+        const cached = await caches.match(request);
+        if (cached) return cached;
 
-            try {
-                const response = await fetch(request);
-                if (response.ok && response.type !== "opaque") {
-                    const cache = await caches.open(CACHE_NAME);
-                    cache.put(request, response.clone());
-                }
-                return response;
-            } catch {
-                return Response.error();
+        try {
+            const response = await fetch(request);
+            if (response && response.ok && response.type === "basic") {
+                const cache = await caches.open(CACHE_NAME);
+                await cache.put(request, response.clone());
             }
-        })());
-    }
+            return response;
+        } catch {
+            return new Response("", { status: 504, statusText: "Offline" });
+        }
+    })());
 });
