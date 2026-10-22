@@ -10,7 +10,11 @@ const CONFIG = {
 };
 
 function carregarNumero(chave, padrao = 0) {
-    const valor = Number(localStorage.getItem(chave));
+    const salvo = localStorage.getItem(chave);
+    // Number(null) vira 0; verificar a ausência antes evita ignorar padrões
+    // importantes, especialmente ultimoSave no primeiro acesso ao jogo.
+    if (salvo === null || salvo.trim() === "") return padrao;
+    const valor = Number(salvo);
     return Number.isFinite(valor) ? valor : padrao;
 }
 function carregarBooleano(chave) {
@@ -32,15 +36,15 @@ function carregarObjeto(chave, padrao = {}) {
 let hamburgueres = Math.max(0, Math.round(carregarNumero("hamburgueres")));
 let hamburgueresTotais = Math.max(0, Math.round(carregarNumero("hamburgueresTotais")));
 let runHamburgueres = Math.max(0, Math.round(carregarNumero("runHamburgueres", hamburgueres)));
-let cliquesTotais = carregarNumero("cliquesTotais");
-let tempoJogado = carregarNumero("tempoJogado");
+let cliquesTotais = Math.max(0, Math.floor(carregarNumero("cliquesTotais")));
+let tempoJogado = Math.max(0, Math.floor(carregarNumero("tempoJogado")));
 let ultimoSave = carregarNumero("ultimoSave", Date.now());
 
-let funcionarios = carregarNumero("funcionarios");
-let chapas = carregarNumero("chapas");
-let foodTrucks = carregarNumero("foodTrucks");
-let lanchonetes = carregarNumero("lanchonetes");
-let franquias = carregarNumero("franquias");
+let funcionarios = Math.max(0, Math.floor(carregarNumero("funcionarios")));
+let chapas = Math.max(0, Math.floor(carregarNumero("chapas")));
+let foodTrucks = Math.max(0, Math.floor(carregarNumero("foodTrucks")));
+let lanchonetes = Math.max(0, Math.floor(carregarNumero("lanchonetes")));
+let franquias = Math.max(0, Math.floor(carregarNumero("franquias")));
 
 const NEGOCIOS = {
     funcionario: { nome: "Funcionário", emoji: "👨‍🍳", custoBase: 15, producao: 0.1 },
@@ -67,14 +71,14 @@ let custoFoodTruck = calcularCustoNegocio("foodTruck");
 let custoLanchonete = calcularCustoNegocio("lanchonete");
 let custoFranquia = calcularCustoNegocio("franquia");
 
-let xp = carregarNumero("xp");
-let nivel = Math.max(1, carregarNumero("nivel", 1));
+let xp = Math.max(0, carregarNumero("xp"));
+let nivel = Math.max(1, Math.floor(carregarNumero("nivel", 1)));
 let xpProximoNivel = Math.max(100, carregarNumero("xpProximoNivel", 100));
 
-let prestigeTokens = Math.max(0, carregarNumero("prestigeTokens"));
-let prestigeTokensEarned = Math.max(prestigeTokens, carregarNumero("prestigeTokensEarned", prestigeTokens));
+let prestigeTokens = Math.max(0, Math.floor(carregarNumero("prestigeTokens")));
+let prestigeTokensEarned = Math.max(prestigeTokens, Math.floor(carregarNumero("prestigeTokensEarned", prestigeTokens)));
 let prestigeUpgrades = carregarObjeto("prestigeUpgrades", {});
-let rebirths = carregarNumero("rebirths");
+let rebirths = Math.max(0, Math.floor(carregarNumero("rebirths")));
 let requisitoRebirth = Math.max(CONFIG.custoInicialRebirth, carregarNumero("requisitoRebirth", CONFIG.custoInicialRebirth));
 function calcularRequisitoRebirth() {
     return Math.ceil(CONFIG.custoInicialRebirth * Math.pow(CONFIG.multiplicadorRebirth, rebirths));
