@@ -1,0 +1,113 @@
+/* ========================================
+   NAVEGAÇÃO DAS ÁREAS DO JOGO
+======================================== */
+
+.bc-areas-nav {
+    width: min(960px, 100%);
+    margin: 0 auto clamp(18px, 4vw, 34px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+    gap: 10px;
+    padding: 12px;
+    border-radius: 24px;
+    background: rgba(255, 248, 233, 0.78);
+    box-shadow: 0 5px 16px rgba(60, 35, 20, 0.14);
+    backdrop-filter: blur(8px);
+}
+
+.bc-areas-titulo {
+    grid-column: 1 / -1;
+    margin: 2px 4px 0;
+    font-weight: 700;
+    color: #5c3317;
+}
+
+.bc-area-btn,
+#configBtn.bc-area-btn {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    border: none;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    line-height: 1.35;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    background: rgba(255, 255, 255, 0.92);
+    color: #432b20;
+    box-shadow: 0 5px 16px rgba(60, 35, 20, 0.14);
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.bc-area-btn:hover,
+#configBtn.bc-area-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px rgba(60, 35, 20, 0.2);
+}
+
+.bc-area-btn.ativo,
+#configBtn.bc-area-btn:focus-visible {
+    background: rgba(255, 224, 178, 0.96);
+    box-shadow: 0 6px 18px rgba(60, 35, 20, 0.2);
+}
+
+.bc-area-btn:focus-visible {
+    outline: 3px solid #a0522d;
+    outline-offset: 2px;
+}
+
+.bc-area-conteudo[hidden] {
+    display: none !important;
+}
+
+.bc-area-conteudo {
+    scroll-margin-top: 14px;
+    animation: entradaPainel 0.28s ease-out both;
+}
+
+html.tema-escuro .bc-areas-nav {
+    background: rgba(24, 25, 30, 0.88);
+}
+
+html.tema-escuro .bc-areas-titulo {
+    color: #f4eee7;
+}
+
+html.tema-escuro .bc-area-btn,
+html.tema-escuro #configBtn.bc-area-btn {
+    background: #292b31;
+    color: #f4eee7;
+}
+
+html.tema-escuro .bc-area-btn.ativo,
+html.tema-escuro #configBtn.bc-area-btn:focus-visible {
+    background: #454852;
+}
+
+@media (max-width: 600px) {
+    .bc-areas-nav {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 9px;
+        border-radius: 18px;
+    }
+
+    .bc-areas-titulo {
+        font-size: 1rem;
+    }
+
+    .bc-area-btn,
+    #configBtn.bc-area-btn {
+        padding: 9px 8px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .bc-areas-nav {
+        grid-template-columns: 1fr;
+    }
+}
