@@ -30,6 +30,31 @@
         }
     }
 
+    // Sincroniza qualquer alteração do menu de configurações com a camada de áudio.
+    const sincronizarAudio = () => {
+        try { window.BurgerClickerAudio?.aplicarConfiguracoes(); } catch (erro) {
+            console.warn("[Burger Clicker] Falha ao sincronizar áudio:", erro);
+        }
+    };
+
+    ["configSom", "configMusica", "configVolumeMusica", "configVolumeEfeitos"].forEach(id => {
+        const elemento = document.getElementById(id);
+        elemento?.addEventListener("change", sincronizarAudio);
+        elemento?.addEventListener("input", sincronizarAudio);
+    });
+
+    // Repetir a tentativa de música após uma interação real cobre navegadores
+    // que bloqueiam autoplay até o primeiro gesto do usuário.
+    const iniciarMusicaComGesto = () => {
+        try {
+            window.BurgerClickerAudio?.iniciarMusica();
+        } catch (erro) {
+            console.warn("[Burger Clicker] Falha ao iniciar áudio após interação:", erro);
+        }
+    };
+    window.addEventListener("pointerdown", iniciarMusicaComGesto, { passive: true });
+    window.addEventListener("keydown", iniciarMusicaComGesto, { passive: true });
+
     // Módulos separados para manter instalação/PWA, reset e navegação fora da
     // lógica principal das configurações. Este arquivo já é carregado pelo HTML.
     const carregarScript = src => {
