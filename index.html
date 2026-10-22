@@ -81,7 +81,7 @@
                 <p class="config-aviso">⚠️ Guarde também um arquivo baixado em um local seguro. O backup automático fica no armazenamento deste navegador e pode ser perdido se os dados do site forem apagados.</p>
             </div>
             <div class="config-grupo"><h3>🔄 Progresso</h3><p>Use esta opção para começar novamente do zero. Um backup automático é criado antes da exclusão.</p><div class="config-acoes"><button id="configResetarBtn" type="button">🔄 Resetar todo o progresso</button></div></div>
-            <div class="config-grupo"><h3>📱 Aplicativo</h3><p>O Burger Clicker agora possui manifesto PWA, ícone, Service Worker e modo de instalação quando o navegador oferecer suporte.</p><div class="config-acoes"><button id="configInstalarBtn" type="button">📱 Instalar aplicativo</button></div><p id="configInstalacaoStatus" class="config-status-instalacao">Verificando disponibilidade da instalação...</p></div>
+            <div class="config-grupo"><h3>📱 Aplicativo</h3><p>Instale o Burger Clicker quando o navegador oferecer suporte. O diagnóstico abaixo verifica manifesto, ícones, segurança, Service Worker, cache e armazenamento neste dispositivo.</p><div class="config-acoes"><button id="configInstalarBtn" type="button">📱 Instalar aplicativo</button><button id="pwaAbrirAppBtn" type="button">🚀 Abrir app</button><button id="pwaDiagnosticoExecutar" type="button">🧪 Executar diagnóstico PWA</button></div><p id="configInstalacaoStatus" class="config-status-instalacao">Verificando disponibilidade da instalação...</p><pre id="pwaDiagnosticoStatus" class="pwa-diagnostico-status" role="status" aria-live="polite">Pronto para verificar a instalação do aplicativo.</pre></div>
             <p id="configStatus" class="config-status" role="status"></p>
         </div>
     </section>
@@ -120,6 +120,6 @@
 
     <div class="conquistas"><h2>🏆 Conquistas</h2><img src="media/art_1.png" alt="Arte 1" width="600"><div id="listaConquistas"></div></div>
 
-    <script src="js/core.js"></script><script src="js/systems.js"></script><script src="js/audio.js"></script><script src="js/welcome.js"></script><script src="js/main.js"></script><script src="js/tooltips.js"></script><script src="js/settings.js"></script><script src="js/settings-compat.js"></script><script src="js/audio-diagnostics.js"></script>
+    <script src="js/core.js"></script><script src="js/systems.js"></script><script src="js/audio.js"></script><script src="js/welcome.js"></script><script src="js/main.js"></script><script src="js/tooltips.js"></script><script src="js/pwa.js"></script><script src="js/settings.js"></script><script src="js/settings-compat.js"></script><script src="js/audio-diagnostics.js"></script><script src="js/pwa-diagnostics.js"></script>
 </body>
 </html>
