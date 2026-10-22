@@ -1,36 +1,63 @@
 "use strict";
 
-// Pool de áudio reutilizável para efeitos: suporta cliques rápidos sem
-// criar um número ilimitado de elementos de áudio.
+// O som de clique continua usando media/click.mp3. O pool permite que
+// vários cliques rápidos toquem sem cortar imediatamente o som anterior.
 const somClique = document.getElementById("somClique");
-const sonsClique = somClique
-    ? Array.from({ length: 8 }, () => {
-        const audio = somClique.cloneNode(true);
-        audio.preload = "auto";
-        return audio;
-    })
-    : [];
+const sonsClique = [];
 let proximoSomClique = 0;
 
+if (somClique) {
+    somClique.preload = "auto";
+    somClique.load();
+
+    const origemSomClique = somClique.currentSrc || somClique.src;
+    for (let i = 0; i < 8; i++) {
+        const audio = new Audio(origemSomClique);
+        audio.preload = "auto";
+        audio.volume = 1;
+        audio.load();
+        sonsClique.push(audio);
+    }
+}
+
 function tocarSomClique() {
-    if (!somClique || localStorage.getItem("bc_config_som") === "false" || sonsClique.length === 0) return;
+    if (!somClique || localStorage.getItem("bc_config_som") === "false") return;
 
     const salvo = localStorage.getItem("bc_config_volume_efeitos");
     const volumeSalvo = salvo === null || salvo.trim() === "" ? 1 : Number(salvo);
     const volume = Number.isFinite(volumeSalvo) ? Math.max(0, Math.min(1, volumeSalvo)) : 1;
-    if (volume === 0) return;
+    if (volume <= 0) return;
 
-    const audio = sonsClique[proximoSomClique];
-    proximoSomClique = (proximoSomClique + 1) % sonsClique.length;
+    const audio = sonsClique.length
+        ? sonsClique[proximoSomClique++ % sonsClique.length]
+        : somClique;
+
     try {
         audio.pause();
         audio.currentTime = 0;
         audio.volume = volume;
         audio.muted = false;
         const reproducao = audio.play();
-        if (reproducao?.catch) reproducao.catch(() => {});
-    } catch {
-        // Um efeito que falhe não deve interromper a jogabilidade.
+        if (reproducao && typeof reproducao.catch === "function") {
+            reproducao.catch(() => {
+                // Fallback no elemento original caso o navegador rejeite o pool.
+                if (audio === somClique) return;
+                try {
+                    somClique.pause();
+                    somClique.currentTime = 0;
+                    somClique.volume = volume;
+                    somClique.muted = false;
+                    const fallback = somClique.play();
+                    if (fallback && typeof fallback.catch === "function") {
+                        fallback.catch(erro => console.warn("Não foi possível reproduzir media/click.mp3:", erro));
+                    }
+                } catch (erro) {
+                    console.warn("Não foi possível reproduzir media/click.mp3:", erro);
+                }
+            });
+        }
+    } catch (erro) {
+        console.warn("Falha ao reproduzir o som de clique:", erro);
     }
 }
 
