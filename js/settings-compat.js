@@ -15,5 +15,5 @@
     const iniciarMusicaComGesto=event=>{const alvo=event.target instanceof Element?event.target:document.activeElement;if(alvo?.closest(".config-diagnostico-audio"))return;try{window.BurgerClickerAudio?.iniciarMusica();}catch(erro){console.warn("[Burger Clicker] Falha ao iniciar áudio após interação:",erro);}};
     window.addEventListener("pointerdown",iniciarMusicaComGesto,{passive:true});window.addEventListener("keydown",iniciarMusicaComGesto,{passive:true});
     const carregarScript=src=>{const script=document.createElement("script");script.src=src;script.defer=false;document.head.appendChild(script);};
-    carregarScript("/js/pwa.js");carregarScript("/js/reset.js");carregarScript("/js/navigation.js");carregarScript("/js/expansion-bridge.js");carregarScript("/js/expansion.js");carregarScript("/js/expansion-ui.js");carregarScript("/js/statistics.js");
+    carregarScript("/js/pwa.js");carregarScript("/js/reset.js");carregarScript("/js/navigation.js");carregarScript("/js/expansion-bridge.js");carregarScript("/js/expansion.js");carregarScript("/js/expansion-ui.js");carregarScript("/js/statistics.js");carregarScript("/js/statistics-accuracy.js");
 })();
