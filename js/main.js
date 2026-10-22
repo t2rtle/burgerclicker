@@ -1,12 +1,37 @@
 "use strict";
 
-// Som com instâncias independentes para cliques rápidos.
+// Pool de áudio reutilizável para efeitos: suporta cliques rápidos sem
+// criar um número ilimitado de elementos de áudio.
 const somClique = document.getElementById("somClique");
+const sonsClique = somClique
+    ? Array.from({ length: 8 }, () => {
+        const audio = somClique.cloneNode(true);
+        audio.preload = "auto";
+        return audio;
+    })
+    : [];
+let proximoSomClique = 0;
+
 function tocarSomClique() {
-    if (!somClique) return;
-    const audio = somClique.cloneNode(true);
-    audio.volume = somClique.volume;
-    audio.play().catch(erro => console.warn("Não foi possível reproduzir o som:", erro));
+    if (!somClique || localStorage.getItem("bc_config_som") === "false" || sonsClique.length === 0) return;
+
+    const salvo = localStorage.getItem("bc_config_volume_efeitos");
+    const volumeSalvo = salvo === null || salvo.trim() === "" ? 1 : Number(salvo);
+    const volume = Number.isFinite(volumeSalvo) ? Math.max(0, Math.min(1, volumeSalvo)) : 1;
+    if (volume === 0) return;
+
+    const audio = sonsClique[proximoSomClique];
+    proximoSomClique = (proximoSomClique + 1) % sonsClique.length;
+    try {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.volume = volume;
+        audio.muted = false;
+        const reproducao = audio.play();
+        if (reproducao?.catch) reproducao.catch(() => {});
+    } catch {
+        // Um efeito que falhe não deve interromper a jogabilidade.
+    }
 }
 
 // Vibração para dispositivos que oferecem suporte à Vibration API.
@@ -256,12 +281,36 @@ setInterval(salvarJogo, 5000);
 window.addEventListener("beforeunload", salvarJogo);
 
 const musica = document.getElementById("musicaFundo");
-if (musica) {
-    musica.volume = 0.3;
+let ouvintesDeInicioMusica = true;
+
+function iniciarMusica() {
+    if (!musica || localStorage.getItem("bc_config_musica") === "false") return;
+    const salvo = localStorage.getItem("bc_config_volume_musica");
+    const volumeSalvo = salvo === null || salvo.trim() === "" ? 0.5 : Number(salvo);
+    musica.volume = Number.isFinite(volumeSalvo) ? Math.max(0, Math.min(1, volumeSalvo)) : 0.5;
     musica.loop = true;
-    document.addEventListener("click", function iniciarMusica() {
-        if (musica.paused) musica.play().catch(erro => console.log("Não foi possível iniciar a música:", erro));
-    }, { once: true });
+    musica.muted = false;
+
+    // play() é chamado diretamente dentro do gesto do usuário, conforme as
+    // políticas de reprodução automática do navegador.
+    const tentativa = musica.play();
+    if (tentativa?.then) {
+        tentativa.then(() => {
+            if (!ouvintesDeInicioMusica) return;
+            ouvintesDeInicioMusica = false;
+            document.removeEventListener("pointerdown", iniciarMusica, true);
+            document.removeEventListener("keydown", iniciarMusica, true);
+        }).catch(() => {
+            // Mantém os ouvintes para tentar novamente no próximo gesto.
+        });
+    }
+}
+
+if (musica) {
+    musica.loop = true;
+    document.addEventListener("pointerdown", iniciarMusica, true);
+    document.addEventListener("keydown", iniciarMusica, true);
+    window.BurgerClickerAudio = { iniciarMusica };
 }
 
 if (!localStorage.getItem("requisitoRebirth")) requisitoRebirth = calcularRequisitoRebirth();
