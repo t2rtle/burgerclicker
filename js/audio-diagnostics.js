@@ -124,10 +124,9 @@
         const promessa = audio.play();
         if (promessa && typeof promessa.then === "function") {
             promessa.then(() => {
-                mostrar("O navegador ACEITOU a reprodução de " + nome + ".\nSe você não ouviu nada, informe isso junto com este resultado.\n\n" + infoAudio(audio));
+                mostrar("O navegador ACEITOU a reprodução de " + nome + ".\nO teste utiliza diretamente o arquivo presente em /media.\n\n" + infoAudio(audio));
                 if (!loop) {
                     audio.addEventListener("ended", restaurar, { once: true });
-                    // Evita manter as configurações de teste caso o arquivo não termine normalmente.
                     setTimeout(restaurar, 15000);
                 }
             }).catch(erro => {
@@ -147,8 +146,8 @@
         }
         const tocou = audio.tocarEfeito();
         mostrar(tocou
-            ? "O teste acionou o efeito de clique via Web Audio.\nEste teste não depende do arquivo click.wav, que o navegador informou não conseguir decodificar (networkState=3 / NO_SOURCE)."
-            : "FALHA: não foi possível iniciar o efeito via Web Audio. Verifique se os efeitos estão ativados, se o volume está acima de zero e se o navegador suporta Web Audio.");
+            ? "O teste acionou o arquivo /media/click.wav diretamente usando HTMLAudioElement. Não há geração de som por Web Audio API."
+            : "FALHA: não foi possível iniciar /media/click.wav. Verifique se os efeitos estão ativados, se o volume está acima de zero e se o arquivo está acessível.");
     });
     btnMusica.addEventListener("click", () => testar("musicaFundo", "música de fundo", true));
     mostrar("Pronto para diagnosticar. Toque primeiro em “Verificar arquivos” e depois teste cada áudio.");
