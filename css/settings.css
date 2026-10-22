@@ -54,19 +54,22 @@
 }
 
 .config-caixa {
-    width: min(760px, 100%);
+    width: min(620px, calc(100vw - 32px));
     min-width: 0;
     max-width: 100%;
     max-height: calc(100vh - 32px);
-    max-height: calc(100dvh - 32px);
+    max-height: min(82dvh, 760px);
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     padding: clamp(16px, 4vw, 34px);
-    background: rgba(255, 248, 233, 0.98);
+    background: rgba(255, 248, 233, 0.94);
     color: #432b20;
-    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    border-radius: 22px;
+    backdrop-filter: blur(18px) saturate(1.15);
+    -webkit-backdrop-filter: blur(18px) saturate(1.15);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
     text-align: left;
     overflow-wrap: anywhere;
@@ -280,15 +283,14 @@ html.sem-animacoes *::after {
     }
 
     .config-modal {
-        place-items: start center;
+        place-items: center;
         padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right))
                  max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
     }
 
     .config-caixa {
-        width: 100%;
-        max-height: calc(100vh - 16px);
-        max-height: calc(100dvh - 16px);
+        width: calc(100vw - 24px);
+        max-height: 82dvh;
         padding: 14px;
         border-radius: 18px;
     }
