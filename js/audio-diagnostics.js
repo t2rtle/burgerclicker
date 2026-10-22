@@ -139,7 +139,17 @@
         }
     }
 
-    btnEfeito.addEventListener("click", () => testar("somClique", "efeito de clique", false));
+    btnEfeito.addEventListener("click", () => {
+        const audio = window.BurgerClickerAudio;
+        if (!audio || typeof audio.tocarEfeito !== "function") {
+            mostrar("FALHA: sistema de áudio centralizado não está disponível.");
+            return;
+        }
+        const tocou = audio.tocarEfeito();
+        mostrar(tocou
+            ? "O teste acionou o efeito de clique via Web Audio.\nEste teste não depende do arquivo click.wav, que o navegador informou não conseguir decodificar (networkState=3 / NO_SOURCE)."
+            : "FALHA: não foi possível iniciar o efeito via Web Audio. Verifique se os efeitos estão ativados, se o volume está acima de zero e se o navegador suporta Web Audio.");
+    });
     btnMusica.addEventListener("click", () => testar("musicaFundo", "música de fundo", true));
     mostrar("Pronto para diagnosticar. Toque primeiro em “Verificar arquivos” e depois teste cada áudio.");
 })();
