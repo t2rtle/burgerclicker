@@ -1,8 +1,8 @@
 "use strict";
 
 /* Burger Clicker - sistema de áudio centralizado.
- * Efeito de clique: Web Audio API, sem depender de um arquivo externo.
- * Música: media/music.mp3 em loop.
+ * Efeito de clique original: media/click.wav (sem sintetizador).
+ * Música original: media/music.mp3 em loop.
  *
  * Os caminhos começam com / porque o Burger Clicker é publicado na raiz
  * de t2rtle.github.io. Assim evitamos que o navegador monte uma URL errada
@@ -16,9 +16,14 @@
         volumeMusica: "bc_config_volume_musica"
     };
 
+    // Reproduz o arquivo de áudio original diretamente, sem gerar tons via Web Audio.
+    // O arquivo click.wav contém dados RIFF/WAVE e deve ser servido como WAV.
+    const CLICK_SRC = "/media/click.wav";
     const MUSIC_SRC = "/media/music.mp3";
+    const CLICK_POOL_SIZE = 8;
 
-    let audioContext = null;
+    let clickPool = [];
+    let clickIndex = 0;
     let musica = null;
     let inicializado = false;
     let houveInteracao = false;
@@ -38,19 +43,6 @@
             return Number.isFinite(valor) ? Math.max(0, Math.min(1, valor)) : padrao;
         } catch (_) {
             return padrao;
-        }
-    }
-
-    function obterAudioContext() {
-        if (audioContext) return audioContext;
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContextClass) return null;
-        try {
-            audioContext = new AudioContextClass();
-            return audioContext;
-        } catch (erro) {
-            console.warn("[Burger Clicker Audio] Web Audio indisponível:", erro);
-            return null;
         }
     }
 
@@ -94,38 +86,33 @@
             musica = criarAudio(MUSIC_SRC, true);
         }
 
+        for (let i = 0; i < CLICK_POOL_SIZE; i++) {
+            const audio = criarAudio(CLICK_SRC);
+            if (audio) clickPool.push(audio);
+        }
     }
 
     function tocarEfeito() {
+        inicializar();
         if (!lerBooleano(CONFIG.som, true)) return false;
+
         const volume = lerVolume(CONFIG.volumeSom, 1);
-        if (volume <= 0) return false;
+        if (volume <= 0 || !clickPool.length) return false;
 
-        // O arquivo atual responde HTTP 200, mas o navegador reporta
-        // networkState=3 (NO_SOURCE). Gere um efeito curto com Web Audio.
-        const contexto = obterAudioContext();
-        if (!contexto) return false;
-
+        const audio = clickPool[clickIndex++ % clickPool.length];
         try {
-            if (contexto.state === "suspended") {
-                contexto.resume().catch(erro => console.warn("[Burger Clicker Audio] Não foi possível ativar Web Audio:", erro));
+            audio.volume = volume;
+            audio.muted = false;
+            audio.currentTime = 0;
+            const promessa = audio.play();
+            if (promessa && typeof promessa.catch === "function") {
+                promessa.catch(erro => {
+                    console.warn("[Burger Clicker Audio] Falha no efeito de clique:", erro);
+                });
             }
-            const agora = contexto.currentTime;
-            const oscilador = contexto.createOscillator();
-            const ganho = contexto.createGain();
-            oscilador.type = "triangle";
-            oscilador.frequency.setValueAtTime(950, agora);
-            oscilador.frequency.exponentialRampToValueAtTime(360, agora + 0.065);
-            ganho.gain.setValueAtTime(0.0001, agora);
-            ganho.gain.exponentialRampToValueAtTime(Math.max(0.0002, 0.18 * volume), agora + 0.006);
-            ganho.gain.exponentialRampToValueAtTime(0.0001, agora + 0.085);
-            oscilador.connect(ganho);
-            ganho.connect(contexto.destination);
-            oscilador.start(agora);
-            oscilador.stop(agora + 0.09);
             return true;
         } catch (erro) {
-            console.warn("[Burger Clicker Audio] Falha no efeito de clique sintetizado:", erro);
+            console.warn("[Burger Clicker Audio] Falha no efeito de clique:", erro);
             return false;
         }
     }
@@ -166,6 +153,11 @@
         const volumeSom = lerVolume(CONFIG.volumeSom, 1);
         const volumeMusica = lerVolume(CONFIG.volumeMusica, 0.5);
 
+        clickPool.forEach(audio => {
+            audio.muted = !somAtivo;
+            audio.volume = volumeSom;
+        });
+
         if (musica) {
             musica.muted = !musicaAtiva;
             musica.volume = volumeMusica;
@@ -183,7 +175,8 @@
         }
     }
 
-    // Captura o gesto antes dos handlers do jogo e inicia o efeito sintetizado.
+    // Captura o gesto antes dos handlers antigos de main.js. Em botões,
+    // impedimos o código antigo de tentar tocar o arquivo click.mp3 inválido.
     window.addEventListener("pointerdown", event => {
         if (event.button !== 0) return;
         const alvo = event.target instanceof Element ? event.target : null;
