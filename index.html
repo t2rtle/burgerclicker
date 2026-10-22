@@ -70,6 +70,7 @@
                 <div class="config-opcao"><label for="configVibracao">📳 Vibração</label><input id="configVibracao" type="checkbox" checked></div>
                 <div class="config-volume"><label for="configVolumeMusica">🎵 Volume da música <span id="configVolumeMusicaValor">50%</span></label><input id="configVolumeMusica" type="range" min="0" max="100" step="1" value="50"></div>
                 <div class="config-volume"><label for="configVolumeEfeitos">🔊 Volume dos efeitos <span id="configVolumeEfeitosValor">100%</span></label><input id="configVolumeEfeitos" type="range" min="0" max="100" step="1" value="100"></div>
+                <div class="config-diagnostico-audio"><h4>🧪 Diagnóstico de áudio</h4><p>Use estes testes para identificar se o navegador encontra os arquivos e consegue reproduzi-los.</p><div class="config-acoes"><button id="audioDiagnosticoArquivos" type="button">🔎 Verificar arquivos</button><button id="audioDiagnosticoEfeito" type="button">🔊 Testar efeito</button><button id="audioDiagnosticoMusica" type="button">🎵 Testar música</button></div><pre id="audioDiagnosticoStatus" role="status" aria-live="polite">Pronto para diagnosticar.</pre></div>
             </div>
             <div class="config-grupo">
                 <h3>💾 Backup</h3>
@@ -118,6 +119,6 @@
 
     <div class="conquistas"><h2>🏆 Conquistas</h2><img src="media/art_1.png" alt="Arte 1" width="600"><div id="listaConquistas"></div></div>
 
-    <script src="js/core.js"></script><script src="js/systems.js"></script><script src="js/audio.js"></script><script src="js/welcome.js"></script><script src="js/main.js"></script><script src="js/tooltips.js"></script><script src="js/settings.js"></script><script src="js/settings-compat.js"></script>
+    <script src="js/core.js"></script><script src="js/systems.js"></script><script src="js/audio.js"></script><script src="js/welcome.js"></script><script src="js/main.js"></script><script src="js/tooltips.js"></script><script src="js/settings.js"></script><script src="js/settings-compat.js"></script><script src="js/audio-diagnostics.js"></script>
 </body>
 </html>
