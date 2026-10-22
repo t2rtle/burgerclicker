@@ -6,6 +6,7 @@
     const output = $("pwaDiagnosticoStatus");
     const runButton = $("pwaDiagnosticoExecutar");
     const openButton = $("pwaAbrirAppBtn");
+    const copyButton = $("pwaDiagnosticoCopiar");
     const statusInstall = $("configInstalacaoStatus");
     if (!output || !runButton) return;
 
@@ -154,6 +155,14 @@
     }
 
     runButton.addEventListener("click", diagnose);
+    copyButton?.addEventListener("click", async () => {
+        try {
+            await navigator.clipboard.writeText(output.textContent || "Execute o diagnóstico PWA primeiro.");
+            if (statusInstall) statusInstall.textContent = "Relatório do diagnóstico copiado. Cole-o na conversa para análise.";
+        } catch (error) {
+            if (statusInstall) statusInstall.textContent = "Não foi possível copiar automaticamente. Selecione o relatório e copie manualmente.";
+        }
+    });
 
     if (openButton) {
         openButton.addEventListener("click", () => {
