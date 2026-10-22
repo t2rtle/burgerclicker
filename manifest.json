@@ -1,11 +1,11 @@
 {
   "id": "/",
   "name": "Burger Clicker",
-  "short_name": "Burger",
+  "short_name": "Burger Clicker",
   "description": "🍔 Burger Clicker: jogo idle de hambúrgueres com pets, melhorias, rebirths e progressão.",
   "lang": "pt-BR",
   "dir": "ltr",
-  "start_url": "/?source=pwa",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui", "browser"],
