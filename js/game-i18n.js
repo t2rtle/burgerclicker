@@ -96,6 +96,7 @@
     'Safari no Mac: procure “Adicionar ao Dock” no menu Arquivo, caso sua versão do macOS ofereça esse recurso.':'Safari on Mac: look for “Add to Dock” in the File menu if your macOS version supports it.',
     '⏳ Abrindo instalação…':'⏳ Opening installer…','[Burger Clicker] Backup antes do reset indisponível; o reset continuará:':'[Burger Clicker] Pre-reset backup unavailable; reset will continue:',
 
+    'Dobra o poder do clique.':'Doubles click power.','Multiplica o poder do clique por 5.':'Multiplies click power by 5.','Dobra a produção dos funcionários.':'Doubles employee production.','Dobra a produção das chapas.':'Doubles griddle production.','Multiplica a produção global por 1,5.':'Multiplies global production by 1.5.','conquista':'achievement','Conquista':'Achievement','unicórnio':'unicorn','[Burger Clicker] Também falhou a recuperação do armazenamento:':'[Burger Clicker] Storage recovery also failed:','[Burger Clicker] Backup automático indisponível:':'[Burger Clicker] Automatic backup unavailable:','⭐ Rebirth:':'⭐ Rebirth:',
     'Arte 1':'Artwork 1','Arte 2':'Artwork 2','Sobre o jogo':'About the game','Política de Privacidade':'Privacy Policy','Última atualização: outubro de 2026 · Burger Clicker v1.0':'Last updated: October 2026 · Burger Clicker v1.0'
   };
   const ptPT = {
