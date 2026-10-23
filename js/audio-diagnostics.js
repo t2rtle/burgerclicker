@@ -157,17 +157,32 @@
         musicaEmTeste = false;
     }
 
-    btnEfeito.addEventListener("click", event => {
+    btnEfeito.addEventListener("click", async event => {
         event.stopPropagation();
         const sistema = window.BurgerClickerAudio;
         if (!sistema || typeof sistema.tocarEfeito !== "function") {
             mostrar("FALHA: sistema de áudio centralizado não está disponível.");
             return;
         }
-        const audio = sistema.tocarEfeito({ forcar: true });
-        mostrar(audio
-            ? "Teste solicitado: /media/click.mp3 foi enviado ao HTMLAudioElement.\n\n" + infoSistema()
-            : "FALHA ao iniciar /media/click.mp3. Verifique o arquivo, volume e console do navegador.");
+
+        btnEfeito.disabled = true;
+        mostrar("Tentando carregar e reproduzir /media/click.mp3; aguardando a confirmação real do navegador…");
+        try {
+            const resultado = await sistema.tocarEfeito({ forcar: true });
+            mostrar(
+                (resultado?.ok
+                    ? "SUCESSO: o navegador iniciou a reprodução de /media/click.mp3.\n"
+                    : "FALHA REAL: o navegador não conseguiu iniciar /media/click.mp3.\n") +
+                JSON.stringify(resultado, null, 2) +
+                "\n\nESTADO DO PLAYER\n" + infoAudio(document.getElementById("somClique")) +
+                "\n\nSISTEMA CENTRALIZADO\n" + infoSistema()
+            );
+        } catch (erro) {
+            mostrar("EXCEÇÃO durante o teste de /media/click.mp3: " +
+                (erro?.stack || erro?.message || String(erro)));
+        } finally {
+            btnEfeito.disabled = false;
+        }
     });
 
     btnMusica.addEventListener("click", event => {
