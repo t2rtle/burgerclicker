@@ -1,6 +1,6 @@
 /* Burger Clicker PWA Service Worker */
 const CACHE_PREFIX = "burger-clicker-";
-const CACHE_NAME = "burger-clicker-v37";
+const CACHE_NAME = "burger-clicker-v38";
 const APP_SHELL = [
     "/", "/index.html", "/manifest.json", "/style.css",
     "/css/pets.css", "/css/tooltips.css", "/css/settings.css", "/css/navigation.css", "/css/welcome.css", "/css/glass-ui.css",
@@ -66,9 +66,6 @@ self.addEventListener("fetch", event => {
         return;
     }
 
-    // JavaScript e CSS são atualizados pela rede primeiro. O cache continua
-    // sendo usado como fallback offline, evitando que uma versão antiga do
-    // áudio/interface fique presa até o usuário fazer Ctrl+F5.
     const caminho = url.pathname.toLowerCase();
     const codigo = caminho.endsWith(".js") || caminho.endsWith(".css");
     if (codigo) {
