@@ -194,6 +194,16 @@
         return Object.freeze({ click, music, estado: obterEstado() });
     }
 
+    // Efeito de clique global: cobre botões estáticos e criados dinamicamente,
+    // incluindo o hambúrguer principal, loja, upgrades, pets e menus.
+    // O botão de teste de efeitos já toca o áudio por conta própria.
+    document.addEventListener("click", event => {
+        if (!(event.target instanceof Element)) return;
+        const button = event.target.closest("button");
+        if (!button || button.disabled || button.id === "audioDiagnosticoEfeito") return;
+        tocarEfeito();
+    });
+
     window.BurgerClickerAudio = Object.freeze({
         inicializar,
         tocarEfeito,
