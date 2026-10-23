@@ -47,8 +47,27 @@
     async function verificarArquivo(url) {
         try {
             const resposta = await fetch(url, { method: "HEAD", cache: "no-store" });
+            const tipo = resposta.headers.get("content-type") || "não informado";
+            let assinatura = "";
+            // O efeito é pequeno; conferir os primeiros bytes ajuda a detectar HTML
+            // de erro servido com extensão .mp3, causa comum de MEDIA_ERR_SRC_NOT_SUPPORTED.
+            if (url.endsWith("/click.mp3") && resposta.ok) {
+                const amostra = await fetch(url, { headers: { Range: "bytes=0-63" }, cache: "no-store" });
+                if (amostra.ok || amostra.status === 206) {
+                    const bytes = new Uint8Array(await amostra.arrayBuffer()).slice(0, 64);
+                    const id3 = bytes.length >= 3 && bytes[0] === 0x49 && bytes[1] === 0x44 && bytes[2] === 0x33;
+                    let frame = false;
+                    for (let i = 0; i + 1 < bytes.length; i++) {
+                        if (bytes[i] === 0xff && (bytes[i + 1] & 0xe0) === 0xe0) { frame = true; break; }
+                    }
+                    assinatura = " | assinatura MP3=" + (id3 || frame ? "detectada" : "NÃO detectada");
+                    if (!id3 && !frame) assinatura += " (pode ser HTML/arquivo inválido)";
+                } else {
+                    assinatura = " | não foi possível ler amostra (HTTP " + amostra.status + ")";
+                }
+            }
             return url + " → HTTP " + resposta.status +
-                (resposta.headers.get("content-type") ? " | tipo: " + resposta.headers.get("content-type") : "") +
+                " | tipo: " + tipo + assinatura +
                 (resposta.ok ? "" : " | resposta não OK");
         } catch (erro) {
             return url + " → FALHA de rede: " + (erro?.message || String(erro));
