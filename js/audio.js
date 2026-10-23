@@ -3,21 +3,9 @@
 /*
  * Burger Clicker — sistema de áudio avançado.
  *
- * IMPORTANTE: este sistema usa EXCLUSIVAMENTE arquivos reais da pasta /media
- * através de HTMLAudioElement. Não cria sons, tons, osciladores ou AudioContext.
- *
- * Arquivos oficiais:
- *   /media/click.wav  -> efeitos de interação
- *   /media/music.mp3  -> música de fundo
- *
- * Objetivos:
- * - funcionar em desktop, Android/iOS e PWA instalado;
- * - respeitar as políticas de autoplay dos navegadores;
- * - evitar sons duplicados quando vários handlers do jogo existem;
- * - permitir vários cliques rápidos sem cortar o som anterior;
- * - manter volumes/configurações persistentes;
- * - recuperar a música quando o app volta ao primeiro plano;
- * - não depender de Web Audio API.
+ * Usa somente os arquivos reais de /media através de HTMLAudioElement.
+ * As configurações de áudio são normalizadas no carregamento para impedir
+ * valores antigos/inválidos do localStorage de deixarem o áudio mudo.
  */
 (() => {
     const CONFIG = Object.freeze({
@@ -45,10 +33,22 @@
     let ultimoCliqueEm = 0;
     let listenersInstalados = false;
 
+    function salvarSeguro(chave, valor) {
+        try { localStorage.setItem(chave, String(valor)); } catch (_) {}
+    }
+
     function lerBooleano(chave, padrao) {
         try {
             const valor = localStorage.getItem(chave);
-            return valor === null ? padrao : valor === "true";
+            if (valor === null) {
+                salvarSeguro(chave, padrao);
+                return padrao;
+            }
+            if (valor === "true") return true;
+            if (valor === "false") return false;
+            // Corrige estados antigos como "1", "0", "on", "off", vazio etc.
+            salvarSeguro(chave, padrao);
+            return padrao;
         } catch (_) {
             return padrao;
         }
@@ -57,14 +57,30 @@
     function lerVolume(chave, padrao) {
         try {
             const salvo = localStorage.getItem(chave);
-            // Number(null) é 0: sem esta verificação, a configuração ausente
-            // era interpretada como volume mudo em vez de usar o padrão.
-            if (salvo === null || salvo.trim() === "") return padrao;
+            if (salvo === null || salvo.trim() === "") {
+                salvarSeguro(chave, padrao);
+                return padrao;
+            }
             const valor = Number(salvo);
-            return Number.isFinite(valor) ? Math.max(0, Math.min(1, valor)) : padrao;
+            if (!Number.isFinite(valor)) {
+                salvarSeguro(chave, padrao);
+                return padrao;
+            }
+            const normalizado = Math.max(0, Math.min(1, valor));
+            if (String(valor) !== String(normalizado)) salvarSeguro(chave, normalizado);
+            return normalizado;
         } catch (_) {
             return padrao;
         }
+    }
+
+    function normalizarConfiguracoes() {
+        // Faz esta limpeza uma vez por carregamento. Não apaga preferências
+        // válidas do jogador; somente repara chaves ausentes ou corrompidas.
+        lerBooleano(CONFIG.som, true);
+        lerBooleano(CONFIG.musica, true);
+        lerVolume(CONFIG.volumeSom, 1);
+        lerVolume(CONFIG.volumeMusica, 0.5);
     }
 
     function criarAudio(src, { loop = false, preload = "auto" } = {}) {
@@ -77,9 +93,7 @@
             audio.controls = false;
             audio.setAttribute("playsinline", "true");
             audio.src = src;
-            audio.addEventListener("error", () => {
-                console.warn("[Burger Clicker Audio] Falha no arquivo:", src, audio.error);
-            });
+            audio.addEventListener("error", () => console.warn("[Burger Clicker Audio] Falha no arquivo:", src, audio.error));
             audio.load();
             return audio;
         } catch (erro) {
@@ -101,9 +115,6 @@
     function obterMusicaDoHTML() {
         const elemento = document.getElementById("musicaFundo");
         if (!(elemento instanceof HTMLAudioElement)) return null;
-
-        // O HTML já contém o arquivo oficial. Não substituímos por nenhum
-        // sintetizador ou fonte gerada.
         elemento.preload = "auto";
         elemento.autoplay = false;
         elemento.loop = true;
@@ -115,16 +126,12 @@
     function inicializar() {
         if (inicializado) return;
         inicializado = true;
+        normalizarConfiguracoes();
 
         musica = obterMusicaDoHTML() || criarAudio(ASSETS.music, { loop: true });
-
         if (musica) {
-            musica.addEventListener("error", () => {
-                console.warn("[Burger Clicker Audio] Erro na música:", musica.error);
-            });
+            musica.addEventListener("error", () => console.warn("[Burger Clicker Audio] Erro na música:", musica.error));
             musica.addEventListener("ended", () => {
-                // loop=true normalmente cuida disso. Este fallback protege
-                // navegadores que interrompem o loop por alguma razão.
                 if (lerBooleano(CONFIG.musica, true) && usuarioInteragiu) {
                     musica.currentTime = 0;
                     iniciarMusica();
@@ -141,7 +148,6 @@
                 clickPool.push(audio);
             }
         }
-
         instalarListenersDeInteracao();
     }
 
@@ -149,19 +155,14 @@
         if (listenersInstalados) return;
         listenersInstalados = true;
 
-        // pointerdown funciona tanto com mouse quanto com toque e ocorre
-        // dentro do gesto do usuário, que é a situação mais confiável para
-        // liberar reprodução de mídia.
         document.addEventListener("pointerdown", event => {
             if (event.button !== 0) return;
             const alvo = event.target instanceof Element ? event.target : null;
             if (!alvo) return;
-
             usuarioInteragiu = true;
             const botao = alvo.closest("button");
             if (!botao || botao.disabled) return;
             if (alvo.closest(".config-diagnostico-audio")) return;
-
             aplicarConfiguracoes();
             iniciarMusica();
             tocarEfeito();
@@ -172,7 +173,6 @@
             const alvo = document.activeElement instanceof Element ? document.activeElement : null;
             const botao = alvo?.closest("button");
             if (!botao || botao.disabled) return;
-
             usuarioInteragiu = true;
             if (alvo.closest(".config-diagnostico-audio")) return;
             aplicarConfiguracoes();
@@ -186,7 +186,6 @@
                 iniciarMusica();
             }
         });
-
         window.addEventListener("pageshow", () => {
             if (usuarioInteragiu) iniciarMusica();
         });
@@ -194,7 +193,6 @@
 
     function aplicarConfiguracoes() {
         inicializar();
-
         const somAtivo = lerBooleano(CONFIG.som, true);
         const musicaAtiva = lerBooleano(CONFIG.musica, true);
         const volumeSom = lerVolume(CONFIG.volumeSom, 1);
@@ -204,7 +202,6 @@
             audio.muted = !somAtivo;
             audio.volume = volumeSom;
         }
-
         if (musica) {
             musica.muted = !musicaAtiva;
             musica.volume = volumeMusica;
@@ -215,10 +212,8 @@
 
     function tocarEfeito(opcoes = {}) {
         inicializar();
-
         const forcar = opcoes && opcoes.forcar === true;
         if (!forcar && !lerBooleano(CONFIG.som, true)) return false;
-
         const volume = lerVolume(CONFIG.volumeSom, 1);
         if (volume <= 0 || clickPool.length === 0) return false;
 
@@ -226,8 +221,6 @@
         if (!forcar && agora - ultimoCliqueEm < CLICK_COOLDOWN_MS) return false;
         ultimoCliqueEm = agora;
 
-        // Escolhe o próximo canal disponível. Assim, cliques rápidos não
-        // interrompem o áudio anterior nem criam dezenas de elementos.
         let audio = null;
         for (let tentativa = 0; tentativa < clickPool.length; tentativa++) {
             const candidato = clickPool[(clickIndex + tentativa) % clickPool.length];
@@ -237,21 +230,14 @@
                 break;
             }
         }
-
-        if (!audio) {
-            audio = clickPool[clickIndex++ % clickPool.length];
-        }
+        if (!audio) audio = clickPool[clickIndex++ % clickPool.length];
 
         try {
             audio.volume = volume;
             audio.muted = false;
             audio.currentTime = 0;
             const promessa = audio.play();
-            if (promessa && typeof promessa.catch === "function") {
-                promessa.catch(erro => {
-                    console.warn("[Burger Clicker Audio] Efeito bloqueado/interrompido:", erro);
-                });
-            }
+            promessa?.catch?.(erro => console.warn("[Burger Clicker Audio] Efeito bloqueado/interrompido:", erro));
             return true;
         } catch (erro) {
             console.warn("[Burger Clicker Audio] Falha no efeito:", erro);
@@ -262,20 +248,13 @@
     async function iniciarMusica() {
         inicializar();
         if (!musica || !lerBooleano(CONFIG.musica, true)) return false;
-
         const volume = lerVolume(CONFIG.volumeMusica, 0.5);
-        if (volume <= 0) {
-            musica.pause();
-            return false;
-        }
-
+        if (volume <= 0) { musica.pause(); return false; }
         musica.loop = true;
         musica.volume = volume;
         musica.muted = false;
-
         if (!musica.paused && !musica.ended) return true;
         if (musicaIniciando) return musicaIniciando;
-
         musicaIniciando = (async () => {
             try {
                 const promessa = musica.play();
@@ -283,33 +262,20 @@
                 usuarioInteragiu = true;
                 return true;
             } catch (erro) {
-                // NotAllowedError é esperado quando o navegador ainda não
-                // recebeu um gesto válido. Não criamos nenhum som alternativo.
                 console.warn("[Burger Clicker Audio] Música aguardando interação do usuário:", erro);
                 return false;
-            } finally {
-                musicaIniciando = null;
-            }
+            } finally { musicaIniciando = null; }
         })();
-
         return musicaIniciando;
     }
 
-    function pararMusica() {
-        inicializar();
-        if (!musica) return;
-        try {
-            musica.pause();
-        } catch (_) {}
-    }
+    function pararMusica() { inicializar(); try { musica?.pause(); } catch (_) {} }
 
     function obterEstado() {
         inicializar();
         return Object.freeze({
-            engine: "HTMLAudioElement",
-            webAudio: false,
-            clickSource: ASSETS.click,
-            musicSource: ASSETS.music,
+            engine: "HTMLAudioElement", webAudio: false,
+            clickSource: ASSETS.click, musicSource: ASSETS.music,
             clickPool: clickPool.length,
             musicReadyState: musica?.readyState ?? 0,
             musicNetworkState: musica?.networkState ?? 0,
@@ -321,11 +287,7 @@
     function testarArquivo(url, timeout = AUDIO_READY_TIMEOUT_MS) {
         return new Promise(resolve => {
             const audio = criarAudio(url, { preload: "metadata" });
-            if (!audio) {
-                resolve({ ok: false, url, motivo: "Não foi possível criar HTMLAudioElement." });
-                return;
-            }
-
+            if (!audio) { resolve({ ok: false, url, motivo: "Não foi possível criar HTMLAudioElement." }); return; }
             let finalizado = false;
             const terminar = resultado => {
                 if (finalizado) return;
@@ -339,7 +301,6 @@
             const sucesso = () => terminar({ ok: true, url, readyState: audio.readyState, duration: audio.duration });
             const falha = () => terminar({ ok: false, url, motivo: audio.error ? audio.error.message || ("code=" + audio.error.code) : "erro de mídia" });
             const timer = setTimeout(() => terminar({ ok: false, url, motivo: "tempo limite de carregamento" }), timeout);
-
             audio.addEventListener("canplay", sucesso, { once: true });
             audio.addEventListener("loadedmetadata", sucesso, { once: true });
             audio.addEventListener("error", falha, { once: true });
@@ -348,22 +309,13 @@
     }
 
     async function diagnosticarArquivos() {
-        const [click, music] = await Promise.all([
-            testarArquivo(ASSETS.click),
-            testarArquivo(ASSETS.music)
-        ]);
+        const [click, music] = await Promise.all([testarArquivo(ASSETS.click), testarArquivo(ASSETS.music)]);
         return Object.freeze({ click, music, estado: obterEstado() });
     }
 
     window.BurgerClickerAudio = Object.freeze({
-        inicializar,
-        tocarEfeito,
-        iniciarMusica,
-        pararMusica,
-        aplicarConfiguracoes,
-        obterEstado,
-        diagnosticarArquivos,
-        assets: ASSETS
+        inicializar, tocarEfeito, iniciarMusica, pararMusica,
+        aplicarConfiguracoes, obterEstado, diagnosticarArquivos, assets: ASSETS
     });
 
     inicializar();
