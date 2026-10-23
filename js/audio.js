@@ -1,30 +1,23 @@
 "use strict";
 
 /*
- * Burger Clicker — áudio simples e direto.
- *
- * Os dois arquivos são recursos locais do próprio site:
- *   /media/music.mp3
- *   /media/click.mp3
- *
- * A música e o efeito usam HTMLAudioElement diretamente, exatamente como
- * os <audio> existentes no index.html. Não há Web Audio API, pools,
- * cooldowns ou lógica de cache para decidir como reproduzir o som.
+ * Burger Clicker — áudio híbrido:
+ * - Efeito de clique sintetizado por Web Audio API (não depende de click.mp3).
+ * - Música de fundo continua usando /media/music.mp3 via HTMLAudioElement.
+ * O arquivo /media/click.mp3 é mantido no repositório como backup histórico.
  */
 (() => {
-    const CLICK_URL = "/media/click.mp3";
+    const CLICK_BACKUP_URL = "/media/click.mp3";
     const MUSIC_URL = "/media/music.mp3";
 
-    let clickAudio = null;
+    let audioContext = null;
     let musicAudio = null;
     let initialized = false;
     let userInteracted = false;
 
     function getConfigBool(id, fallback = true) {
         const input = document.getElementById(id);
-        if (input instanceof HTMLInputElement && input.type === "checkbox") {
-            return input.checked;
-        }
+        if (input instanceof HTMLInputElement && input.type === "checkbox") return input.checked;
         return fallback;
     }
 
@@ -37,18 +30,13 @@
         return fallback;
     }
 
-    function getClickAudio() {
-        if (!(clickAudio instanceof HTMLAudioElement)) {
-            const existing = document.getElementById("somClique");
-            clickAudio = existing instanceof HTMLAudioElement ? existing : new Audio(CLICK_URL);
-            clickAudio.preload = "auto";
-            const target = new URL(CLICK_URL, document.baseURI).href;
-            if (clickAudio.src !== target) {
-                clickAudio.src = CLICK_URL;
-                clickAudio.load();
-            }
+    function getAudioContext() {
+        if (!audioContext) {
+            const Context = window.AudioContext || window.webkitAudioContext;
+            if (!Context) throw new Error("Este navegador não oferece suporte à Web Audio API.");
+            audioContext = new Context();
         }
-        return clickAudio;
+        return audioContext;
     }
 
     function getMusicAudio() {
@@ -69,88 +57,84 @@
     function inicializar() {
         if (initialized) return;
         initialized = true;
-        getClickAudio();
         getMusicAudio();
         aplicarConfiguracoes();
     }
 
     function aplicarConfiguracoes() {
-        const click = getClickAudio();
         const music = getMusicAudio();
-
-        const somAtivo = getConfigBool("configSom", true);
         const musicaAtiva = getConfigBool("configMusica", true);
-        const volumeSom = getConfigVolume("configVolumeEfeitos", 1);
         const volumeMusica = getConfigVolume("configVolumeMusica", 0.5);
-
-        click.muted = !somAtivo;
-        click.volume = volumeSom;
         music.muted = !musicaAtiva;
         music.volume = volumeMusica;
         music.loop = true;
-
-        if (!musicaAtiva || volumeMusica <= 0) {
-            music.pause();
-        }
+        if (!musicaAtiva || volumeMusica <= 0) music.pause();
     }
 
     async function tocarEfeito(opcoes = {}) {
         inicializar();
-        const click = getClickAudio();
         const forcar = opcoes && opcoes.forcar === true;
-
         if (!forcar && !getConfigBool("configSom", true)) {
             return { ok: false, motivo: "Os efeitos sonoros estão desativados nas configurações." };
         }
 
         try {
-            // Atualiza o volume, mas nunca declara sucesso antes de play() resolver.
-            click.muted = false;
-            click.volume = forcar
-                ? Math.max(0.01, getConfigVolume("configVolumeEfeitos", 1))
-                : getConfigVolume("configVolumeEfeitos", 1);
+            const ctx = getAudioContext();
+            if (ctx.state === "suspended") await ctx.resume();
 
-            // Aguarda metadados antes de tentar reposicionar um arquivo que ainda carrega.
-            if (click.readyState === HTMLMediaElement.HAVE_NOTHING) {
-                await new Promise((resolve, reject) => {
-                    const timer = setTimeout(() => finish(new Error("Tempo limite ao carregar click.mp3.")), 8000);
-                    const cleanup = () => {
-                        clearTimeout(timer);
-                        click.removeEventListener("canplay", ready);
-                        click.removeEventListener("error", failed);
-                    };
-                    const finish = error => {
-                        cleanup();
-                        if (error) reject(error);
-                        else resolve();
-                    };
-                    const ready = () => finish();
-                    const failed = () => finish(new Error(
-                        click.error ? "Falha de mídia (código " + click.error.code + ")." : "Não foi possível carregar click.mp3."
-                    ));
-                    click.addEventListener("canplay", ready, { once: true });
-                    click.addEventListener("error", failed, { once: true });
-                    click.load();
-                });
-            }
+            const volumeConfigurado = getConfigVolume("configVolumeEfeitos", 1);
+            const volume = forcar ? Math.max(0.01, volumeConfigurado) : volumeConfigurado;
+            if (volume <= 0 && !forcar) return { ok: true, engine: "Web Audio API", synthesized: true, silent: true };
 
-            // currentTime pode falhar em alguns estados do carregamento; a reprodução
-            // deve continuar sendo tentada e qualquer falha deve chegar ao diagnóstico.
-            try { click.currentTime = 0; } catch (seekError) {
-                console.warn("[Burger Clicker] Não foi possível reposicionar click.mp3; tentando reproduzir do estado atual:", seekError);
+            const now = ctx.currentTime;
+            const master = ctx.createGain();
+            master.gain.setValueAtTime(Math.max(0.0001, volume * 0.24), now);
+            master.gain.exponentialRampToValueAtTime(0.0001, now + 0.075);
+            master.connect(ctx.destination);
+
+            // Estalo curto com varredura descendente, sintetizado sem arquivo externo.
+            const oscillator = ctx.createOscillator();
+            const toneGain = ctx.createGain();
+            oscillator.type = "triangle";
+            oscillator.frequency.setValueAtTime(1250, now);
+            oscillator.frequency.exponentialRampToValueAtTime(430, now + 0.045);
+            toneGain.gain.setValueAtTime(0.9, now);
+            toneGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
+            oscillator.connect(toneGain);
+            toneGain.connect(master);
+            oscillator.start(now);
+            oscillator.stop(now + 0.06);
+
+            // Pequeno transiente de ruído para dar definição ao clique.
+            const bufferSize = Math.max(1, Math.floor(ctx.sampleRate * 0.012));
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
             }
-            await click.play();
-            return { ok: true, source: click.currentSrc || CLICK_URL, readyState: click.readyState };
+            const noise = ctx.createBufferSource();
+            const noiseGain = ctx.createGain();
+            noise.buffer = buffer;
+            noiseGain.gain.setValueAtTime(0.22, now);
+            noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.012);
+            noise.connect(noiseGain);
+            noiseGain.connect(master);
+            noise.start(now);
+            noise.stop(now + 0.013);
+
+            const dispose = () => {
+                try { master.disconnect(); } catch (_) {}
+            };
+            oscillator.addEventListener("ended", dispose, { once: true });
+            return { ok: true, engine: "Web Audio API", synthesized: true, contextState: ctx.state };
         } catch (error) {
-            console.error("[Burger Clicker] Falha real ao reproduzir click.mp3:", error);
+            console.error("[Burger Clicker] Falha ao sintetizar o som de clique:", error);
             return {
                 ok: false,
-                source: click.currentSrc || CLICK_URL,
+                source: "Web Audio API (som sintetizado)",
                 name: error?.name || "Error",
                 motivo: error?.message || String(error),
-                mediaError: click.error ? click.error.code : null,
-                readyState: click.readyState,
-                networkState: click.networkState
+                contextState: audioContext?.state || "indisponível"
             };
         }
     }
@@ -158,10 +142,8 @@
     function iniciarMusica() {
         inicializar();
         aplicarConfiguracoes();
-
         const music = getMusicAudio();
         if (!getConfigBool("configMusica", true) || music.volume <= 0) return false;
-
         try {
             const promise = music.play();
             if (promise && typeof promise.catch === "function") {
@@ -181,17 +163,18 @@
 
     function obterEstado() {
         inicializar();
-        const click = getClickAudio();
         const music = getMusicAudio();
         return Object.freeze({
-            engine: "HTMLAudioElement",
-            webAudio: false,
-            clickSource: CLICK_URL,
+            engine: "Web Audio API + HTMLAudioElement",
+            webAudio: true,
+            clickSource: "Web Audio API (sintetizado; click.mp3 não utilizado)",
+            clickBackup: CLICK_BACKUP_URL,
             musicSource: MUSIC_URL,
-            clickReadyState: click.readyState,
-            clickNetworkState: click.networkState,
-            clickPaused: click.paused,
-            clickVolume: click.volume,
+            clickReadyState: audioContext ? (audioContext.state === "running" ? 4 : 0) : 0,
+            clickNetworkState: 0,
+            clickPaused: !audioContext || audioContext.state !== "running",
+            clickVolume: getConfigVolume("configVolumeEfeitos", 1),
+            audioContextState: audioContext?.state || "não inicializado",
             musicReadyState: music.readyState,
             musicNetworkState: music.networkState,
             musicPaused: music.paused,
@@ -212,15 +195,11 @@
                 resolve(resultado);
             };
             const sucesso = () => finalizar({
-                ok: true,
-                url,
-                readyState: audio.readyState,
+                ok: true, url, readyState: audio.readyState,
                 duration: Number.isFinite(audio.duration) ? audio.duration : 0
             });
             const erro = () => finalizar({
-                ok: false,
-                url,
-                readyState: audio.readyState,
+                ok: false, url, readyState: audio.readyState,
                 motivo: audio.error?.message || (audio.error ? "code=" + audio.error.code : "erro de mídia")
             });
             const timer = setTimeout(() => finalizar({ ok: false, url, motivo: "tempo limite de carregamento" }), 7000);
@@ -232,25 +211,31 @@
     }
 
     async function diagnosticarArquivos() {
-        const [click, music] = await Promise.all([
-            testarArquivo(CLICK_URL),
-            testarArquivo(MUSIC_URL)
-        ]);
-        return Object.freeze({ click, music, estado: obterEstado() });
+        // O efeito não precisa carregar nem decodificar click.mp3. Testa-se apenas a música.
+        let sintetizador;
+        try {
+            const ctx = getAudioContext();
+            sintetizador = { ok: true, engine: "Web Audio API", state: ctx.state, arquivoNecessario: false };
+        } catch (error) {
+            sintetizador = { ok: false, engine: "Web Audio API", motivo: error?.message || String(error) };
+        }
+        const music = await testarArquivo(MUSIC_URL);
+        return Object.freeze({
+            click: { ...sintetizador, url: "sintetizado por código", backup: CLICK_BACKUP_URL },
+            music,
+            estado: obterEstado()
+        });
     }
 
     document.addEventListener("pointerdown", () => { userInteracted = true; }, { capture: true, passive: true });
     document.addEventListener("keydown", () => { userInteracted = true; }, { capture: true });
     document.addEventListener("click", () => { userInteracted = true; }, { capture: true });
 
-    // Efeito de clique global: cobre botões estáticos e criados dinamicamente,
-    // incluindo o hambúrguer principal, loja, upgrades, pets e menus.
-    // O botão de teste de efeitos já toca o áudio por conta própria.
     document.addEventListener("click", event => {
         if (!(event.target instanceof Element)) return;
         const button = event.target.closest("button");
         if (!button || button.disabled || button.id === "audioDiagnosticoEfeito") return;
-        tocarEfeito();
+        void tocarEfeito();
     });
 
     window.BurgerClickerAudio = Object.freeze({
@@ -261,7 +246,7 @@
         aplicarConfiguracoes,
         obterEstado,
         diagnosticarArquivos,
-        assets: Object.freeze({ click: CLICK_URL, music: MUSIC_URL })
+        assets: Object.freeze({ click: CLICK_BACKUP_URL, clickMode: "synthesized", music: MUSIC_URL })
     });
 
     if (document.readyState === "loading") {
