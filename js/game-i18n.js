@@ -117,7 +117,17 @@
     'Lanchonete':'Hamburgueria','hambúrgueres':'hambúrgueres','produção':'produção','configurações':'definições','Configurações':'Definições',
     'Restaurar arquivo de backup':'Restaurar ficheiro de cópia de segurança','Criar e baixar backup agora':'Criar e transferir cópia de segurança',
     'Restaurar último backup automático':'Restaurar a última cópia de segurança automática','backup':'cópia de segurança','Backup':'Cópia de segurança',
-    'Baixar':'Transferir','baixar':'transferir','Instalação cancelada':'Instalação cancelada','Pronto para diagnosticar.':'Pronto para executar o diagnóstico.'
+    'Baixar':'Transferir','baixar':'transferir','Instalação cancelada':'Instalação cancelada','Pronto para diagnosticar.':'Pronto para executar o diagnóstico.',
+    'Bônus':'Bónus','bônus':'bónus','Pet':'Animal de estimação','Pets':'Animais de estimação','pet':'animal de estimação','pets':'animais de estimação',
+    'Usuário':'Utilizador','usuário':'utilizador','Usuários':'Utilizadores','usuários':'utilizadores',
+    'Seu Pet':'O seu animal de estimação','Seu restaurante':'O seu restaurante','Nome personalizado do pet equipado':'Nome personalizado do animal de estimação equipado',
+    'Trocar pet equipado':'Trocar o animal de estimação equipado','Nenhum pet equipado':'Nenhum animal de estimação equipado',
+    'Nenhum pet disponível':'Nenhum animal de estimação disponível','Coleção de pets':'Coleção de animais de estimação',
+    'Produção offline':'Produção offline','Império global':'Império global','Estoque inicial':'Stock inicial','dinheiro':'saldo de hambúrgueres',
+    'cliques':'cliques','Configurações':'Definições','configurações':'definições','Resetar':'Repor','resetar':'repor',
+    'Lanchonete':'Hamburgueria','aplicativo':'aplicação','Aplicativo':'Aplicação','celular':'telemóvel','tela':'ecrã',
+    'arquivo':'ficheiro','Arquivos':'Ficheiros','salvas':'guardadas','salvo':'guardado','Salvar':'Guardar','salvar':'guardar',
+    'Baixar backup':'Transferir cópia de segurança','Criar e baixar':'Criar e transferir','voltar':'voltar','por favor':'por favor'
   };
   const ptPTFull = Object.assign({}, ptPT, ptPTExtra);
   function getEntries() {
