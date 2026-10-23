@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="css/welcome.css">
     <link rel="stylesheet" href="css/glass-ui.css">
     <link rel="stylesheet" href="css/info-pages.css">
-    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/animations.css">\n    <link rel="stylesheet" href="css/pwa.css">
     <meta name="theme-color" content="#fff8e9">
     <meta name="application-name" content="Burger Clicker">
     <meta name="mobile-web-app-capable" content="yes">
@@ -99,7 +99,7 @@
                 <p class="config-aviso">⚠️ Guarde também um arquivo baixado em um local seguro. O backup automático fica no armazenamento deste navegador e pode ser perdido se os dados do site forem apagados.</p>
             </div>
             <div class="config-grupo"><h3>🔄 Progresso</h3><p>Use esta opção para começar novamente do zero. Um backup automático é criado antes da exclusão.</p><div class="config-acoes"><button id="configResetarBtn" type="button">🔄 Resetar todo o progresso</button></div></div>
-            <div class="config-grupo"><h3>📱 Aplicativo</h3><p>Instale o Burger Clicker quando o navegador oferecer suporte. O diagnóstico abaixo verifica manifesto, ícones, segurança, Service Worker, cache e armazenamento neste dispositivo.</p><div class="config-acoes"><button id="configInstalarBtn" type="button">📱 Instalar aplicativo</button><button id="pwaAbrirAppBtn" type="button">🚀 Abrir app</button><button id="pwaDiagnosticoExecutar" type="button">🧪 Executar diagnóstico PWA</button><button id="pwaDiagnosticoCopiar" type="button">📋 Copiar relatório</button></div><p id="configInstalacaoStatus" class="config-status-instalacao">Verificando disponibilidade da instalação...</p><pre id="pwaDiagnosticoStatus" class="pwa-diagnostico-status" role="status" aria-live="polite">Pronto para verificar a instalação do aplicativo.</pre></div>
+            <div class="config-grupo"><h3>📱 Aplicativo</h3><p>Instale o Burger Clicker quando o navegador oferecer suporte. O diagnóstico abaixo verifica manifesto, ícones, segurança, Service Worker, cache e armazenamento neste dispositivo.</p><div class="config-acoes"><button id="configInstalarBtn" type="button">📱 Instalar aplicativo</button><button id="pwaAbrirAppBtn" type="button">🚀 Abrir app</button><button id="pwaDiagnosticoExecutar" type="button">🧪 Executar diagnóstico PWA</button><button id="pwaDiagnosticoCopiar" type="button">📋 Copiar relatório</button></div><div class="bc-pwa-update" aria-labelledby="pwaAtualizacaoTitulo"><h4 id="pwaAtualizacaoTitulo">🔄 Atualizações do aplicativo</h4><p>O Burger Clicker verifica atualizações automaticamente quando abre, quando você volta ao aplicativo e periodicamente enquanto ele está aberto.</p><div class="config-acoes"><button id="pwaVerificarAtualizacaoBtn" type="button">🔎 Verificar atualizações</button><button id="pwaAplicarAtualizacaoBtn" type="button" hidden>⬇️ Atualizar e reiniciar</button></div><p id="pwaAtualizacaoStatus" role="status" aria-live="polite">Preparando verificação de atualizações…</p></div><p id="configInstalacaoStatus" class="config-status-instalacao">Verificando disponibilidade da instalação...</p><pre id="pwaDiagnosticoStatus" class="pwa-diagnostico-status" role="status" aria-live="polite">Pronto para verificar a instalação do aplicativo.</pre></div>
             <p id="configStatus" class="config-status" role="status"></p>
         </div>
     </section>
