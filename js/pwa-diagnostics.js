@@ -173,27 +173,19 @@
 
             const chromium = /Edg\\//i.test(navigator.userAgent) || /Chrome\\//i.test(navigator.userAgent);
             if (chromium) {
-                // Best effort: Chromium can register this manifest protocol handler for an installed PWA.
-                // A webpage cannot reliably detect whether the installed app actually opened.
+                // O protocolo declarado no manifesto é a única tentativa web de encaminhar
+                // a ação ao PWA instalado; a página não consegue confirmar a abertura.
                 if (statusInstall) statusInstall.textContent =
-                    "Tentando abrir o Burger Clicker instalado… Se o navegador pedir confirmação, permita abrir o aplicativo. Se nada acontecer, atualize/reinstale o PWA pelo navegador; esta função depende do suporte do sistema e do registro do protocolo.";
+                    "Tentando encaminhar ao Burger Clicker instalado. Se o navegador pedir confirmação, permita abrir o aplicativo. Se nada acontecer, use o ícone do Burger Clicker no menu Iniciar/na tela inicial: páginas web não podem forçar a abertura de um app instalado.";
                 window.location.href = "web+burgerclicker://open";
                 return;
             }
 
-            // Other browsers may not support manifest protocol_handlers; keep a usable web fallback.
-            const url = new URL("/", location.origin);
-            url.searchParams.set("abrir-app", "1");
-            const opened = window.open(url.href, "_blank");
-            if (opened) opened.opener = null;
-            if (statusInstall) {
-                statusInstall.textContent = opened
-                    ? "Este navegador não oferece suporte confirmado ao protocolo de abertura do app; foi aberta a versão web. Para abrir como aplicativo, use o ícone instalado no dispositivo."
-                    : "Este navegador não confirmou suporte à abertura direta do app e bloqueou a nova guia. Abra o ícone instalado no dispositivo.";
-            }
+            // Não abrir outra guia como falso substituto do aplicativo instalado.
+            if (statusInstall) statusInstall.textContent =
+                "Este navegador não oferece um mecanismo compatível para abrir diretamente o aplicativo instalado a partir desta página. Abra o Burger Clicker pelo ícone instalado no dispositivo. Nenhuma nova guia foi aberta.";
         });
     }
-
     window.addEventListener("appinstalled", () => {
         if (statusInstall) statusInstall.textContent = "Instalação detectada nesta sessão. Abra o aplicativo pelo ícone criado pelo navegador/sistema.";
     });
