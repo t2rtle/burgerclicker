@@ -116,6 +116,7 @@
     if (select) select.value = lang;
 
     if (persist) localStorage.setItem(STORAGE_KEY, lang);
+    document.dispatchEvent(new CustomEvent("burgerclicker:languagechange", { detail: lang }));
   }
 
   function init() {
