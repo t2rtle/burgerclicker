@@ -10,7 +10,8 @@
 
   const translations = {
     'en-US': {
-      navLabel: 'Institutional navigation',
+      navLabel: 'Page navigation',
+      navHome: '🍔 Home',
       navAbout: 'ℹ️ About',
       navPrivacy: '🔒 Privacy',
       navContact: '✉️ Contact',
@@ -76,7 +77,8 @@
     },
 
     'pt-BR': {
-      navLabel: 'Navegação institucional', navAbout: 'ℹ️ Sobre', navPrivacy: '🔒 Privacidade', navContact: '✉️ Contato',
+      navLabel: 'Navegação das páginas',
+      navHome: '🍔 Principal', navAbout: 'ℹ️ Sobre', navPrivacy: '🔒 Privacidade', navContact: '✉️ Contato',
       languageLabel: '🌐 Idioma', languageAria: 'Selecionar idioma', languageEn: 'Inglês (Estados Unidos)', languagePtBR: 'Português (Brasil)', languagePtPT: 'Português (Portugal)',
       brand: '🍔 Burger Clicker', backGame: '🍔 Voltar ao jogo', playGame: '🍔 Jogar Burger Clicker', contact: '✉️ Entrar em contato', footerAbout: 'Sobre', footerPrivacy: 'Privacidade', footerContact: 'Contato', footerCopyright: 'Burger Clicker v1.0 · Todos os direitos reservados.',
       aboutTitle: 'Sobre o Burger Clicker', aboutLead: 'Um jogo incremental simples de começar, mas cheio de caminhos para evoluir seu restaurante.', aboutWhatTitle: '🎮 O que é o Burger Clicker?', aboutWhat: 'O Burger Clicker é um jogo incremental criado por <strong>Crabscary</strong>. A ideia é produzir hambúrgueres, melhorar sua operação e transformar uma pequena produção em um verdadeiro império gastronômico.', aboutHowTitle: '📈 Como funciona?', aboutHow: '<li>🍔 Produza hambúrgueres clicando e aumentando sua produção automática.</li><li>🏪 Compre funcionários, equipamentos, food trucks, lanchonetes e franquias.</li><li>⬆️ Adquira upgrades para aumentar a eficiência da sua operação.</li><li>⭐ Faça Rebirths e use a progressão de prestígio para alcançar novos patamares.</li><li>🐾 Encontre, equipe e evolua pets com recompensas próprias.</li><li>🏆 Complete conquistas e desbloqueie recompensas ao longo da progressão.</li>', aboutExperienceTitle: '✨ Experiência', aboutExperience: 'O jogo foi desenvolvido para funcionar diretamente no navegador e também possui recursos de aplicativo instalável (PWA) em navegadores compatíveis. O progresso e várias preferências são mantidos localmente no dispositivo.', aboutGoal: '🍔 <strong>Objetivo:</strong> produza cada vez mais, evolua seu restaurante, descubra novas possibilidades e tente superar seu próprio progresso.', aboutDevelopmentTitle: '👨‍💻 Desenvolvimento', aboutDeveloper: '<strong>Desenvolvedor:</strong> Crabscary', aboutProject: '<strong>Projeto:</strong> Burger Clicker', aboutVersion: '<strong>Versão atual:</strong> 1.0', aboutDevelopmentNote: 'O projeto continua recebendo melhorias de interface, sistemas, acessibilidade e experiência de jogo.',
@@ -85,7 +87,8 @@
     },
 
     'pt-PT': {
-      navLabel: 'Navegação institucional', navAbout: 'ℹ️ Sobre', navPrivacy: '🔒 Privacidade', navContact: '✉️ Contacto',
+      navLabel: 'Navegação das páginas',
+      navHome: '🍔 Principal', navAbout: 'ℹ️ Sobre', navPrivacy: '🔒 Privacidade', navContact: '✉️ Contacto',
       languageLabel: '🌐 Idioma', languageAria: 'Selecionar idioma', languageEn: 'Inglês (Estados Unidos)', languagePtBR: 'Português (Brasil)', languagePtPT: 'Português (Portugal)',
       brand: '🍔 Burger Clicker', backGame: '🍔 Voltar ao jogo', playGame: '🍔 Jogar Burger Clicker', contact: '✉️ Entrar em contacto', footerAbout: 'Sobre', footerPrivacy: 'Privacidade', footerContact: 'Contacto', footerCopyright: 'Burger Clicker v1.0 · Todos os direitos reservados.',
       aboutTitle: 'Sobre o Burger Clicker', aboutLead: 'Um jogo incremental simples de começar, mas cheio de caminhos para evoluir o seu restaurante.', aboutWhatTitle: '🎮 O que é o Burger Clicker?', aboutWhat: 'O Burger Clicker é um jogo incremental criado por <strong>Crabscary</strong>. A ideia é produzir hambúrgueres, melhorar a sua operação e transformar uma pequena produção num verdadeiro império gastronómico.', aboutHowTitle: '📈 Como funciona?', aboutHow: '<li>🍔 Produza hambúrgueres ao clicar e aumente a sua produção automática.</li><li>🏪 Compre funcionários, equipamentos, food trucks, restaurantes e franquias.</li><li>⬆️ Adquira upgrades para aumentar a eficiência da sua operação.</li><li>⭐ Faça Rebirths e utilize a progressão de prestígio para alcançar novos patamares.</li><li>🐾 Encontre, equipe e evolua pets com recompensas próprias.</li><li>🏆 Complete conquistas e desbloqueie recompensas ao longo da progressão.</li>', aboutExperienceTitle: '✨ Experiência', aboutExperience: 'O jogo foi desenvolvido para funcionar diretamente no navegador e também possui recursos de aplicação instalável (PWA) em navegadores compatíveis. O progresso e várias preferências são mantidos localmente no dispositivo.', aboutGoal: '🍔 <strong>Objetivo:</strong> produza cada vez mais, evolua o seu restaurante, descubra novas possibilidades e tente superar o seu próprio progresso.', aboutDevelopmentTitle: '👨‍💻 Desenvolvimento', aboutDeveloper: '<strong>Desenvolvedor:</strong> Crabscary', aboutProject: '<strong>Projeto:</strong> Burger Clicker', aboutVersion: '<strong>Versão atual:</strong> 1.0', aboutDevelopmentNote: 'O projeto continua a receber melhorias de interface, sistemas, acessibilidade e experiência de jogo.',
