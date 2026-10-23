@@ -208,3 +208,91 @@ body :is(.loja button,.upgrades button,.conquistas button,.estatisticas button,.
   }
   body :is(h1,h2,h3,h4) { line-height: 1.25; }
 }
+
+
+/* Refinamento premium da interface — tokens compartilhados e estados consistentes. */
+:root {
+  color-scheme: light;
+  --bc-accent: #b85f20;
+  --bc-accent-strong: #8e4216;
+  --bc-focus: #1769aa;
+  --bc-surface-soft: rgba(255,255,255,.46);
+  --bc-motion-fast: 140ms;
+  --bc-motion-normal: 220ms;
+}
+html.tema-escuro { color-scheme: dark; --bc-accent: #ffc078; --bc-accent-strong: #ffdaa8; --bc-focus: #8ecaff; }
+body { -webkit-tap-highlight-color: transparent; }
+body > h1 { letter-spacing: -.035em; line-height: 1.12; }
+body > h4 { opacity: .86; font-weight: 600; }
+.painel, .loja, .upgrades, .estatisticas, .prestige, .conquistas, .painel-pets, .prestige-shop-panel {
+  overflow-wrap: anywhere;
+  transition: border-color var(--bc-motion-normal) ease, box-shadow var(--bc-motion-normal) ease, background-color var(--bc-motion-normal) ease;
+}
+:is(.loja,.upgrades,.estatisticas,.prestige,.conquistas,.painel-pets,.prestige-shop-panel) > h2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  letter-spacing: -.025em;
+}
+body :is(button, input, select, textarea, a) { accent-color: var(--bc-accent); }
+body :is(button, input, select, textarea) { font: inherit; }
+body button {
+  min-height: 42px;
+  touch-action: manipulation;
+}
+body button:disabled,
+body button[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: .56;
+  filter: saturate(.62);
+  transform: none !important;
+  box-shadow: none !important;
+}
+body :is(button,a,input,select,textarea,[tabindex]):focus-visible {
+  outline: 3px solid var(--bc-focus);
+  outline-offset: 3px;
+}
+body :is(input[type="text"],input[type="number"],input[type="range"],select,textarea) {
+  max-width: 100%;
+}
+body :is(.config-caixa,.welcome-caixa) {
+  border-radius: 24px;
+  box-shadow: 0 24px 70px rgba(22,15,10,.28), inset 0 1px 0 rgba(255,255,255,.65);
+}
+.config-modal, #welcomeScreen { overscroll-behavior: contain; }
+.config-cabecalho {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding-block: 4px 10px;
+  background: inherit;
+}
+html.tema-escuro .config-cabecalho { background: inherit; }
+footer { line-height: 1.5; }
+footer a { text-underline-offset: 3px; }
+footer a:hover { text-decoration-thickness: 2px; }
+html.tema-escuro footer { background: rgba(28,29,35,.9); color: #f4eee7; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .painel, .loja, .upgrades, .estatisticas, .prestige, .conquistas, .painel-pets, .prestige-shop-panel {
+    background: rgba(255,250,239,.97) !important;
+  }
+  .config-modal, #welcomeScreen { background: rgba(24,16,11,.78) !important; }
+  html.tema-escuro .painel, html.tema-escuro .loja, html.tema-escuro .upgrades,
+  html.tema-escuro .estatisticas, html.tema-escuro .prestige, html.tema-escuro .conquistas,
+  html.tema-escuro .painel-pets, html.tema-escuro .prestige-shop-panel {
+    background: rgba(28,29,35,.98) !important;
+  }
+}
+@media (hover: none) {
+  .loja button:not(:disabled):hover, .upgrades button:not(:disabled):hover,
+  #rebirthBtn:not(:disabled):hover, .pets button:not(:disabled):hover,
+  .prestige-upgrade-card button:not(:disabled):hover, .bc-area-btn:hover {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
