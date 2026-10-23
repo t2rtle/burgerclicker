@@ -87,26 +87,64 @@
         }
     }
 
-    function tocarEfeito(opcoes = {}) {
+    async function tocarEfeito(opcoes = {}) {
         inicializar();
         const click = getClickAudio();
         const forcar = opcoes && opcoes.forcar === true;
 
-        if (!forcar && !getConfigBool("configSom", true)) return false;
-
-        click.muted = false;
-        click.volume = getConfigVolume("configVolumeEfeitos", 1);
-        click.currentTime = 0;
+        if (!forcar && !getConfigBool("configSom", true)) {
+            return { ok: false, motivo: "Os efeitos sonoros estão desativados nas configurações." };
+        }
 
         try {
-            const promise = click.play();
-            if (promise && typeof promise.catch === "function") {
-                promise.catch(error => console.warn("[Burger Clicker] Não foi possível reproduzir click.mp3:", error));
+            // Atualiza o volume, mas nunca declara sucesso antes de play() resolver.
+            click.muted = false;
+            click.volume = forcar
+                ? Math.max(0.01, getConfigVolume("configVolumeEfeitos", 1))
+                : getConfigVolume("configVolumeEfeitos", 1);
+
+            // Aguarda metadados antes de tentar reposicionar um arquivo que ainda carrega.
+            if (click.readyState === HTMLMediaElement.HAVE_NOTHING) {
+                await new Promise((resolve, reject) => {
+                    const timer = setTimeout(() => finish(new Error("Tempo limite ao carregar click.mp3.")), 8000);
+                    const cleanup = () => {
+                        clearTimeout(timer);
+                        click.removeEventListener("canplay", ready);
+                        click.removeEventListener("error", failed);
+                    };
+                    const finish = error => {
+                        cleanup();
+                        if (error) reject(error);
+                        else resolve();
+                    };
+                    const ready = () => finish();
+                    const failed = () => finish(new Error(
+                        click.error ? "Falha de mídia (código " + click.error.code + ")." : "Não foi possível carregar click.mp3."
+                    ));
+                    click.addEventListener("canplay", ready, { once: true });
+                    click.addEventListener("error", failed, { once: true });
+                    click.load();
+                });
             }
-            return true;
+
+            // currentTime pode falhar em alguns estados do carregamento; a reprodução
+            // deve continuar sendo tentada e qualquer falha deve chegar ao diagnóstico.
+            try { click.currentTime = 0; } catch (seekError) {
+                console.warn("[Burger Clicker] Não foi possível reposicionar click.mp3; tentando reproduzir do estado atual:", seekError);
+            }
+            await click.play();
+            return { ok: true, source: click.currentSrc || CLICK_URL, readyState: click.readyState };
         } catch (error) {
-            console.warn("[Burger Clicker] Não foi possível reproduzir click.mp3:", error);
-            return false;
+            console.error("[Burger Clicker] Falha real ao reproduzir click.mp3:", error);
+            return {
+                ok: false,
+                source: click.currentSrc || CLICK_URL,
+                name: error?.name || "Error",
+                motivo: error?.message || String(error),
+                mediaError: click.error ? click.error.code : null,
+                readyState: click.readyState,
+                networkState: click.networkState
+            };
         }
     }
 
