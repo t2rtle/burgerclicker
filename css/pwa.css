@@ -1,0 +1,38 @@
+/* PWA controls — Burger Clicker */
+.bc-pwa-update {
+    margin-top: 14px;
+    padding: 14px;
+    border: 1px solid rgba(255, 152, 0, 0.42);
+    border-radius: 14px;
+    background: rgba(255, 152, 0, 0.08);
+}
+.bc-pwa-update h4 {
+    margin: 0 0 6px;
+}
+.bc-pwa-update p {
+    margin: 6px 0 10px;
+}
+#pwaAplicarAtualizacaoBtn[hidden] {
+    display: none !important;
+}
+#pwaAplicarAtualizacaoBtn {
+    border: 1px solid rgba(40, 120, 60, 0.35);
+    background: #e6f6e9;
+    color: #174b25;
+}
+#pwaAtualizacaoStatus {
+    min-height: 1.4em;
+    overflow-wrap: anywhere;
+    font-size: 0.94em;
+}
+html.tema-escuro .bc-pwa-update {
+    background: rgba(255, 152, 0, 0.1);
+    border-color: rgba(255, 183, 77, 0.35);
+}
+html.tema-escuro #pwaAplicarAtualizacaoBtn {
+    background: #24472c;
+    color: #e9ffed;
+}
+@media (prefers-reduced-motion: reduce) {
+    .bc-pwa-update * { scroll-behavior: auto; }
+}
