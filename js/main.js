@@ -67,6 +67,55 @@ function atualizarTela() {
     atualizarBotaoRebirth();
     atualizarEstadoBotoesPet();
     verificarConquistas();
+    atualizarPainelInteligente();
+}
+
+// Camada de orientação visual: lê valores reais sem alterar a economia.
+function atualizarPainelInteligente() {
+    const clickEl = document.getElementById("bcStatClick");
+    if (!clickEl) return;
+    const ppsAtual = Math.max(0, Number(calcularPPS()) || 0);
+    const cliqueAtual = Math.max(0, Number(calcularPoderClique()) || 0);
+    const total = Math.max(0, Number(hamburgueresTotais) || 0);
+    clickEl.textContent = formatarNumero(cliqueAtual) + " 🍔";
+    document.getElementById("bcStatPps").textContent = formatarNumero(Math.round(ppsAtual)) + "/s";
+    document.getElementById("bcStatLifetime").textContent = formatarNumero(total);
+
+    const tier = total < 1000 ? "Barraca de hambúrgueres" : total < 100000 ? "Lanchonete local" : total < 10000000 ? "Restaurante popular" : total < 1000000000 ? "Rede de franquias" : "Império global";
+    document.getElementById("bcRestaurantTier").textContent = tier;
+
+    const requisito = Math.max(1, Number(requisitoRebirth) || 1);
+    const progresso = Math.max(0, Math.min(100, (Math.max(0, Number(hamburgueres) || 0) / requisito) * 100));
+    document.getElementById("bcRebirthProgressLabel").textContent = progresso.toFixed(1).replace(".", ",") + "%";
+    document.getElementById("bcRebirthProgressBar").style.width = progresso + "%";
+    document.getElementById("bcRebirthProgressTrack").setAttribute("aria-valuenow", String(Math.round(progresso)));
+
+    const candidatos = [];
+    for (const [tipo, nome] of [["funcionario","Funcionário"],["chapa","Chapa Industrial"],["foodTruck","Food Truck"],["lanchonete","Lanchonete"],["franquia","Franquia"]]) {
+        const custo = Number(calcularCustoNegocio(tipo));
+        if (Number.isFinite(custo) && custo > 0) candidatos.push({ nome, custo, categoria: "Loja" });
+    }
+    const estados = { clique2x: upgradeClique2x, clique5x: upgradeClique5x, funcionario: upgradeFuncionario, chapa: upgradeChapa, global: upgradeGlobal };
+    for (const [chave, dados] of Object.entries(UPGRADES)) {
+        if (estados[chave]) continue;
+        const custo = Number(custoUpgradeNormal(dados.custo));
+        if (Number.isFinite(custo) && custo > 0) candidatos.push({ nome: dados.nome.replace(/^\S+\s*/, ""), custo, categoria: "Upgrade" });
+    }
+    candidatos.sort((a, b) => {
+        const aPode = a.custo <= hamburgueres, bPode = b.custo <= hamburgueres;
+        if (aPode !== bPode) return aPode ? -1 : 1;
+        return a.custo - b.custo;
+    });
+    const recomendado = candidatos[0];
+    const titulo = document.getElementById("bcRecommendationTitle");
+    const texto = document.getElementById("bcRecommendationText");
+    if (!recomendado) {
+        titulo.textContent = "Tudo comprado!";
+        texto.textContent = "Continue produzindo e explore a progressão de prestígio.";
+    } else {
+        titulo.textContent = (recomendado.custo <= hamburgueres ? "Compra disponível: " : "Próxima meta: ") + recomendado.nome;
+        texto.textContent = recomendado.categoria + " • " + (recomendado.custo <= hamburgueres ? "custa " : "faltam ") + formatarNumero(recomendado.custo <= hamburgueres ? recomendado.custo : recomendado.custo - hamburgueres) + " 🍔";
+    }
 }
 function atualizarBotoesLoja() {
     funcionarioBtn.disabled = hamburgueres < custoFuncionario;
