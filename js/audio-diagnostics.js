@@ -1,6 +1,6 @@
 "use strict";
 
-/* Diagnóstico do sistema de áudio do Burger Clicker. */
+/* Diagnóstico do sistema de áudio MP3 do Burger Clicker. */
 (() => {
     const $ = id => document.getElementById(id);
     const status = $("audioDiagnosticoStatus");
@@ -26,7 +26,6 @@
             "volume=" + audio.volume,
             "duration=" + (Number.isFinite(audio.duration) ? audio.duration.toFixed(2) + "s" : "desconhecida"),
             "canPlayMP3=" + (audio.canPlayType("audio/mpeg") || "não informado"),
-            "canPlayWAV=" + (audio.canPlayType("audio/wav") || "não informado"),
             "erro=" + (audio.error ? audio.error.code + (audio.error.message ? ": " + audio.error.message : "") : "nenhum")
         ].join("\n");
     }
@@ -40,7 +39,7 @@
             "Web Audio API=" + (estado.webAudio ? "SIM" : "NÃO"),
             "arquivo de efeito=" + estado.clickSource,
             "arquivo de música=" + estado.musicSource,
-            "canais de efeito=" + estado.clickPool,
+            "formato=" + (estado.format || "MP3"),
             "usuário já interagiu=" + estado.userInteracted
         ].join("\n");
     }
@@ -59,7 +58,7 @@
     btnArquivos.addEventListener("click", async event => {
         event.stopPropagation();
         btnArquivos.disabled = true;
-        mostrar("Verificando os arquivos reais da pasta /media…");
+        mostrar("Verificando os dois arquivos MP3 da pasta /media…");
         try {
             const musica = $("musicaFundo");
             const efeito = $("somClique");
@@ -71,7 +70,7 @@
             let testes = "";
             if (window.BurgerClickerAudio?.diagnosticarArquivos) {
                 const resultado = await window.BurgerClickerAudio.diagnosticarArquivos();
-                testes = "\n\nCARREGAMENTO HTMLAUDIOELEMENT\n" + JSON.stringify(resultado, null, 2);
+                testes = "\n\nCARREGAMENTO DOS ARQUIVOS MP3\n" + JSON.stringify(resultado, null, 2);
             }
 
             const chaves = [
@@ -86,7 +85,7 @@
             })()).join("\n");
 
             mostrar(
-                "RESULTADO DOS ARQUIVOS\n" + resultados.join("\n") +
+                "RESULTADO DOS ARQUIVOS MP3\n" + resultados.join("\n") +
                 "\n\nSISTEMA CENTRALIZADO\n" + infoSistema() +
                 "\n\nELEMENTO DE MÚSICA\n" + infoAudio(musica) +
                 "\n\nELEMENTO DE EFEITO\n" + infoAudio(efeito) +
@@ -137,7 +136,7 @@
         const promessa = audio.play();
         if (promessa && typeof promessa.then === "function") {
             promessa.then(() => {
-                mostrar("O navegador ACEITOU a reprodução de /media/music.mp3 usando HTMLAudioElement.\nNão há geração de áudio por Web Audio API.\n\n" + infoAudio(audio));
+                mostrar("O navegador ACEITOU a reprodução de /media/music.mp3 usando HTMLAudioElement.\nOs efeitos e a música usam arquivos MP3 reais; não há geração por Web Audio API.\n\n" + infoAudio(audio));
             }).catch(erro => {
                 mostrar("FALHA ao iniciar /media/music.mp3: " + (erro?.name || "Erro") + " — " + (erro?.message || String(erro)) + "\n\n" + infoAudio(audio));
                 restaurarMusica();
@@ -160,15 +159,15 @@
 
     btnEfeito.addEventListener("click", event => {
         event.stopPropagation();
-        const audio = window.BurgerClickerAudio;
-        if (!audio || typeof audio.tocarEfeito !== "function") {
+        const sistema = window.BurgerClickerAudio;
+        if (!sistema || typeof sistema.tocarEfeito !== "function") {
             mostrar("FALHA: sistema de áudio centralizado não está disponível.");
             return;
         }
-        const tocou = audio.tocarEfeito({ forcar: true });
-        mostrar(tocou
-            ? "Teste OK: /media/click.mp3 foi enviado a um canal HTMLAudioElement. Não há Web Audio API nem som sintetizado.\n\n" + infoSistema()
-            : "FALHA: não foi possível iniciar /media/click.mp3. Verifique o arquivo e as configurações de volume.");
+        const audio = sistema.tocarEfeito({ forcar: true });
+        mostrar(audio
+            ? "Teste solicitado: /media/click.mp3 foi enviado ao HTMLAudioElement.\n\n" + infoSistema()
+            : "FALHA ao iniciar /media/click.mp3. Verifique o arquivo, volume e console do navegador.");
     });
 
     btnMusica.addEventListener("click", event => {
@@ -176,5 +175,5 @@
         testarMusica();
     });
 
-    mostrar("Pronto para diagnosticar. O sistema usa somente os arquivos reais da pasta /media.");
+    mostrar("Pronto para diagnosticar. O sistema usa exclusivamente /media/music.mp3 e /media/click.mp3.");
 })();
