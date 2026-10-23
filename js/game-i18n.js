@@ -200,12 +200,17 @@
     'Os efeitos sonoros estão desativados nas configurações.':'Os efeitos sonoros estão desativados nas definições.','indisponível':'indisponível','[Burger Clicker] Música aguardando interação do usuário:':'[Burger Clicker] Música à espera de interação do utilizador:','Web Audio API (sintetizado; click.mp3 não utilizado)':'Web Audio API (sintetizado; click.mp3 não utilizado)','não inicializado':'não inicializado','erro de mídia':'erro de multimédia','sintetizado por código':'gerado por código','Tentando encaminhar ao Burger Clicker instalado. Se o navegador pedir confirmação, permita abrir o aplicativo. Se nada acontecer, use o ícone do Burger Clicker no menu Iniciar/na tela inicial: páginas web não podem forçar a abertura de um app instalado.':'A tentar abrir a aplicação Burger Clicker instalada. Se o navegador pedir confirmação, permita a abertura da aplicação. Se nada acontecer, use o ícone do Burger Clicker no menu Iniciar ou no ecrã inicial: as páginas web não podem forçar a abertura de uma aplicação instalada.','ESTADO DO PLAYER':'ESTADO DO REPRODUTOR','Desconto em negócios':'Desconto em negócios'
   };
   const ptPTFull = Object.assign({}, ptPT, ptPTExtra);
+  // Build the sorted dictionaries once, not once per text node.
+  const entryCache = new Map();
   function getEntries() {
+    if (entryCache.has(language)) return entryCache.get(language);
     const phrases = language === 'en-US' ? en : language === 'pt-PT' ? ptPTFull : {};
-    return Object.entries(phrases).sort((a,b)=>b[0].length-a[0].length);
+    const entries = Object.entries(phrases).sort((a,b)=>b[0].length-a[0].length);
+    entryCache.set(language, entries);
+    return entries;
   }
   function translateText(value) {
-    if (!value || !value.trim()) return value;
+    if (!value || !value.trim() || language === 'pt-BR') return value;
     let result = value;
     for (const [from,to] of getEntries()) {
       if (result.includes(from)) result = result.split(from).join(to);
@@ -217,25 +222,30 @@
   const originalAttributes = new WeakMap();
   const lastAppliedAttributes = new WeakMap();
   let writingTranslation = false;
+  const TRANSLATABLE_ATTRIBUTES = ['aria-label','title','placeholder','alt','data-tooltip','data-tooltip-title','data-tooltip-description'];
+
+  function translateAttributes(el) {
+    if (!(el instanceof Element)) return;
+    let saved = originalAttributes.get(el);
+    if (!saved) { saved = Object.create(null); originalAttributes.set(el, saved); }
+    let applied = lastAppliedAttributes.get(el);
+    if (!applied) { applied = Object.create(null); lastAppliedAttributes.set(el, applied); }
+    for (const attr of TRANSLATABLE_ATTRIBUTES) {
+      if (!el.hasAttribute(attr)) continue;
+      const current = el.getAttribute(attr);
+      if (!(attr in saved)) saved[attr] = current;
+      else if (current !== applied[attr] && current !== translateText(saved[attr])) saved[attr] = current;
+      const translated = translateText(saved[attr]);
+      applied[attr] = translated;
+      if (translated !== current) el.setAttribute(attr, translated);
+    }
+  }
+
   function translateElement(el) {
     if (!(el instanceof Element)) return;
-    let savedAttributes = originalAttributes.get(el);
-    if (!savedAttributes) { savedAttributes = {}; originalAttributes.set(el, savedAttributes); }
-    let appliedAttributes = lastAppliedAttributes.get(el);
-    if (!appliedAttributes) { appliedAttributes = {}; lastAppliedAttributes.set(el, appliedAttributes); }
-    for (const attr of ['aria-label','title','placeholder','alt','data-tooltip','data-tooltip-title','data-tooltip-description']) {
-      if (el.hasAttribute(attr)) {
-        const current = el.getAttribute(attr);
-        if (!(attr in savedAttributes)) savedAttributes[attr] = current;
-        else if (current !== appliedAttributes[attr] && current !== translateText(savedAttributes[attr])) savedAttributes[attr] = current;
-        const original = savedAttributes[attr];
-        const translated = translateText(original);
-        appliedAttributes[attr] = translated;
-        if (translated !== current) el.setAttribute(attr, translated);
-      }
-    }
+    translateAttributes(el);
     if (el.hasAttribute('data-i18n')) return;
-    if (el.matches('script,style,textarea, input[type="text"], input[type="file"]')) return;
+    if (el.matches('script,style,textarea,input[type="text"],input[type="file"]')) return;
     for (const node of el.childNodes) {
       if (node.nodeType === Node.TEXT_NODE) {
         if (!originalText.has(node)) originalText.set(node, node.nodeValue);
@@ -250,13 +260,15 @@
     }
   }
   function apply(nextLanguage) {
-    language = supported.has(nextLanguage) ? nextLanguage : DEFAULT_LANGUAGE;
+    const normalizedLanguage = supported.has(nextLanguage) ? nextLanguage : DEFAULT_LANGUAGE;
+    if (normalizedLanguage === language && document.documentElement.lang === language) return;
+    language = normalizedLanguage;
     document.documentElement.lang = language;
     translateElement(document.body);
   }
   const observer = new MutationObserver(records => {
     for (const record of records) {
-      if (record.type === 'attributes') { translateElement(record.target); continue; }
+      if (record.type === 'attributes') { translateAttributes(record.target); continue; }
       if (record.type === 'characterData' && record.target.nodeType === Node.TEXT_NODE && !writingTranslation) {
         const node = record.target;
         const value = node.nodeValue;
