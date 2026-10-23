@@ -56,7 +56,11 @@
 
     function lerVolume(chave, padrao) {
         try {
-            const valor = Number(localStorage.getItem(chave));
+            const salvo = localStorage.getItem(chave);
+            // Number(null) é 0: sem esta verificação, a configuração ausente
+            // era interpretada como volume mudo em vez de usar o padrão.
+            if (salvo === null || salvo.trim() === "") return padrao;
+            const valor = Number(salvo);
             return Number.isFinite(valor) ? Math.max(0, Math.min(1, valor)) : padrao;
         } catch (_) {
             return padrao;
