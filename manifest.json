@@ -1,11 +1,11 @@
 {
-  "id": "/",
+  "id": "/burger-clicker/",
   "name": "Burger Clicker",
   "short_name": "Burger Clicker",
   "description": "🍔 Burger Clicker: an idle burger clicker game with pets, upgrades, Rebirths, and endless progression.",
   "lang": "en-US",
   "dir": "ltr",
-  "start_url": "/",
+  "start_url": "/index.html?source=pwa",
   "scope": "/",
   "display": "standalone",
   "display_override": [
@@ -35,10 +35,36 @@
       "purpose": "maskable"
     }
   ],
+  "shortcuts": [
+    {
+      "name": "Jogar",
+      "short_name": "Jogar",
+      "url": "/index.html?source=pwa-shortcut",
+      "icons": [
+        {
+          "src": "/media/pwa-icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Configurações",
+      "short_name": "Configurações",
+      "url": "/index.html?source=pwa-settings",
+      "icons": [
+        {
+          "src": "/media/pwa-icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
   "protocol_handlers": [
     {
       "protocol": "web+burgerclicker",
-      "url": "/?protocolo=%s"
+      "url": "/index.html?protocolo=%s"
     }
   ],
   "launch_handler": {
