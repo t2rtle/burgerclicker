@@ -43,4 +43,64 @@ html.tema-escuro .bc-contract-card{border-color:rgba(255,255,255,.1);background:
 @media(prefers-reduced-motion:reduce){.bc-ach-card{transition:none}}
 `;
 document.head.appendChild(style);
+
+/* =========================================================
+   TOOLTIPS INDIVIDUAIS DAS CONQUISTAS DA EXPANSÃO
+   Cada cartão recebe sua própria descrição a partir dos dados
+   que já aparecem nele: desafio, recompensa e estado.
+========================================================= */
+function prepararTooltipConquistaExpansao(card) {
+    if (!(card instanceof Element) || !card.matches(".bc-ach-card")) return;
+
+    const limpar = valor => String(valor || "").replace(/\s+/g, " ").trim();
+    const titulo = limpar(card.querySelector("h3"));
+    const desafio = limpar(card.querySelector("p"));
+    const recompensa = limpar(card.querySelector("small"));
+    const obtida = card.classList.contains("obtained");
+
+    if (!titulo && !desafio && !recompensa) return;
+
+    const partes = [];
+    if (desafio) partes.push("🎯 Desafio: " + desafio);
+    if (recompensa) partes.push("🎁 Recompensa: " + recompensa);
+    partes.push(obtida
+        ? "✅ Conquista obtida. A recompensa já está registrada no seu progresso."
+        : "🔒 Conquista bloqueada. Complete o desafio para desbloquear a recompensa.");
+
+    card.dataset.tooltipTitle = titulo || "🏆 Conquista";
+    card.dataset.tooltip = partes.join("\n\n");
+    delete card.dataset.tooltipAuto;
+    card.setAttribute("tabindex", "0");
+}
+
+function prepararTooltipsConquistasExpansao() {
+    document.querySelectorAll(".bc-ach-card").forEach(prepararTooltipConquistaExpansao);
+}
+
+prepararTooltipsConquistasExpansao();
+
+const observadorConquistas = new MutationObserver(mutations => {
+    for (const mutation of mutations) {
+        if (mutation.type === "childList") {
+            for (const node of mutation.addedNodes) {
+                if (!(node instanceof Element)) continue;
+                if (node.matches(".bc-ach-card")) prepararTooltipConquistaExpansao(node);
+                node.querySelectorAll?.(".bc-ach-card").forEach(prepararTooltipConquistaExpansao);
+            }
+        } else if (
+            mutation.type === "attributes" &&
+            mutation.attributeName === "class" &&
+            mutation.target.matches?.(".bc-ach-card")
+        ) {
+            prepararTooltipConquistaExpansao(mutation.target);
+        }
+    }
+});
+
+observadorConquistas.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["class"]
+});
 })();
