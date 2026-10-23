@@ -1,21 +1,23 @@
 # 🍔 Burger Clicker
 
-Idle Game inspirado em Cookie Clicker.
+An idle clicker game inspired by Cookie Clicker.
 
-## Recursos
+## Features
 
-- Sistema de Pets
-- Rebirth
-- Loja de Prestígio
-- XP e Levels
-- Conquistas
-- Produção Offline
-- Salvamento Automático
+- Pet collection and bonuses
+- Rebirth progression
+- Prestige Shop and permanent upgrades
+- XP and levels
+- Achievements and rewards
+- Offline production
+- Automatic saving and backups
+- Installable Progressive Web App (PWA)
+- English (United States), Portuguese (Brazil), and Portuguese (Portugal) localization
 
-## Jogar
+## Play
 
 https://t2rtle.github.io
 
-## Desenvolvedor
+## Developer
 
 Crabscary
