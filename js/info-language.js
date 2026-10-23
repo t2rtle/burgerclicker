@@ -115,6 +115,27 @@
     const select = document.getElementById('languageSelector');
     if (select) select.value = lang;
 
+    const aboutHeading = document.querySelector('[data-i18n="aboutTitle"]');
+    const privacyHeading = document.querySelector('[data-i18n="privacyTitle"]');
+    const contactHeading = document.querySelector('[data-i18n="contactTitle"]');
+    if (aboutHeading) document.title = dict.aboutTitle + ' — Burger Clicker';
+    else if (privacyHeading) document.title = dict.privacyTitle + ' — Burger Clicker';
+    else if (contactHeading) document.title = dict.contactTitle + ' — Burger Clicker';
+    else document.title = '🍔 Burger Clicker';
+
+    const description = document.querySelector('meta[name="description"]');
+    if (description) {
+      const descriptions = {
+        'en-US': 'Burger Clicker — an idle clicker game with pets, rebirths, a prestige shop, and endless progression.',
+        'pt-BR': 'Burger Clicker — um jogo idle clicker com pets, rebirths, loja de prestígio e progressão infinita.',
+        'pt-PT': 'Burger Clicker — um jogo idle clicker com animais de estimação, Rebirths, loja de prestígio e progressão infinita.'
+      };
+      if (document.querySelector('[data-i18n="aboutTitle"]')) description.content = dict.aboutLead;
+      else if (document.querySelector('[data-i18n="privacyTitle"]')) description.content = dict.privacyLead;
+      else if (document.querySelector('[data-i18n="contactTitle"]')) description.content = dict.contactLead;
+      else description.content = descriptions[lang];
+    }
+
     if (persist) localStorage.setItem(STORAGE_KEY, lang);
     document.dispatchEvent(new CustomEvent("burgerclicker:languagechange", { detail: lang }));
   }
