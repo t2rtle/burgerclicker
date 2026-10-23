@@ -36,3 +36,8 @@ body.info-page::before { content: ""; position: fixed; inset: 0; width: 100%; he
 @media (max-width: 620px) { body.info-page { padding: 14px 10px 24px; } .info-card { padding: 20px 15px; border-radius: 20px; } .info-section { padding: 16px; } .info-nav { width: 100%; } .info-nav a { flex: 1 1 auto; } .info-language { width: min(100%, 360px); box-sizing: border-box; flex-wrap: wrap; } .info-language select { flex: 1; min-width: 190px; } }
 @media (prefers-reduced-motion: reduce) { .info-card, .info-nav a, .info-back { animation: none; transition: none; } }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .info-card { background: rgba(255,250,239,.96); } .info-nav a, .info-back, .info-footer, .info-language { background: rgba(255,250,239,.94); } .info-section { background: rgba(255,255,255,.72); } }
+
+/* Barra de navegação e idioma também na página principal do jogo */
+.game-language-topbar { margin: 18px auto 20px; padding: 0 12px; }
+.game-language-topbar .info-nav a[aria-current="page"] { font-weight: 800; border-color: rgba(184,95,32,.45); }
+@media (max-width: 480px) { .game-language-topbar { gap: 10px; } .game-language-topbar .info-nav { gap: 6px; } .game-language-topbar .info-nav a { padding: 7px 10px; font-size: .92rem; } .game-language-topbar .info-language { width: fit-content; max-width: 100%; flex-wrap: wrap; } }
