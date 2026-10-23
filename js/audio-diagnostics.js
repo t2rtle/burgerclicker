@@ -65,7 +65,7 @@
             const efeito = $("somClique");
             const resultados = await Promise.all([
                 verificarArquivo("/media/music.mp3"),
-                verificarArquivo("/media/click.wav")
+                verificarArquivo("/media/click.mp3")
             ]);
 
             let testes = "";
@@ -167,8 +167,8 @@
         }
         const tocou = audio.tocarEfeito({ forcar: true });
         mostrar(tocou
-            ? "Teste OK: /media/click.wav foi enviado a um canal HTMLAudioElement. Não há Web Audio API nem som sintetizado.\n\n" + infoSistema()
-            : "FALHA: não foi possível iniciar /media/click.wav. Verifique o arquivo e as configurações de volume.");
+            ? "Teste OK: /media/click.mp3 foi enviado a um canal HTMLAudioElement. Não há Web Audio API nem som sintetizado.\n\n" + infoSistema()
+            : "FALHA: não foi possível iniciar /media/click.mp3. Verifique o arquivo e as configurações de volume.");
     });
 
     btnMusica.addEventListener("click", event => {
