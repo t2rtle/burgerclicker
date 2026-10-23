@@ -1,13 +1,13 @@
 /* Burger Clicker PWA Service Worker */
 const CACHE_PREFIX = "burger-clicker-";
-const CACHE_NAME = "burger-clicker-v50";
+const CACHE_NAME = "burger-clicker-v51";
 const APP_SHELL = [
     "/", "/index.html", "/manifest.json", "/style.css",
-    "/css/pets.css", "/css/tooltips.css", "/css/settings.css", "/css/navigation.css", "/css/welcome.css", "/css/glass-ui.css",
-    "/js/core.js", "/js/systems.js", "/js/main.js", "/js/audio.js", "/js/audio-diagnostics.js", "/js/welcome.js", "/js/tooltips.js", "/js/settings.js", "/js/settings-compat.js",
+    "/css/pets.css", "/css/tooltips.css", "/css/settings.css", "/css/navigation.css", "/css/welcome.css", "/css/glass-ui.css", "/css/info-pages.css",
+    "/js/info-language.js", "/js/game-i18n.js", "/js/core.js", "/js/systems.js", "/js/main.js", "/js/audio.js", "/js/audio-diagnostics.js", "/js/welcome.js", "/js/tooltips.js", "/js/settings.js", "/js/settings-compat.js",
     "/js/expansion-bridge.js", "/js/expansion.js", "/js/expansion-ui.js", "/js/statistics.js", "/js/statistics-accuracy.js",
     "/js/pwa.js", "/js/pwa-diagnostics.js", "/js/reset.js", "/js/navigation.js",
-    "/media/background.jpg", "/media/art_1.png", "/media/art_2.png", "/media/click.mp3", "/media/music.mp3", "/media/pwa-icon.svg"
+    "/about.html", "/privacy.html", "/contact.html", "/media/background.jpg", "/media/art_1.png", "/media/art_2.png", "/media/click.mp3", "/media/music.mp3", "/media/pwa-icon.svg"
 ];
 
 self.addEventListener("install", event => {
