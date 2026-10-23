@@ -171,7 +171,8 @@
                 return;
             }
 
-            const chromium = /Edg\\//i.test(navigator.userAgent) || /Chrome\\//i.test(navigator.userAgent);
+            const ua = navigator.userAgent || "";
+            const chromium = ua.includes("Edg/") || ua.includes("Chrome/");
             if (chromium) {
                 // O protocolo declarado no manifesto é a única tentativa web de encaminhar
                 // a ação ao PWA instalado; a página não consegue confirmar a abertura.
