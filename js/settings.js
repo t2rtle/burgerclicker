@@ -245,7 +245,8 @@
         "upgradeClique2x", "upgradeClique5x", "upgradeFuncionario", "upgradeChapa", "upgradeGlobal",
         "xp", "nivel", "xpProximoNivel", "cliquesTotais", "tempoJogado", "rebirths",
         "prestigeTokens", "prestigeTokensEarned", "prestigeUpgrades", "requisitoRebirth",
-        "conquistas", "ultimoSave", "petColecao", "petAtivoId", "petNomes", "petNiveis"
+        "conquistas", "ultimoSave", "petColecao", "petAtivoId", "petNomes", "petNiveis",
+        "bc_expansion_state_v1", "bc_statistics_v2"
     ]);
 
     function validarPacoteBackup(pacote) {
