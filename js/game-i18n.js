@@ -85,12 +85,25 @@
     'Pronto para diagnosticar.':'Pronto para executar o diagnóstico.','Aplicativo':'Aplicação'
   };
 
-  const phrases = language === 'en-US' ? en : language === 'pt-PT' ? ptPT : {};
-  const entries = Object.entries(phrases).sort((a,b)=>b[0].length-a[0].length);
+  const ptPTExtra = {
+    'você':'si','seu ':'o seu ','sua ':'a sua ','salvas':'guardadas','salvo':'guardado','Salvar':'Guardar',
+    'Resetar':'Repor','resetar':'repor','arquivo':'ficheiro','Arquivos':'Ficheiros','arquivo de backup':'ficheiro de cópia de segurança',
+    'aplicativo':'aplicação','Aplicativo':'Aplicação','celular':'telemóvel','tela inicial':'ecrã inicial','usuário':'utilizador','jogador':'jogador',
+    'clique':'clique','botão':'botão','botões':'botões','Loja de Prestígio':'Loja de Prestígio','Funcionários':'Funcionários',
+    'Lanchonete':'Hamburgueria','hambúrgueres':'hambúrgueres','produção':'produção','configurações':'definições','Configurações':'Definições',
+    'Restaurar arquivo de backup':'Restaurar ficheiro de cópia de segurança','Criar e baixar backup agora':'Criar e transferir cópia de segurança',
+    'Restaurar último backup automático':'Restaurar a última cópia de segurança automática','backup':'cópia de segurança','Backup':'Cópia de segurança',
+    'Baixar':'Transferir','baixar':'transferir','Instalação cancelada':'Instalação cancelada','Pronto para diagnosticar.':'Pronto para executar o diagnóstico.'
+  };
+  const ptPTFull = Object.assign({}, ptPT, ptPTExtra);
+  function getEntries() {
+    const phrases = language === 'en-US' ? en : language === 'pt-PT' ? ptPTFull : {};
+    return Object.entries(phrases).sort((a,b)=>b[0].length-a[0].length);
+  }
   function translateText(value) {
     if (!value || !value.trim()) return value;
     let result = value;
-    for (const [from,to] of entries) {
+    for (const [from,to] of getEntries()) {
       if (result.includes(from)) result = result.split(from).join(to);
     }
     return result;
