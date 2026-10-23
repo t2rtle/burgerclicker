@@ -148,3 +148,63 @@ html body .config-modal {
   overflow-clip-margin: 0 !important;
   transform: none !important;
 }
+
+
+/* Tipografia adaptável para todas as áreas do jogo, não apenas conquistas. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body, body * { min-width: 0; }
+body :is(h1,h2,h3,h4,h5,h6,p,small,strong,b,span,label,a,li,button,summary) {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+body :is(button,a,label) {
+  line-height: 1.35;
+  white-space: normal;
+}
+body :is(.loja,.upgrades,.estatisticas,.prestige,.conquistas,.painel-pets,.prestige-shop-panel,.bc-expansion-section,.estatisticas-avancadas) {
+  min-width: 0;
+  max-width: 100%;
+}
+body :is(.loja button,.upgrades button,.conquistas button,.estatisticas button,.prestige button,.painel-pets button,.prestige-shop-panel button,.bc-expansion-section button) {
+  height: auto;
+  min-width: 0;
+  max-width: 100%;
+  font-size: clamp(.82rem, 1vw + .55rem, 1rem);
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+.estatisticas-avancadas,.estatisticas-avancadas * { min-width: 0; }
+.estatisticas-avancadas .estat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+}
+.estatisticas-avancadas .estat-grid article {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.estatisticas-avancadas .estat-grid p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 8px;
+  font-size: .9rem;
+  line-height: 1.4;
+}
+.estatisticas-avancadas .estat-grid b {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  text-align: right;
+}
+@media (max-width: 480px) {
+  body { font-size: 16px; }
+  body :is(.loja,.upgrades,.estatisticas,.prestige,.conquistas,.painel-pets,.prestige-shop-panel) {
+    padding: 12px;
+  }
+  body :is(h1,h2,h3,h4) { line-height: 1.25; }
+}
