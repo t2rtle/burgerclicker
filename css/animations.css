@@ -1,0 +1,84 @@
+/* Burger Clicker — motion polish, tuned for performance and accessibility. */
+:root {
+  --bc-motion-ease: cubic-bezier(.22,.75,.22,1);
+  --bc-motion-reveal: 560ms;
+}
+@keyframes bcRevealUp {
+  from { opacity: 0; transform: translate3d(0,22px,0) scale(.99); filter: blur(2px); }
+  to { opacity: 1; transform: translate3d(0,0,0) scale(1); filter: blur(0); }
+}
+@keyframes bcIdleFloat {
+  0%,100% { transform: translate3d(0,0,0) rotate(0); }
+  50% { transform: translate3d(0,-4px,0) rotate(.35deg); }
+}
+@keyframes bcSoftGlow {
+  0%,100% { box-shadow: 0 8px 22px rgba(91,53,25,.08), inset 0 1px 0 rgba(255,255,255,.55); }
+  50% { box-shadow: 0 12px 28px rgba(180,95,32,.15), inset 0 1px 0 rgba(255,255,255,.7); }
+}
+@keyframes bcButtonShine {
+  from { transform: translateX(-150%) skewX(-18deg); }
+  to { transform: translateX(260%) skewX(-18deg); }
+}
+@keyframes bcBurgerPop {
+  0% { transform: scale(1) rotate(0); }
+  36% { transform: scale(.88) rotate(-7deg); }
+  70% { transform: scale(1.12) rotate(5deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+@keyframes bcParticleRise {
+  0% { opacity: 0; transform: translate(-50%,0) scale(.55) rotate(-8deg); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--bc-dx)), -76px) scale(1.2) rotate(12deg); }
+}
+.bc-reveal-ready .bc-reveal {
+  opacity: 0;
+  transform: translate3d(0,18px,0);
+}
+.bc-reveal-ready .bc-reveal.is-visible {
+  animation: bcRevealUp var(--bc-motion-reveal) var(--bc-motion-ease) both;
+}
+.bc-reveal-ready .bc-reveal:nth-of-type(2n).is-visible { animation-delay: 45ms; }
+.bc-reveal-ready .bc-reveal:nth-of-type(3n).is-visible { animation-delay: 85ms; }
+.bc-idle-float { animation: bcIdleFloat 5.4s ease-in-out infinite; }
+.bc-idle-glow { animation: bcSoftGlow 6.5s ease-in-out infinite; }
+#burgerBtn.bc-burger-pop { animation: bcBurgerPop 360ms var(--bc-motion-ease); }
+.bc-click-particle {
+  position: fixed; z-index: 100000; pointer-events: none; user-select: none;
+  font-size: clamp(18px,3vw,30px); line-height: 1;
+  animation: bcParticleRise 760ms ease-out forwards;
+  will-change: transform,opacity;
+}
+.bc-motion-ready .loja button:not(:disabled),
+.bc-motion-ready .upgrades button:not(:disabled),
+.bc-motion-ready .prestige-upgrade-card button:not(:disabled),
+.bc-motion-ready .pets button:not(:disabled) { position: relative; overflow: hidden; }
+.bc-motion-ready .loja button:not(:disabled)::after,
+.bc-motion-ready .upgrades button:not(:disabled)::after,
+.bc-motion-ready .prestige-upgrade-card button:not(:disabled)::after,
+.bc-motion-ready .pets button:not(:disabled)::after {
+  content: ""; position: absolute; inset: -20% auto -20% -55%; width: 28%;
+  pointer-events: none; opacity: 0;
+  background: linear-gradient(90deg,transparent,rgba(255,255,255,.48),transparent);
+}
+@media (hover:hover) and (prefers-reduced-motion:no-preference) {
+  .bc-motion-ready .loja button:not(:disabled):hover::after,
+  .bc-motion-ready .upgrades button:not(:disabled):hover::after,
+  .bc-motion-ready .prestige-upgrade-card button:not(:disabled):hover::after,
+  .bc-motion-ready .pets button:not(:disabled):hover::after {
+    opacity: 1; animation: bcButtonShine 650ms ease-out;
+  }
+  .bc-motion-ready .bc-smart-dashboard:hover { transform: translateY(-2px); transition: transform 260ms ease; }
+}
+html.sem-animacoes .bc-reveal,
+html.sem-animacoes .bc-reveal.is-visible { opacity: 1 !important; transform: none !important; filter: none !important; animation: none !important; }
+html.sem-animacoes .bc-idle-float,
+html.sem-animacoes .bc-idle-glow,
+html.sem-animacoes #burgerBtn.bc-burger-pop,
+html.sem-animacoes .bc-click-particle { animation: none !important; }
+html.sem-animacoes .bc-click-particle { display: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .bc-reveal, .bc-reveal.is-visible, .bc-idle-float, .bc-idle-glow,
+  #burgerBtn.bc-burger-pop, .bc-click-particle { animation: none !important; opacity: 1 !important; transform: none !important; filter: none !important; }
+  .bc-motion-ready .loja button::after, .bc-motion-ready .upgrades button::after,
+  .bc-motion-ready .prestige-upgrade-card button::after, .bc-motion-ready .pets button::after { display:none !important; }
+}
