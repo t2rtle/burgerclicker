@@ -94,7 +94,7 @@
     'Android: use Chrome ou um navegador compatível e abra o menu ⋮. Escolha “Instalar app” ou “Adicionar à tela inicial”, se aparecer.':'Android: use Chrome or a compatible browser and open the ⋮ menu. Choose “Install app” or “Add to home screen”, if available.',
     'Computador/Chrome: procure o ícone Instalar na barra de endereço ou abra ⋮ > Transmitir, salvar e compartilhar > Instalar página como app (o nome pode variar).':'Computer/Chrome: look for the Install icon in the address bar or open ⋮ > Cast, save, and share > Install page as app (the wording may vary).',
     'Safari no Mac: procure “Adicionar ao Dock” no menu Arquivo, caso sua versão do macOS ofereça esse recurso.':'Safari on Mac: look for “Add to Dock” in the File menu if your macOS version supports it.',
-    '⏳ Abrindo instalação…':'⏳ Opening installer…','[Burger Clicker] Backup antes do reset indisponível; o reset continuará:':'[Burger Clicker] Pre-reset backup unavailable; reset will continue:'
+    '⏳ Abrindo instalação…':'⏳ Opening installer…','[Burger Clicker] Backup antes do reset indisponível; o reset continuará:':'[Burger Clicker] Pre-reset backup unavailable; reset will continue:',
 
     'Arte 1':'Artwork 1','Arte 2':'Artwork 2','Sobre o jogo':'About the game','Política de Privacidade':'Privacy Policy','Última atualização: outubro de 2026 · Burger Clicker v1.0':'Last updated: October 2026 · Burger Clicker v1.0'
   };
