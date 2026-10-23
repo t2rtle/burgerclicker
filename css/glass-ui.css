@@ -340,3 +340,26 @@ html.tema-escuro .bc-recommendation { background: rgba(105,65,35,.24); border-co
   .bc-smart-dashboard { border-radius: 17px; padding: 12px; }
   .bc-tier-pill { max-width: 100%; }
 }
+
+
+/* Relatório de progresso offline: discreto, acessível e não bloqueante. */
+.bc-offline-toast {
+  position: fixed;
+  z-index: 1500;
+  inset: auto max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) auto;
+  display: flex; align-items: flex-start; gap: 14px;
+  width: min(420px,calc(100vw - 28px)); padding: 16px;
+  border: 1px solid rgba(255,255,255,.72); border-radius: 18px;
+  color: #432b20; background: rgba(255,250,239,.94);
+  box-shadow: 0 18px 48px rgba(28,18,10,.24),inset 0 1px 0 rgba(255,255,255,.75);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15); backdrop-filter: blur(18px) saturate(1.15);
+  animation: bcOfflineToastIn 220ms ease-out both;
+}
+.bc-offline-toast-content { flex: 1; min-width: 0; }
+.bc-offline-toast strong { display: block; }
+.bc-offline-toast p { margin: 5px 0; font-size: .9rem; }
+.bc-offline-toast small { opacity: .72; font-size: .78rem; }
+.bc-offline-toast-close { flex: 0 0 34px; min-height: 34px; width: 34px; padding: 0; border-radius: 10px; }
+html.tema-escuro .bc-offline-toast { color: #f4eee7; background: rgba(28,29,35,.96); border-color: rgba(255,255,255,.12); }
+@keyframes bcOfflineToastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@media(prefers-reduced-motion:reduce) { .bc-offline-toast { animation: none; } }
