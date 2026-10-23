@@ -129,17 +129,23 @@
   const originalText = new WeakMap();
   const lastAppliedText = new WeakMap();
   const originalAttributes = new WeakMap();
+  const lastAppliedAttributes = new WeakMap();
   let writingTranslation = false;
   function translateElement(el) {
     if (!(el instanceof Element)) return;
     let savedAttributes = originalAttributes.get(el);
     if (!savedAttributes) { savedAttributes = {}; originalAttributes.set(el, savedAttributes); }
+    let appliedAttributes = lastAppliedAttributes.get(el);
+    if (!appliedAttributes) { appliedAttributes = {}; lastAppliedAttributes.set(el, appliedAttributes); }
     for (const attr of ['aria-label','title','placeholder','alt','data-tooltip','data-tooltip-title','data-tooltip-description']) {
       if (el.hasAttribute(attr)) {
-        if (!(attr in savedAttributes)) savedAttributes[attr] = el.getAttribute(attr);
+        const current = el.getAttribute(attr);
+        if (!(attr in savedAttributes)) savedAttributes[attr] = current;
+        else if (current !== appliedAttributes[attr] && current !== translateText(savedAttributes[attr])) savedAttributes[attr] = current;
         const original = savedAttributes[attr];
         const translated = translateText(original);
-        if (translated !== el.getAttribute(attr)) el.setAttribute(attr, translated);
+        appliedAttributes[attr] = translated;
+        if (translated !== current) el.setAttribute(attr, translated);
       }
     }
     if (el.hasAttribute('data-i18n')) return;
