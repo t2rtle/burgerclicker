@@ -5,6 +5,7 @@
   const DEFAULT_LANGUAGE = 'en-US';
   const supported = new Set(['en-US', 'pt-BR', 'pt-PT']);
   let language = supported.has(localStorage.getItem(STORAGE_KEY)) ? localStorage.getItem(STORAGE_KEY) : DEFAULT_LANGUAGE;
+  let hasAppliedLanguage = false;
 
   const en = {
     'Principal':'Home','Sobre':'About','Privacidade':'Privacy','Contato':'Contact','Contacto':'Contact',
@@ -22,7 +23,7 @@
     'Resetar todo o progresso':'Reset all progress','Aplicativo':'App','Instale o Burger Clicker quando o navegador oferecer suporte. O diagnóstico abaixo verifica manifesto, ícones, segurança, Service Worker, cache e armazenamento neste dispositivo.':'Install Burger Clicker when your browser supports it. The diagnostics below check the manifest, icons, security, Service Worker, cache, and storage on this device.',
     'Instalar aplicativo':'Install app','Abrir app':'Open app','Executar diagnóstico PWA':'Run PWA diagnostics','Copiar relatório':'Copy report',
     'Verificando disponibilidade da instalação...':'Checking installation availability...','Pronto para verificar a instalação do aplicativo.':'Ready to check app installation.',
-    'Jogar':'Play','JOGAR':'PLAY','Bem-vindo de volta! Confira as novidades antes de começar a sua fábrica de hambúrgueres.':'Welcome back! Check out what is new before starting your burger factory.',
+    'Jogar':'Play','JOGAR':'PLAY','📋 Changelog — v1.0':'📋 Changelog — v1.0','Bem-vindo de volta! Confira as novidades antes de começar a sua fábrica de hambúrgueres.':'Welcome back! Check out what is new before starting your burger factory.',
     'Sistema completo de progressão com níveis, XP, negócios e upgrades.':'Complete progression system with levels, XP, businesses, and upgrades.',
     'Rebirth com fichas, bônus permanentes e Loja de Prestígio.':'Rebirth with tokens, permanent bonuses, and the Prestige Shop.',
     'Sistema de pets com coleção, equipamento, nomes e evolução.':'Pet system with collection, equipping, names, and leveling.',
@@ -261,8 +262,9 @@
   }
   function apply(nextLanguage) {
     const normalizedLanguage = supported.has(nextLanguage) ? nextLanguage : DEFAULT_LANGUAGE;
-    if (normalizedLanguage === language && document.documentElement.lang === language) return;
+    if (hasAppliedLanguage && normalizedLanguage === language && document.documentElement.lang === language) return;
     language = normalizedLanguage;
+    hasAppliedLanguage = true;
     document.documentElement.lang = language;
     translateElement(document.body);
   }
