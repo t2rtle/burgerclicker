@@ -87,21 +87,33 @@
     }
     return result;
   }
+  const originalText = new WeakMap();
+  const lastAppliedText = new WeakMap();
+  const originalAttributes = new WeakMap();
+  let writingTranslation = false;
   function translateElement(el) {
     if (!(el instanceof Element)) return;
+    let savedAttributes = originalAttributes.get(el);
+    if (!savedAttributes) { savedAttributes = {}; originalAttributes.set(el, savedAttributes); }
     for (const attr of ['aria-label','title','placeholder','alt']) {
       if (el.hasAttribute(attr)) {
-        const value = el.getAttribute(attr);
-        const translated = translateText(value);
-        if (translated !== value) el.setAttribute(attr, translated);
+        if (!(attr in savedAttributes)) savedAttributes[attr] = el.getAttribute(attr);
+        const original = savedAttributes[attr];
+        const translated = translateText(original);
+        if (translated !== el.getAttribute(attr)) el.setAttribute(attr, translated);
       }
     }
     if (el.matches('script,style,textarea, input[type="text"], input[type="file"]')) return;
     for (const node of el.childNodes) {
       if (node.nodeType === Node.TEXT_NODE) {
-        const value = node.nodeValue;
-        const translated = translateText(value);
-        if (translated !== value) node.nodeValue = translated;
+        if (!originalText.has(node)) originalText.set(node, node.nodeValue);
+        const translated = translateText(originalText.get(node));
+        if (translated !== node.nodeValue) {
+          writingTranslation = true;
+          lastAppliedText.set(node, translated);
+          node.nodeValue = translated;
+          writingTranslation = false;
+        }
       } else if (node.nodeType === Node.ELEMENT_NODE) translateElement(node);
     }
   }
@@ -112,17 +124,32 @@
   }
   const observer = new MutationObserver(records => {
     for (const record of records) {
-      if (record.type === 'characterData' && record.target.nodeType === Node.TEXT_NODE) {
-        const value = record.target.nodeValue;
+      if (record.type === 'characterData' && record.target.nodeType === Node.TEXT_NODE && !writingTranslation) {
+        const node = record.target;
+        const value = node.nodeValue;
+        if (lastAppliedText.has(node) && lastAppliedText.get(node) === value) continue;
+        originalText.set(node, value);
         const translated = translateText(value);
-        if (translated !== value) record.target.nodeValue = translated;
+        if (translated !== value) {
+          writingTranslation = true;
+          lastAppliedText.set(node, translated);
+          node.nodeValue = translated;
+          writingTranslation = false;
+        } else {
+          lastAppliedText.delete(node);
+        }
       }
       record.addedNodes?.forEach(node => {
         if (node.nodeType === Node.ELEMENT_NODE) translateElement(node);
         else if (node.nodeType === Node.TEXT_NODE) {
-          const value = node.nodeValue;
-          const translated = translateText(value);
-          if (translated !== value) node.nodeValue = translated;
+          originalText.set(node, node.nodeValue);
+          const translated = translateText(node.nodeValue);
+          if (translated !== node.nodeValue) {
+            writingTranslation = true;
+            lastAppliedText.set(node, translated);
+            node.nodeValue = translated;
+            writingTranslation = false;
+          }
         }
       });
     }
