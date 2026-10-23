@@ -18,6 +18,7 @@
     let clickAudio = null;
     let musicAudio = null;
     let initialized = false;
+    let userInteracted = false;
 
     function getConfigBool(id, fallback = true) {
         const input = document.getElementById(id);
@@ -41,8 +42,11 @@
             const existing = document.getElementById("somClique");
             clickAudio = existing instanceof HTMLAudioElement ? existing : new Audio(CLICK_URL);
             clickAudio.preload = "auto";
-            clickAudio.src = CLICK_URL;
-            clickAudio.load();
+            const target = new URL(CLICK_URL, document.baseURI).href;
+            if (clickAudio.src !== target) {
+                clickAudio.src = CLICK_URL;
+                clickAudio.load();
+            }
         }
         return clickAudio;
     }
@@ -51,10 +55,13 @@
         if (!(musicAudio instanceof HTMLAudioElement)) {
             const existing = document.getElementById("musicaFundo");
             musicAudio = existing instanceof HTMLAudioElement ? existing : new Audio(MUSIC_URL);
-            musicAudio.preload = "auto";
+            musicAudio.preload = "metadata";
             musicAudio.loop = true;
-            musicAudio.src = MUSIC_URL;
-            musicAudio.load();
+            const target = new URL(MUSIC_URL, document.baseURI).href;
+            if (musicAudio.src !== target) {
+                musicAudio.src = MUSIC_URL;
+                musicAudio.load();
+            }
         }
         return musicAudio;
     }
@@ -189,7 +196,7 @@
             musicNetworkState: music.networkState,
             musicPaused: music.paused,
             musicVolume: music.volume,
-            userInteracted: true
+            userInteracted
         });
     }
 
@@ -231,6 +238,10 @@
         ]);
         return Object.freeze({ click, music, estado: obterEstado() });
     }
+
+    document.addEventListener("pointerdown", () => { userInteracted = true; }, { capture: true, passive: true });
+    document.addEventListener("keydown", () => { userInteracted = true; }, { capture: true });
+    document.addEventListener("click", () => { userInteracted = true; }, { capture: true });
 
     // Efeito de clique global: cobre botões estáticos e criados dinamicamente,
     // incluindo o hambúrguer principal, loja, upgrades, pets e menus.
