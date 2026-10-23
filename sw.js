@@ -1,6 +1,6 @@
 /* Burger Clicker PWA Service Worker */
 const CACHE_PREFIX = "burger-clicker-";
-const CACHE_NAME = "burger-clicker-v36";
+const CACHE_NAME = "burger-clicker-v37";
 const APP_SHELL = [
     "/", "/index.html", "/manifest.json", "/style.css",
     "/css/pets.css", "/css/tooltips.css", "/css/settings.css", "/css/navigation.css", "/css/welcome.css", "/css/glass-ui.css",
@@ -9,7 +9,94 @@ const APP_SHELL = [
     "/js/pwa.js", "/js/pwa-diagnostics.js", "/js/reset.js", "/js/navigation.js",
     "/media/background.jpg", "/media/art_1.png", "/media/art_2.png", "/media/click.wav", "/media/music.mp3", "/media/pwa-icon.svg"
 ];
-self.addEventListener("install",event=>{event.waitUntil((async()=>{const c=await caches.open(CACHE_NAME);await Promise.allSettled(APP_SHELL.map(async p=>{try{const r=await fetch(p,{cache:"no-cache"});if(r.ok&&r.type==="basic")await c.put(p,r);}catch(e){console.warn("[Burger Clicker PWA] Falha ao pré-cachear:",p,e);}}));await self.skipWaiting();})());});
-self.addEventListener("activate",event=>{event.waitUntil((async()=>{const names=await caches.keys();await Promise.all(names.filter(n=>n.startsWith(CACHE_PREFIX)&&n!==CACHE_NAME).map(n=>caches.delete(n)));await self.clients.claim();})());});
-self.addEventListener("message",event=>{if(event.data?.type==="SKIP_WAITING")self.skipWaiting();if(event.data?.type==="CLEAR_APP_CACHE")event.waitUntil(caches.keys().then(ns=>Promise.all(ns.filter(n=>n.startsWith(CACHE_PREFIX)).map(n=>caches.delete(n)))));});
-self.addEventListener("fetch",event=>{const r=event.request;if(r.method!=="GET")return;const u=new URL(r.url);if(u.origin!==self.location.origin)return;if(r.mode==="navigate"){event.respondWith((async()=>{try{const x=await fetch(r,{cache:"no-store"});if(x?.ok){const c=await caches.open(CACHE_NAME);await c.put("/index.html",x.clone());}return x;}catch{const c=await caches.match(r)||await caches.match("/index.html")||await caches.match("/");return c||new Response("Sem conexão",{status:503});}})());return;}event.respondWith((async()=>{const c=await caches.match(r);if(c)return c;try{const x=await fetch(r);if(x?.ok&&x.type==="basic"){const c2=await caches.open(CACHE_NAME);await c2.put(r,x.clone());}return x;}catch{return new Response("",{status:504,statusText:"Offline"});}})());});
+
+self.addEventListener("install", event => {
+    event.waitUntil((async () => {
+        const cache = await caches.open(CACHE_NAME);
+        await Promise.allSettled(APP_SHELL.map(async path => {
+            try {
+                const response = await fetch(path, { cache: "no-cache" });
+                if (response.ok && response.type === "basic") await cache.put(path, response);
+            } catch (error) {
+                console.warn("[Burger Clicker PWA] Falha ao pré-cachear:", path, error);
+            }
+        }));
+        await self.skipWaiting();
+    })());
+});
+
+self.addEventListener("activate", event => {
+    event.waitUntil((async () => {
+        const names = await caches.keys();
+        await Promise.all(names.filter(name => name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME).map(name => caches.delete(name)));
+        await self.clients.claim();
+    })());
+});
+
+self.addEventListener("message", event => {
+    if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
+    if (event.data?.type === "CLEAR_APP_CACHE") {
+        event.waitUntil(caches.keys().then(names => Promise.all(
+            names.filter(name => name.startsWith(CACHE_PREFIX)).map(name => caches.delete(name))
+        )));
+    }
+});
+
+self.addEventListener("fetch", event => {
+    const request = event.request;
+    if (request.method !== "GET") return;
+
+    const url = new URL(request.url);
+    if (url.origin !== self.location.origin) return;
+
+    if (request.mode === "navigate") {
+        event.respondWith((async () => {
+            try {
+                const response = await fetch(request, { cache: "no-store" });
+                if (response?.ok) {
+                    const cache = await caches.open(CACHE_NAME);
+                    await cache.put("/index.html", response.clone());
+                }
+                return response;
+            } catch {
+                const cache = await caches.open(CACHE_NAME);
+                return await caches.match(request) || await cache.match("/index.html") || await cache.match("/") || new Response("Sem conexão", { status: 503 });
+            }
+        })());
+        return;
+    }
+
+    // JavaScript e CSS são atualizados pela rede primeiro. O cache continua
+    // sendo usado como fallback offline, evitando que uma versão antiga do
+    // áudio/interface fique presa até o usuário fazer Ctrl+F5.
+    const caminho = url.pathname.toLowerCase();
+    const codigo = caminho.endsWith(".js") || caminho.endsWith(".css");
+    if (codigo) {
+        event.respondWith((async () => {
+            try {
+                const response = await fetch(request, { cache: "no-store" });
+                if (response?.ok && response.type === "basic") {
+                    const cache = await caches.open(CACHE_NAME);
+                    await cache.put(request, response.clone());
+                }
+                return response;
+            } catch {
+                return await caches.match(request) || new Response("", { status: 504, statusText: "Offline" });
+            }
+        })());
+        return;
+    }
+
+    event.respondWith((async () => {
+        const cache = await caches.open(CACHE_NAME);
+        const cached = await cache.match(request);
+        if (cached) return cached;
+        try {
+            const response = await fetch(request);
+            if (response?.ok && response.type === "basic") await cache.put(request, response.clone());
+            return response;
+        } catch {
+            return new Response("", { status: 504, statusText: "Offline" });
+        }
+    })());
+});
