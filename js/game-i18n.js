@@ -8,6 +8,15 @@
   let hasAppliedLanguage = false;
 
   const en = {
+    '🔄 Atualizações do aplicativo':'🔄 App updates','Verificar atualizações':'Check for updates','⏳ Verificando…':'⏳ Checking…','⬇️ Atualizar e reiniciar':'⬇️ Update and restart','⏳ Preparando atualização…':'⏳ Preparing update…','Preparando verificação de atualizações…':'Preparing update check…',
+    '✨ Uma nova versão está pronta. Toque em “Atualizar e reiniciar” quando quiser aplicar a atualização.':'✨ A new version is ready. Select “Update and restart” when you want to apply it.',
+    'Você está offline. Conecte-se à internet para verificar se há uma nova versão.':'You are offline. Connect to the internet to check for a new version.',
+    'Verificando a versão publicada…':'Checking the published version…','✅ Você já está usando a versão disponível. Nenhuma atualização foi encontrada.':'✅ You are already using the latest available version. No update was found.',
+    'Atualizações verificadas automaticamente. Nenhuma nova versão disponível.':'Updates checked automatically. No new version is available.',
+    'Não foi possível verificar agora. Tente novamente em instantes.':'Could not check right now. Try again shortly.',
+    'Verificação automática de atualizações ativada. Você pode verificar manualmente quando quiser.':'Automatic update checks are enabled. You can check manually at any time.',
+    'Aplicando a atualização. O aplicativo será recarregado; seu progresso salvo pelo jogo não deve ser apagado.':'Applying the update. The app will reload; your saved game progress should remain intact.',
+    'Não foi possível aplicar a atualização. Feche outras janelas do app e tente novamente.':'Could not apply the update. Close other app windows and try again.',
     'Principal':'Home','Sobre':'About','Privacidade':'Privacy','Contato':'Contact','Contacto':'Contact',
     'Configurações':'Settings','Abrir configurações':'Open settings','Fechar configurações':'Close settings','Menu de configurações':'Settings menu',
     'Personalize sua experiência no Burger Clicker. As opções ficam salvas neste dispositivo.':'Customize your Burger Clicker experience. Your options are saved on this device.',
@@ -155,6 +164,15 @@
   };
 
   const ptPTExtra = {
+    '🔄 Atualizações do aplicativo':'🔄 Atualizações da aplicação','Verificar atualizações':'Verificar atualizações','⏳ Verificando…':'⏳ A verificar…','⬇️ Atualizar e reiniciar':'⬇️ Atualizar e reiniciar','⏳ Preparando atualização…':'⏳ A preparar atualização…','Preparando verificação de atualizações…':'A preparar a verificação de atualizações…',
+    '✨ Uma nova versão está pronta. Toque em “Atualizar e reiniciar” quando quiser aplicar a atualização.':'✨ Está pronta uma nova versão. Toque em “Atualizar e reiniciar” quando quiser aplicar a atualização.',
+    'Você está offline. Conecte-se à internet para verificar se há uma nova versão.':'Está sem ligação à Internet. Ligue-se à Internet para verificar se existe uma nova versão.',
+    'Verificando a versão publicada…':'A verificar a versão publicada…','✅ Você já está usando a versão disponível. Nenhuma atualização foi encontrada.':'✅ Já está a utilizar a versão disponível. Não foi encontrada nenhuma atualização.',
+    'Atualizações verificadas automaticamente. Nenhuma nova versão disponível.':'Atualizações verificadas automaticamente. Não existe nenhuma versão nova disponível.',
+    'Não foi possível verificar agora. Tente novamente em instantes.':'Não foi possível verificar agora. Tente novamente dentro de instantes.',
+    'Verificação automática de atualizações ativada. Você pode verificar manualmente quando quiser.':'A verificação automática de atualizações está ativa. Pode verificar manualmente quando quiser.',
+    'Aplicando a atualização. O aplicativo será recarregado; seu progresso salvo pelo jogo não deve ser apagado.':'A aplicar a atualização. A aplicação será recarregada; o progresso guardado não deverá ser apagado.',
+    'Não foi possível aplicar a atualização. Feche outras janelas do app e tente novamente.':'Não foi possível aplicar a atualização. Feche outras janelas da aplicação e tente novamente.',
     'salvas':'guardadas','salvo':'guardado','Salvar':'Guardar',
     'Resetar':'Repor','resetar':'repor','arquivo':'ficheiro','Arquivos':'Ficheiros','arquivo de backup':'ficheiro de cópia de segurança',
     'aplicativo':'aplicação','Aplicativo':'Aplicação','celular':'telemóvel','tela inicial':'ecrã inicial','usuário':'utilizador','jogador':'jogador',
