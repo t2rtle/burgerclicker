@@ -5,14 +5,14 @@
  *
  * Os dois arquivos são recursos locais do próprio site:
  *   /media/music.mp3
- *   /media/click.wav
+ *   /media/click.mp3
  *
  * A música e o efeito usam HTMLAudioElement diretamente, exatamente como
  * os <audio> existentes no index.html. Não há Web Audio API, pools,
  * cooldowns ou lógica de cache para decidir como reproduzir o som.
  */
 (() => {
-    const CLICK_URL = "/media/click.wav";
+    const CLICK_URL = "/media/click.mp3";
     const MUSIC_URL = "/media/music.mp3";
 
     let clickAudio = null;
@@ -101,11 +101,11 @@
         try {
             const promise = click.play();
             if (promise && typeof promise.catch === "function") {
-                promise.catch(error => console.warn("[Burger Clicker] Não foi possível reproduzir click.wav:", error));
+                promise.catch(error => console.warn("[Burger Clicker] Não foi possível reproduzir click.mp3:", error));
             }
             return true;
         } catch (error) {
-            console.warn("[Burger Clicker] Não foi possível reproduzir click.wav:", error);
+            console.warn("[Burger Clicker] Não foi possível reproduzir click.mp3:", error);
             return false;
         }
     }
