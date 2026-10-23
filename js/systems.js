@@ -521,13 +521,42 @@ function iniciarOffline() {
         hamburgueres += ganhoOffline;
         hamburgueresTotais += ganhoOffline;
         runHamburgueres += ganhoOffline;
-        alert("Enquanto você estava fora, produziu " + formatarNumero(ganhoOffline) +
-            " hambúrgueres!\n\nTempo contabilizado: " + Math.floor(segundosOffline / 60) + " minutos.");
+        mostrarResumoOffline(ganhoOffline, segundosOffline);
     }
     ultimoSave = agora;
 }
 
 // =====================
+
+/* Relatório de retorno não bloqueante: mostra o progresso offline sem interromper o jogo. */
+function mostrarResumoOffline(ganho, segundos) {
+    if (!document.body) return;
+    document.querySelector(".bc-offline-toast")?.remove();
+    const aviso = document.createElement("aside");
+    aviso.className = "bc-offline-toast";
+    aviso.setAttribute("role", "status");
+    aviso.setAttribute("aria-live", "polite");
+    const conteudo = document.createElement("div");
+    conteudo.className = "bc-offline-toast-content";
+    const titulo = document.createElement("strong");
+    titulo.textContent = "🍔 Bem-vindo de volta!";
+    const detalhe = document.createElement("p");
+    detalhe.textContent = "Você produziu " + formatarNumero(ganho) + " hambúrgueres enquanto estava fora.";
+    const tempo = document.createElement("small");
+    const minutos = Math.floor(segundos / 60);
+    tempo.textContent = "Tempo contabilizado: " + (minutos >= 60 ? Math.floor(minutos / 60) + " h " + (minutos % 60) + " min" : minutos + " min");
+    const fechar = document.createElement("button");
+    fechar.type = "button";
+    fechar.className = "bc-offline-toast-close";
+    fechar.setAttribute("aria-label", "Fechar relatório de progresso offline");
+    fechar.textContent = "✕";
+    fechar.addEventListener("click", () => aviso.remove(), { once: true });
+    conteudo.append(titulo, detalhe, tempo);
+    aviso.append(conteudo, fechar);
+    document.body.appendChild(aviso);
+    window.setTimeout(() => aviso.remove(), 14000);
+}
+
 // SISTEMA DE PETS
 // =====================
 
