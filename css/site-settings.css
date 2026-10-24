@@ -31,8 +31,16 @@ html.tema-escuro body:not(.info-page) textarea {
     border-color: rgba(255, 255, 255, .16);
 }
 
+html.tema-escuro body:not(.info-page) #burgerBtn {
+    background: transparent !important;
+}
+
 html.tema-escuro body:not(.info-page) button:hover:not(:disabled) {
     background-color: #353840;
+}
+
+html.tema-escuro body:not(.info-page) #burgerBtn:hover {
+    background: transparent !important;
 }
 
 html.tema-escuro body:not(.info-page) button:disabled {
