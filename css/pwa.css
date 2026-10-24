@@ -36,3 +36,79 @@ html.tema-escuro #pwaAplicarAtualizacaoBtn {
 @media (prefers-reduced-motion: reduce) {
     .bc-pwa-update * { scroll-behavior: auto; }
 }
+
+
+/* In-app update prompt: shown only while the installed PWA is running. */
+.bc-pwa-update-popup[hidden] {
+    display: none !important;
+}
+.bc-pwa-update-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: grid;
+    place-items: center;
+    padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
+    background: rgba(24, 20, 14, 0.62);
+    backdrop-filter: blur(5px);
+}
+.bc-pwa-update-popup__card {
+    width: min(100%, 420px);
+    padding: 24px;
+    border: 1px solid rgba(255, 152, 0, 0.42);
+    border-radius: 22px;
+    background: var(--painel-fundo, #fff8e9);
+    color: var(--texto-principal, #332719);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    animation: bcPwaUpdateEnter 180ms ease-out;
+}
+.bc-pwa-update-popup__icon {
+    font-size: 2.4rem;
+    margin-bottom: 8px;
+}
+.bc-pwa-update-popup__card h2 {
+    margin: 0 0 10px;
+}
+.bc-pwa-update-popup__card p {
+    margin: 0 0 20px;
+    line-height: 1.5;
+}
+.bc-pwa-update-popup__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+.bc-pwa-update-popup__actions button {
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+.bc-pwa-update-popup__actions [data-pwa-update-apply] {
+    border: 1px solid #26713a;
+    background: #e6f6e9;
+    color: #174b25;
+    font-weight: 700;
+}
+.bc-pwa-update-popup__actions [data-pwa-update-later] {
+    border: 1px solid rgba(120, 100, 75, 0.35);
+    background: transparent;
+    color: inherit;
+}
+html.tema-escuro .bc-pwa-update-popup__card {
+    background: #24211c;
+    color: #fff8e9;
+}
+html.tema-escuro .bc-pwa-update-popup__actions [data-pwa-update-apply] {
+    background: #24472c;
+    color: #e9ffed;
+}
+@keyframes bcPwaUpdateEnter {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .bc-pwa-update-popup__card { animation: none; }
+}

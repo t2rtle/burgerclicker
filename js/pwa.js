@@ -15,6 +15,8 @@
     let updateInProgress = false;
     let reloadAfterControllerChange = false;
     let checkInProgress = false;
+    let updatePopup = null;
+    let updatePopupShown = false;
 
     const get = id => document.getElementById(id);
     const isStandalone = () =>
@@ -115,9 +117,45 @@
         setInstallButtonState();
     }
 
+    function ensureUpdatePopup() {
+        if (updatePopup) return updatePopup;
+        const popup = document.createElement("section");
+        popup.className = "bc-pwa-update-popup";
+        popup.hidden = true;
+        popup.setAttribute("role", "dialog");
+        popup.setAttribute("aria-modal", "true");
+        popup.setAttribute("aria-labelledby", "bcPwaUpdatePopupTitle");
+        popup.innerHTML = `
+            <div class="bc-pwa-update-popup__card">
+                <div class="bc-pwa-update-popup__icon" aria-hidden="true">✨</div>
+                <h2 id="bcPwaUpdatePopupTitle">Burger Clicker atualizado!</h2>
+                <p>Uma nova versão do aplicativo está pronta. Atualize agora para receber as melhorias e correções mais recentes.</p>
+                <div class="bc-pwa-update-popup__actions">
+                    <button type="button" data-pwa-update-apply>⬇️ Atualizar agora</button>
+                    <button type="button" data-pwa-update-later>Depois</button>
+                </div>
+            </div>`;
+        popup.querySelector("[data-pwa-update-apply]").addEventListener("click", () => {
+            popup.hidden = true;
+            applyUpdate();
+        });
+        popup.querySelector("[data-pwa-update-later]").addEventListener("click", () => {
+            popup.hidden = true;
+            updatePopupShown = false;
+        });
+        document.body.appendChild(popup);
+        updatePopup = popup;
+        return popup;
+    }
+
     function showUpdateAvailable() {
         setUpdateButtons({ available: true });
-        setUpdateStatus("✨ Uma nova versão está pronta. Toque em “Atualizar e reiniciar” quando quiser aplicar a atualização.");
+        setUpdateStatus("✨ Uma nova versão está pronta. Você pode atualizar agora ou continuar jogando e aplicar depois.");
+        if (isStandalone() && !updatePopupShown) {
+            const popup = ensureUpdatePopup();
+            popup.hidden = false;
+            updatePopupShown = true;
+        }
     }
 
     function watchInstallingWorker(worker) {
@@ -158,6 +196,8 @@
                 setUpdateStatus("Uma verificação encontrou recursos novos. Aguardando a instalação segura da atualização…");
             } else {
                 setUpdateButtons({ available: false });
+                if (updatePopup) updatePopup.hidden = true;
+                updatePopupShown = false;
                 setUpdateStatus(manual
                     ? "✅ Você já está usando a versão disponível. Nenhuma atualização foi encontrada."
                     : "Atualizações verificadas automaticamente. Nenhuma nova versão disponível.");
