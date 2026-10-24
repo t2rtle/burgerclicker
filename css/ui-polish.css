@@ -1,0 +1,63 @@
+/* Settings button stays beside the language selector. */
+.game-language-topbar .info-language {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+#configBtn.bc-settings-top-btn {
+    margin: 0;
+    width: auto;
+    min-height: 40px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+/* Stable close button for the Settings modal. */
+#configModal .config-caixa { position: relative; }
+#configModal .config-cabecalho { position: relative; padding-right: 50px; }
+#configModal #configFecharBtn {
+    position: absolute;
+    top: -4px;
+    right: 0;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(92,51,23,.08);
+    color: #5c3317;
+    font-size: 1.05rem;
+    line-height: 1;
+    box-shadow: none;
+    transform: none;
+}
+
+#configModal #configFecharBtn:hover {
+    transform: scale(1.06);
+    background: rgba(92,51,23,.14);
+}
+
+html.tema-escuro #configModal #configFecharBtn {
+    background: rgba(255,255,255,.09);
+    color: #f4eee7;
+}
+
+/* Keep the welcome primary action immediately below its subtitle. */
+#welcomeScreen .welcome-caixa { display: flex; flex-direction: column; }
+#welcomeScreen #welcomePlayBtn { order: 3; margin: 4px auto 10px; }
+#welcomeScreen .welcome-audio-aviso { order: 4; }
+#welcomeScreen .welcome-changelog { order: 5; }
+
+@media (max-width: 600px) {
+    #welcomeScreen #welcomePlayBtn { margin-top: 2px; }
+    .game-language-topbar .info-language { justify-content: center; }
+}
