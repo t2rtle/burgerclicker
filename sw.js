@@ -1,6 +1,6 @@
 /* Burger Clicker PWA Service Worker — update-aware cache */
 const CACHE_PREFIX = "burger-clicker-";
-const CACHE_NAME = "burger-clicker-v60";
+const CACHE_NAME = "burger-clicker-v61";
 const APP_SHELL = [
     "/", "/index.html", "/manifest.json", "/style.css",
     "/css/pets.css", "/css/tooltips.css", "/css/settings.css", "/css/navigation.css", "/css/welcome.css", "/css/glass-ui.css", "/css/info-pages.css", "/css/animations.css", "/css/pwa.css",
@@ -21,7 +21,7 @@ self.addEventListener("install", event => {
                 console.warn("[Burger Clicker PWA] Recurso não pré-cacheado:", path, error);
             }
         }));
-        // Deliberately do not call skipWaiting here: the player chooses when to update.
+        // Activate the new worker immediately so fixes to audio/network handling are not\n        // held behind an older worker. Game progress is stored separately from this cache.\n        await self.skipWaiting();
     })());
 });
 
