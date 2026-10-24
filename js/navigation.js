@@ -7,6 +7,7 @@
         ["rebirth", "⭐ Rebirth", ".prestige"],
         ["prestige", "🪙 Loja de Prestígio", ".prestige-shop-panel"],
         ["pets", "🐾 Pets", ".painel-pets"],
+        ["contratos", "📜 Contratos", ".contratos"],
         ["estatisticas", "📊 Estatísticas", ".estatisticas"],
         ["conquistas", "🏆 Conquistas", ".conquistas"]
     ];
@@ -27,8 +28,6 @@
         const configBtn = document.getElementById("configBtn");
         if (!painel || !configBtn || document.querySelector(".bc-areas-nav")) return;
 
-        // Esta imagem fica solta entre o painel principal e a Loja no HTML
-        // antigo e é apenas decorativa; escondê-la evita espaço vertical inútil.
         document.querySelectorAll('body > img[src*="art_1"]').forEach(imagem => {
             imagem.hidden = true;
             imagem.setAttribute("aria-hidden", "true");
@@ -78,15 +77,12 @@
             secoes.push({ botao, elemento });
         });
 
-        // Configurações passa a ficar na mesma barra e abaixo do hambúrguer.
         configBtn.classList.add("bc-area-btn", "bc-config-area-btn");
         configBtn.style.margin = "";
         nav.appendChild(configBtn);
 
         painel.insertAdjacentElement("afterend", nav);
 
-        // A Loja abre primeiro para manter o fluxo principal acessível sem
-        // devolver à página a altura enorme que existia anteriormente.
         if (secoes.length) {
             secoes[0].elemento.hidden = false;
             secoes[0].botao.setAttribute("aria-expanded", "true");
