@@ -1,0 +1,228 @@
+/* =========================================================
+   MENU DE JOGO + MISSÕES DIÁRIAS
+   Burger Clicker — UI responsiva
+========================================================= */
+
+.bc-top-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-left: 10px;
+    vertical-align: middle;
+    flex-wrap: wrap;
+}
+
+.bc-top-actions button,
+#gameMenuBtn {
+    border: 0;
+    border-radius: 12px;
+    padding: 9px 13px;
+    min-height: 40px;
+    font: inherit;
+    font-weight: 700;
+    color: #432b20;
+    background: rgba(255,255,255,.9);
+    box-shadow: 0 4px 12px rgba(60,35,20,.14);
+    cursor: pointer;
+    transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+    touch-action: manipulation;
+}
+
+.bc-top-actions button:hover,
+#gameMenuBtn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.04);
+    box-shadow: 0 6px 16px rgba(60,35,20,.18);
+}
+
+.bc-top-actions button:active,
+#gameMenuBtn:active {
+    transform: translateY(1px);
+}
+
+.bc-game-menu-anchor {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 14px auto 26px;
+}
+
+.bc-game-menu-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2100;
+    display: grid;
+    place-items: center;
+    padding: max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+    background: rgba(0,0,0,.56);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.bc-game-menu-modal[hidden] { display:none !important; }
+
+.bc-game-menu-panel {
+    position: relative;
+    width: min(720px,calc(100vw - 24px));
+    max-height: min(84dvh,780px);
+    overflow: auto;
+    padding: clamp(18px,4vw,30px);
+    border: 1px solid rgba(255,255,255,.72);
+    border-radius: 24px;
+    background: rgba(255,248,233,.96);
+    color: #432b20;
+    box-shadow: 0 24px 70px rgba(0,0,0,.36);
+    text-align: left;
+}
+
+.bc-game-menu-head {
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    padding-right:46px;
+}
+
+.bc-game-menu-head h2 { margin:0; }
+.bc-game-menu-head p { margin:5px 0 0; opacity:.78; }
+
+#gameMenuCloseBtn {
+    position:absolute;
+    top:14px;
+    right:14px;
+    width:40px;
+    height:40px;
+    padding:0;
+    border:0;
+    border-radius:50%;
+    background:rgba(92,51,23,.08);
+    color:#5c3317;
+    font:700 1.15rem/1 inherit;
+    cursor:pointer;
+}
+
+.bc-menu-summary {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+    margin:18px 0;
+}
+
+.bc-menu-stat {
+    padding:13px;
+    border-radius:15px;
+    background:rgba(139,69,19,.07);
+    text-align:center;
+}
+
+.bc-menu-stat span { display:block; font-size:.78rem; opacity:.72; }
+.bc-menu-stat strong { display:block; margin-top:3px; font-size:1.25rem; }
+
+.bc-mission-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));
+    gap:12px;
+}
+
+.bc-mission-card {
+    min-width:0;
+    padding:15px;
+    border:1px solid rgba(92,51,23,.12);
+    border-radius:17px;
+    background:rgba(255,255,255,.58);
+}
+
+.bc-mission-card.done { opacity:.68; }
+.bc-mission-card h3 { margin:0 0 5px; line-height:1.25; }
+.bc-mission-card p { margin:0 0 10px; font-size:.9rem; opacity:.8; }
+.bc-mission-progress { font-size:.8rem; margin-bottom:6px; }
+.bc-mission-track { height:8px; overflow:hidden; border-radius:99px; background:rgba(120,100,80,.18); }
+.bc-mission-track span { display:block; width:0; height:100%; border-radius:inherit; background:linear-gradient(90deg,#c97831,#f4bf63); transition:width .2s ease; }
+.bc-mission-reward { display:block; margin:10px 0; font-weight:700; }
+.bc-mission-card button { width:100%; min-height:40px; }
+
+.bc-menu-rank {
+    margin-top:16px;
+    padding:14px;
+    border-radius:16px;
+    background:linear-gradient(135deg,rgba(255,193,7,.15),rgba(139,69,19,.07));
+}
+
+.bc-menu-rank strong { display:block; margin-bottom:4px; }
+.bc-menu-rank p { margin:0; opacity:.8; }
+
+html.tema-escuro .bc-top-actions button,
+html.tema-escuro #gameMenuBtn { background:rgba(35,36,42,.94); color:#f4eee7; }
+html.tema-escuro .bc-game-menu-panel { background:#18191e; color:#f4eee7; }
+html.tema-escuro .bc-mission-card { background:rgba(45,46,53,.75); border-color:rgba(255,255,255,.1); }
+html.tema-escuro .bc-menu-stat { background:rgba(255,255,255,.06); }
+html.tema-escuro #gameMenuCloseBtn { background:rgba(255,255,255,.09); color:#f4eee7; }
+
+@media (max-width:700px) {
+    .game-language-topbar .info-language { flex-wrap:wrap; justify-content:center; }
+    .bc-top-actions { margin-left:0; width:100%; }
+    .bc-top-actions button { flex:1 1 150px; }
+    .bc-menu-summary { grid-template-columns:1fr; }
+    .bc-game-menu-panel { border-radius:18px; }
+}
+
+@media (max-width:600px) {
+    .bc-game-menu-anchor { margin:10px auto 20px; }
+}
+
+/* Correção definitiva do cabeçalho do modal de configurações. */
+#configModal .config-caixa {
+    position:relative;
+}
+
+#configModal .config-cabecalho {
+    position:relative;
+    padding-right:50px;
+}
+
+#configModal #configFecharBtn {
+    position:absolute;
+    top:-4px;
+    right:0;
+    width:42px;
+    height:42px;
+    min-width:42px;
+    min-height:42px;
+    margin:0;
+    padding:0;
+    display:grid;
+    place-items:center;
+    border:0;
+    border-radius:50%;
+    background:rgba(92,51,23,.08);
+    color:#5c3317;
+    font-size:1.05rem;
+    line-height:1;
+    box-shadow:none;
+    transform:none;
+}
+
+#configModal #configFecharBtn:hover {
+    transform:scale(1.06);
+    background:rgba(92,51,23,.14);
+}
+
+html.tema-escuro #configModal #configFecharBtn {
+    background:rgba(255,255,255,.09);
+    color:#f4eee7;
+}
+
+/* Na tela inicial, o botão Jogar fica visualmente mais acima. */
+#welcomeScreen .welcome-caixa {
+    display:flex;
+    flex-direction:column;
+}
+
+#welcomeScreen #welcomePlayBtn { order:3; margin:4px auto 10px; }
+#welcomeScreen .welcome-audio-aviso { order:4; }
+#welcomeScreen .welcome-changelog { order:5; }
+
+@media (max-width:600px) {
+    #welcomeScreen #welcomePlayBtn { margin-top:2px; }
+}
