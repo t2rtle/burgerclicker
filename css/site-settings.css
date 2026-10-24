@@ -8,6 +8,78 @@ html.tema-escuro {
     background: #12100d !important;
 }
 
+/* Base do jogo: componentes novos também herdam o tema, mesmo que
+   ainda não tenham uma regra específica de modo escuro. */
+html.tema-escuro body:not(.info-page) {
+    color: #f4eee7;
+}
+
+html.tema-escuro body:not(.info-page)::before {
+    filter: brightness(.48) saturate(.8);
+}
+
+html.tema-escuro body:not(.info-page) a {
+    color: #ffc46e;
+}
+
+html.tema-escuro body:not(.info-page) button,
+html.tema-escuro body:not(.info-page) input,
+html.tema-escuro body:not(.info-page) select,
+html.tema-escuro body:not(.info-page) textarea {
+    color: #f4eee7;
+    background-color: #292b31;
+    border-color: rgba(255, 255, 255, .16);
+}
+
+html.tema-escuro body:not(.info-page) button:hover:not(:disabled) {
+    background-color: #353840;
+}
+
+html.tema-escuro body:not(.info-page) button:disabled {
+    color: #aaa;
+    background-color: #22242a;
+}
+
+html.tema-escuro body:not(.info-page) .loja,
+html.tema-escuro body:not(.info-page) .upgrades,
+html.tema-escuro body:not(.info-page) .estatisticas,
+html.tema-escuro body:not(.info-page) .prestige,
+html.tema-escuro body:not(.info-page) .conquistas,
+html.tema-escuro body:not(.info-page) .painel-pets,
+html.tema-escuro body:not(.info-page) .prestige-shop-panel,
+html.tema-escuro body:not(.info-page) .contratos,
+html.tema-escuro body:not(.info-page) .bc-smart-dashboard,
+html.tema-escuro body:not(.info-page) .bc-area-conteudo {
+    color: #f4eee7;
+    background-color: rgba(24, 25, 30, .88);
+    border-color: rgba(255, 255, 255, .14);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .28);
+}
+
+html.tema-escuro body:not(.info-page) .pet-ativo-card,
+html.tema-escuro body:not(.info-page) .pet-colecao,
+html.tema-escuro body:not(.info-page) .contratos-grid,
+html.tema-escuro body:not(.info-page) .contratos-resumo,
+html.tema-escuro body:not(.info-page) .contratos-bonus,
+html.tema-escuro body:not(.info-page) .bc-recommendation,
+html.tema-escuro body:not(.info-page) .bc-dashboard-stats,
+html.tema-escuro body:not(.info-page) .bc-dashboard-progress {
+    color: #f4eee7;
+    background-color: rgba(45, 46, 53, .82);
+    border-color: rgba(255, 255, 255, .13);
+}
+
+html.tema-escuro body:not(.info-page) .info-nav a,
+html.tema-escuro body:not(.info-page) .info-back,
+html.tema-escuro body:not(.info-page) .info-language {
+    color: #f7dfc2;
+    background: rgba(30, 24, 19, .78);
+    border-color: rgba(255, 221, 174, .22);
+}
+
+/* =========================================================
+   PÁGINAS INSTITUCIONAIS
+========================================================= */
 html.tema-escuro body.info-page {
     color: #f2e8da;
 }
@@ -92,7 +164,10 @@ html.sem-animacoes *,
 html.sem-animacoes *::before,
 html.sem-animacoes *::after {
     animation: none !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition: none !important;
+    transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
 }
 
