@@ -21,7 +21,9 @@ self.addEventListener("install", event => {
                 console.warn("[Burger Clicker PWA] Recurso não pré-cacheado:", path, error);
             }
         }));
-        // Activate the new worker immediately so fixes to audio/network handling are not\n        // held behind an older worker. Game progress is stored separately from this cache.\n        await self.skipWaiting();
+        // Activate the new worker immediately so fixes to audio/network handling are not
+        // held behind an older worker. Game progress is stored separately from this cache.
+        await self.skipWaiting();
     })());
 });
 
