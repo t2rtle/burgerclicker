@@ -1,0 +1,86 @@
+/* =========================================================
+   CONTRATOS DE CHEF — Burger Clicker
+========================================================= */
+.contratos {
+    width: min(960px, 94vw);
+    margin: 0 auto 28px;
+    padding: clamp(18px, 3vw, 30px);
+    box-sizing: border-box;
+    border-radius: 24px;
+    background: rgba(255, 248, 233, .94);
+    color: #432b20;
+    box-shadow: 0 16px 45px rgba(65, 38, 18, .12);
+}
+
+.contratos-cabecalho {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.contratos-cabecalho h2 { margin: 0; }
+.contratos-cabecalho p { margin: 6px 0 0; opacity: .78; }
+
+.contratos-resumo {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.contrato-resumo-item {
+    padding: 13px;
+    border-radius: 16px;
+    background: rgba(139, 69, 19, .07);
+    text-align: center;
+}
+
+.contrato-resumo-item span { display: block; font-size: .8rem; opacity: .7; }
+.contrato-resumo-item strong { display: block; margin-top: 3px; font-size: 1.3rem; }
+
+.contratos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 13px;
+}
+
+.contrato-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 220px;
+    padding: 16px;
+    border: 1px solid rgba(92, 51, 23, .13);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .58);
+}
+
+.contrato-card.concluido { border-color: rgba(45, 140, 75, .35); }
+.contrato-card.resgatado { opacity: .62; }
+.contrato-card h3 { margin: 0 0 6px; line-height: 1.25; }
+.contrato-card p { margin: 0 0 10px; opacity: .8; }
+.contrato-progresso { font-size: .82rem; margin-bottom: 6px; }
+.contrato-barra { height: 9px; overflow: hidden; border-radius: 99px; background: rgba(120, 100, 80, .18); }
+.contrato-barra span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #c97831, #f4bf63); transition: width .2s ease; }
+.contrato-recompensa { margin: 11px 0; font-weight: 700; }
+.contrato-card button { width: 100%; min-height: 42px; margin-top: auto; }
+
+.contratos-bonus {
+    margin-top: 16px;
+    padding: 15px;
+    border-radius: 17px;
+    background: linear-gradient(135deg, rgba(255, 193, 7, .15), rgba(139, 69, 19, .07));
+}
+
+.contratos-bonus strong { display: block; margin-bottom: 4px; }
+.contratos-bonus p { margin: 0; opacity: .8; }
+
+html.tema-escuro .contratos { background: #18191e; color: #f4eee7; }
+html.tema-escuro .contrato-card { background: rgba(45, 46, 53, .75); border-color: rgba(255,255,255,.1); }
+html.tema-escuro .contrato-resumo-item { background: rgba(255,255,255,.06); }
+
+@media (max-width: 700px) {
+    .contratos-resumo { grid-template-columns: 1fr; }
+    .contratos-cabecalho { flex-direction: column; }
+}
