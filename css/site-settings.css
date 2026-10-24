@@ -1,0 +1,107 @@
+/* =========================================================
+   CONFIGURAÇÕES GLOBAIS — TEMA E ANIMAÇÕES
+   Regras compartilhadas por todas as páginas.
+========================================================= */
+
+html.tema-escuro {
+    color-scheme: dark;
+    background: #12100d !important;
+}
+
+html.tema-escuro body.info-page {
+    color: #f2e8da;
+}
+
+html.tema-escuro body.info-page::before {
+    filter: brightness(.42) saturate(.8);
+}
+
+html.tema-escuro .info-brand {
+    color: #ffd59b;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, .45);
+}
+
+html.tema-escuro .info-nav a,
+html.tema-escuro .info-back,
+html.tema-escuro .info-language,
+html.tema-escuro .info-footer {
+    color: #f7dfc2;
+    background: rgba(30, 24, 19, .78);
+    border-color: rgba(255, 221, 174, .22);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+
+html.tema-escuro .info-nav a:hover,
+html.tema-escuro .info-back:hover {
+    background: rgba(53, 42, 33, .88);
+}
+
+html.tema-escuro .info-language select {
+    color: #f7ead9;
+    background: rgba(20, 17, 14, .88);
+    border-color: rgba(255, 221, 174, .25);
+}
+
+html.tema-escuro .info-card {
+    color: #f2e8da;
+    background: rgba(29, 24, 20, .86);
+    border-color: rgba(255, 221, 174, .20);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, .38), inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+
+html.tema-escuro .info-icon {
+    background: rgba(50, 41, 33, .72);
+    border-color: rgba(255, 221, 174, .20);
+}
+
+html.tema-escuro .info-card h1 {
+    color: #ffc46e;
+    text-shadow: 0 4px 14px rgba(0, 0, 0, .42);
+}
+
+html.tema-escuro .info-lead {
+    color: #d8c5b1;
+}
+
+html.tema-escuro .info-section {
+    background: rgba(50, 41, 33, .58);
+    border-color: rgba(255, 221, 174, .16);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255, 255, 255, .04);
+}
+
+html.tema-escuro .info-section h2 {
+    color: #ffd08b;
+}
+
+html.tema-escuro .info-section a,
+html.tema-escuro .info-footer a {
+    color: #ffc46e;
+}
+
+html.tema-escuro .info-highlight {
+    border-left-color: #d88932;
+    background: rgba(83, 58, 31, .52);
+}
+
+html.tema-escuro .info-meta {
+    color: #d4c1ae;
+}
+
+/* A preferência de animações deve valer para páginas atuais e futuras. */
+html.sem-animacoes *,
+html.sem-animacoes *::before,
+html.sem-animacoes *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+}
+
+html.sem-animacoes {
+    scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html * {
+        scroll-behavior: auto;
+    }
+}
