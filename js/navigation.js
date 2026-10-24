@@ -13,12 +13,20 @@
     ];
 
     function carregarEstilos() {
-        if (document.querySelector('link[data-burger-navigation="true"]')) return;
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = "/css/navigation.css";
-        link.dataset.burgerNavigation = "true";
-        document.head.appendChild(link);
+        if (!document.querySelector('link[data-burger-navigation="true"]')) {
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = "/css/navigation.css";
+            link.dataset.burgerNavigation = "true";
+            document.head.appendChild(link);
+        }
+        if (!document.querySelector('link[data-burger-ui-polish="true"]')) {
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = "/css/ui-polish.css";
+            link.dataset.burgerUiPolish = "true";
+            document.head.appendChild(link);
+        }
     }
 
     function iniciarNavegacao() {
@@ -52,7 +60,6 @@
         nav.appendChild(titulo);
 
         const secoes = [];
-
         const abrirArea = (indice, foco = true) => {
             secoes.forEach((secao, i) => {
                 const aberta = i === indice && secao.elemento.hidden;
@@ -60,7 +67,6 @@
                 secao.botao.setAttribute("aria-expanded", aberta ? "true" : "false");
                 secao.botao.classList.toggle("ativo", aberta);
             });
-
             if (foco && secoes[indice]?.elemento && !secoes[indice].elemento.hidden) {
                 requestAnimationFrame(() => secoes[indice].elemento.scrollIntoView({ behavior: "smooth", block: "start" }));
             }
@@ -69,7 +75,6 @@
         AREAS.forEach(([id, rotulo, seletor], indice) => {
             const elemento = document.querySelector(seletor);
             if (!elemento) return;
-
             elemento.classList.add("bc-area-conteudo");
             elemento.hidden = true;
             elemento.id = elemento.id || `bc-area-${id}`;
@@ -81,13 +86,11 @@
             botao.setAttribute("aria-controls", elemento.id);
             botao.setAttribute("aria-expanded", "false");
             botao.addEventListener("click", () => abrirArea(indice));
-
             nav.appendChild(botao);
             secoes.push({ botao, elemento });
         });
 
         painel.insertAdjacentElement("afterend", nav);
-
         if (secoes.length) {
             secoes[0].elemento.hidden = false;
             secoes[0].botao.setAttribute("aria-expanded", "true");
@@ -95,9 +98,6 @@
         }
     }
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", iniciarNavegacao, { once: true });
-    } else {
-        iniciarNavegacao();
-    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", iniciarNavegacao, { once: true });
+    else iniciarNavegacao();
 })();
