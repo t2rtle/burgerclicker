@@ -8,22 +8,4 @@ for (const key of ["funcionarios","chapas","foodTrucks","lanchonetes","franquias
     try { Object.defineProperty(window,key,{configurable:true,get:()=>Number(localStorage.getItem(key)||0)}); } catch {}
   }
 }
-
-// Keep the new UI modular without changing the existing index markup.
-function carregarAsset(tipo, src) {
-  if (document.querySelector(`[data-bc-asset="${src}"]`)) return;
-  const node = document.createElement(tipo === "css" ? "link" : "script");
-  node.dataset.bcAsset = src;
-  if (tipo === "css") {
-    node.rel = "stylesheet";
-    node.href = src;
-  } else {
-    node.src = src;
-    node.defer = true;
-  }
-  document.head.appendChild(node);
-}
-
-carregarAsset("css", "css/game-menu.css");
-carregarAsset("js", "js/game-menu.js");
 })();
