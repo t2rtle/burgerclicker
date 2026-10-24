@@ -181,14 +181,21 @@
         userInteracted = true;
     }, { capture: true });
 
-    // EXATAMENTE o comportamento da versão v0.5.8:
-    // o som é reproduzido ao clicar no botão principal do hambúrguer.
-    const burgerBtn = document.getElementById("burgerBtn");
-    if (burgerBtn && somClique instanceof HTMLAudioElement) {
-        burgerBtn.addEventListener("click", () => {
-            void tocarEfeito();
-        });
-    }
+    // Reproduz o arquivo click.mp3 ao clicar em qualquer botão do jogo.
+    // A delegação cobre também botões criados dinamicamente por lojas,
+    // conquistas, pets, contratos, configurações e expansões.
+    // O listener em captura evita que handlers do jogo que desabilitam um
+    // botão durante o clique impeçam a reprodução do efeito.
+    document.addEventListener("click", event => {
+        const alvo = event.target;
+        const botao = alvo instanceof Element ? alvo.closest("button") : null;
+
+        if (!botao || botao.disabled || !(somClique instanceof HTMLAudioElement)) {
+            return;
+        }
+
+        void tocarEfeito();
+    }, { capture: true });
 
     // EXATAMENTE o comportamento da versão v0.5.8:
     // a primeira interação do usuário tenta iniciar a música em loop.
