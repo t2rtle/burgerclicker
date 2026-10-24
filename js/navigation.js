@@ -26,12 +26,21 @@
 
         const painel = document.querySelector(".painel");
         const configBtn = document.getElementById("configBtn");
+        const languageArea = document.querySelector(".info-language");
         if (!painel || !configBtn || document.querySelector(".bc-areas-nav")) return;
 
         document.querySelectorAll('body > img[src*="art_1"]').forEach(imagem => {
             imagem.hidden = true;
             imagem.setAttribute("aria-hidden", "true");
         });
+
+        // Configurações fica junto do seletor de idioma, fora da lista de áreas.
+        if (languageArea) {
+            configBtn.classList.add("bc-settings-top-btn");
+            configBtn.style.margin = "0";
+            configBtn.style.width = "auto";
+            languageArea.appendChild(configBtn);
+        }
 
         const nav = document.createElement("nav");
         nav.className = "bc-areas-nav";
@@ -76,10 +85,6 @@
             nav.appendChild(botao);
             secoes.push({ botao, elemento });
         });
-
-        configBtn.classList.add("bc-area-btn", "bc-config-area-btn");
-        configBtn.style.margin = "";
-        nav.appendChild(configBtn);
 
         painel.insertAdjacentElement("afterend", nav);
 
