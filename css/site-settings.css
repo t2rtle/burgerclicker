@@ -5,7 +5,7 @@
 
 html.tema-escuro {
     color-scheme: dark;
-    background: #12100d !important;
+    background: #0d0b09 !important;
 }
 
 /* Base do jogo: componentes novos também herdam o tema, mesmo que
@@ -14,8 +14,13 @@ html.tema-escuro body:not(.info-page) {
     color: #f4eee7;
 }
 
+/* O fundo global fica propositalmente um pouco mais escuro em todo o site. */
 html.tema-escuro body:not(.info-page)::before {
-    filter: brightness(.48) saturate(.8);
+    filter: brightness(.38) saturate(.78);
+}
+
+html.tema-escuro body.info-page::before {
+    filter: brightness(.34) saturate(.78);
 }
 
 html.tema-escuro body:not(.info-page) a {
@@ -77,12 +82,95 @@ html.tema-escuro body:not(.info-page) .bc-dashboard-progress {
     border-color: rgba(255, 255, 255, .13);
 }
 
-html.tema-escuro body:not(.info-page) .info-nav a,
-html.tema-escuro body:not(.info-page) .info-back,
-html.tema-escuro body:not(.info-page) .info-language {
-    color: #f7dfc2;
-    background: rgba(30, 24, 19, .78);
-    border-color: rgba(255, 221, 174, .22);
+/* =========================================================
+   TELAS INICIAIS, MODAIS E POPUPS
+   A preferência de tema também vale para interfaces criadas
+   dinamicamente pelo jogo, como ganhos offline.
+========================================================= */
+html.tema-escuro body:not(.info-page) #welcomeScreen {
+    background: rgba(5, 5, 7, .82);
+}
+
+html.tema-escuro body:not(.info-page) .welcome-caixa {
+    color: #f4eee7;
+    background: linear-gradient(145deg, rgba(25, 26, 31, .97), rgba(35, 32, 28, .96));
+    border-color: rgba(255, 255, 255, .16);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, .58), 0 5px 0 rgba(0, 0, 0, .24);
+}
+
+html.tema-escuro body:not(.info-page) .welcome-caixa h1 {
+    color: #ffc46e;
+}
+
+html.tema-escuro body:not(.info-page) .welcome-changelog {
+    background: rgba(10, 11, 14, .54);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
+}
+
+html.tema-escuro body:not(.info-page) #welcomePlayBtn {
+    background: #8b4513;
+    color: #fffaf0;
+    border-color: transparent;
+}
+
+/* Qualquer caixa semântica de diálogo recebe uma base escura. Isso também
+   cobre popups/diálogos criados por recursos novos sem exigir uma regra
+   específica para cada feature futura. */
+html.tema-escuro body:not(.info-page) [role="dialog"] {
+    color: #f4eee7;
+    background-color: rgba(25, 26, 31, .97);
+    border-color: rgba(255, 255, 255, .16);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, .55);
+}
+
+/* Classes comuns para overlays de ganhos/offline e futuras telas modais. */
+html.tema-escuro body:not(.info-page) .offline-overlay,
+html.tema-escuro body:not(.info-page) .offline-modal,
+html.tema-escuro body:not(.info-page) .offline-popup,
+html.tema-escuro body:not(.info-page) .offline-ganhos,
+html.tema-escuro body:not(.info-page) .ganhos-offline,
+html.tema-escuro body:not(.info-page) .offline-recompensa {
+    color: #f4eee7;
+    background: rgba(8, 9, 12, .84);
+}
+
+html.tema-escuro body:not(.info-page) .offline-overlay .modal,
+html.tema-escuro body:not(.info-page) .offline-overlay .popup,
+html.tema-escuro body:not(.info-page) .offline-modal .modal,
+html.tema-escuro body:not(.info-page) .offline-popup .popup,
+html.tema-escuro body:not(.info-page) .offline-ganhos,
+html.tema-escuro body:not(.info-page) .ganhos-offline,
+html.tema-escuro body:not(.info-page) .offline-recompensa {
+    color: #f4eee7;
+    background: linear-gradient(145deg, rgba(25, 26, 31, .98), rgba(35, 32, 28, .97));
+    border-color: rgba(255, 255, 255, .16);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, .58);
+}
+
+html.tema-escuro body:not(.info-page) .offline-overlay h1,
+html.tema-escuro body:not(.info-page) .offline-overlay h2,
+html.tema-escuro body:not(.info-page) .offline-overlay h3,
+html.tema-escuro body:not(.info-page) .offline-modal h1,
+html.tema-escuro body:not(.info-page) .offline-modal h2,
+html.tema-escuro body:not(.info-page) .offline-modal h3,
+html.tema-escuro body:not(.info-page) .offline-popup h1,
+html.tema-escuro body:not(.info-page) .offline-popup h2,
+html.tema-escuro body:not(.info-page) .offline-popup h3,
+html.tema-escuro body:not(.info-page) .offline-ganhos h1,
+html.tema-escuro body:not(.info-page) .offline-ganhos h2,
+html.tema-escuro body:not(.info-page) .offline-ganhos h3,
+html.tema-escuro body:not(.info-page) .ganhos-offline h1,
+html.tema-escuro body:not(.info-page) .ganhos-offline h2,
+html.tema-escuro body:not(.info-page) .ganhos-offline h3,
+html.tema-escuro body:not(.info-page) .offline-recompensa h1,
+html.tema-escuro body:not(.info-page) .offline-recompensa h2,
+html.tema-escuro body:not(.info-page) .offline-recompensa h3 {
+    color: #ffc46e;
+}
+
+html.tema-escuro body:not(.info-page) [role="dialog"] button {
+    color: #f4eee7;
+    background-color: #292b31;
 }
 
 /* =========================================================
@@ -90,10 +178,6 @@ html.tema-escuro body:not(.info-page) .info-language {
 ========================================================= */
 html.tema-escuro body.info-page {
     color: #f2e8da;
-}
-
-html.tema-escuro body.info-page::before {
-    filter: brightness(.42) saturate(.8);
 }
 
 html.tema-escuro .info-brand {
