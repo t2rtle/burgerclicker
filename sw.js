@@ -1,13 +1,13 @@
 /* Burger Clicker PWA Service Worker — update-aware cache */
 const CACHE_PREFIX = "burger-clicker-";
-const CACHE_NAME = "burger-clicker-v59";
+const CACHE_NAME = "burger-clicker-v60";
 const APP_SHELL = [
     "/", "/index.html", "/manifest.json", "/style.css",
     "/css/pets.css", "/css/tooltips.css", "/css/settings.css", "/css/navigation.css", "/css/welcome.css", "/css/glass-ui.css", "/css/info-pages.css", "/css/animations.css", "/css/pwa.css",
     "/js/info-language.js", "/js/game-i18n.js", "/js/core.js", "/js/systems.js", "/js/main.js", "/js/audio.js", "/js/audio-diagnostics.js", "/js/welcome.js", "/js/tooltips.js", "/js/settings.js", "/js/settings-compat.js",
     "/js/expansion-bridge.js", "/js/expansion.js", "/js/expansion-ui.js", "/js/statistics.js", "/js/statistics-accuracy.js",
     "/js/pwa.js", "/js/pwa-diagnostics.js", "/js/reset.js", "/js/navigation.js", "/js/animations.js",
-    "/about.html", "/privacy.html", "/contact.html", "/media/background.jpg", "/media/art_1.png", "/media/art_2.png", "/media/click.mp3", "/media/music.mp3", "/media/pwa-icon.svg"
+    "/about.html", "/privacy.html", "/contact.html", "/media/background.jpg", "/media/art_1.png", "/media/art_2.png", "/media/pwa-icon.svg"
 ];
 
 self.addEventListener("install", event => {
@@ -75,6 +75,13 @@ self.addEventListener("fetch", event => {
     }
 
     const path = url.pathname.toLowerCase();
+
+    // Áudio: nunca pré-armazenar permanentemente no Cache Storage da PWA.
+    // Sempre buscar a versão publicada; o preload="none" evita baixar antes de precisar.
+    if (path === "/media/music.mp3" || path === "/media/click.mp3") {
+        event.respondWith(fetch(request, { cache: "no-store" }));
+        return;
+    }
     const codeAsset = path.endsWith(".js") || path.endsWith(".css") || path.endsWith(".json");
     if (codeAsset) {
         event.respondWith((async () => {
